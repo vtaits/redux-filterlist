@@ -1,0 +1,46 @@
+{
+  "name": "redux-filterlist",
+  "version": "0.0.1",
+  "description": "A Higher Order Component using react-redux for creating lists with filters, sotring, paginatinon, endless scroll etc.",
+  "main": "dist/redux-filterlist.js",
+  "scripts": {
+    "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
+    "build:lib": "babel src --out-dir lib --ignore __tests__",
+    "build:umd": "cross-env NODE_ENV=development webpack",
+    "build:umd:min": "cross-env NODE_ENV=production webpack",
+    "lint": "eslint src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vtaits/redux-filterlist.git"
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "redux",
+    "redux-filterlist",
+    "filter",
+    "sort",
+    "pagination"
+  ],
+  "author": "Vadim Taits",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vtaits/redux-filterlist/issues"
+  },
+  "homepage": "https://github.com/vtaits/redux-filterlist#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-preset-es2015-no-commonjs": "0.0.2",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "cross-env": "^5.0.0",
+    "eslint": "^3.19.0",
+    "eslint-plugin-react": "^7.0.0",
+    "path": "^0.12.7",
+    "webpack": "^2.5.1"
+  }
+}
