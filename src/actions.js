@@ -9,7 +9,7 @@ export function registerList(listId, params) {
     payload: {
       listId,
       params,
-    }
+    },
   }
 }
 
@@ -18,6 +18,6 @@ export function destroyList(listId) {
     type: DESTROY_FILTERLIST,
     payload: {
       listId,
-    }
+    },
   }
 }
