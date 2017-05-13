@@ -8,6 +8,7 @@ const listInitialState = {
   loading: false,
   items: [],
   additional: null,
+  error: null,
 }
 
 export default listInitialState

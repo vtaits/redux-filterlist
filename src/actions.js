@@ -45,11 +45,12 @@ export function loadListSuccess(listId, response) {
   }
 }
 
-export function loadListError(listId) {
+export function loadListError(listId, response) {
   return {
     type: LOAD_LIST_ERROR,
     payload: {
       listId,
+      response,
     },
   }
 }

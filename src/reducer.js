@@ -24,6 +24,7 @@ function listReducer(listState = listInitialState, { type, payload }) {
       return {
         ...listState,
         loading: true,
+        error: null,
       }
 
     case LOAD_LIST_SUCCESS:
@@ -41,6 +42,9 @@ function listReducer(listState = listInitialState, { type, payload }) {
       return {
         ...listState,
         loading: false,
+        error: payload.response ?
+          payload.response.error :
+          null,
       }
 
     default:
