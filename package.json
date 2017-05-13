@@ -2,7 +2,7 @@
   "name": "redux-filterlist",
   "version": "0.0.1",
   "description": "A Higher Order Component using react-redux for creating lists with filters, sotring, paginatinon, endless scroll etc.",
-  "main": "dist/redux-filterlist.js",
+  "main": "./dist/redux-filterlist.js",
   "scripts": {
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
     "build:lib": "babel src --out-dir lib --ignore __tests__",
@@ -46,6 +46,9 @@
     "eslint": "^3.19.0",
     "eslint-plugin-react": "^7.0.0",
     "path": "^0.12.7",
+    "react": "^15.5.4",
+    "react-redux": "^5.0.4",
+    "redux": "^3.6.0",
     "webpack": "^2.5.1"
   }
 }

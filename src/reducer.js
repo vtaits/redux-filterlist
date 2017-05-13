@@ -1,25 +1,46 @@
 import {
-  REGISTER_FILTERLIST,
-  DESTROY_FILTERLIST,
+  REGISTER_LIST,
+  DESTROY_LIST,
+
+  LOAD_LIST,
+  LOAD_LIST_SUCCESS,
+  LOAD_LIST_ERROR,
 } from './actionsTypes'
 
-const listInitialState = {
-  sort: {
-    param: null,
-    asc: true,
-  },
-  filters: {},
-  appliedFilters: {},
-  loading: false,
-  items: [],
-}
+import listInitialState from './listInitialState'
 
 function listReducer(listState = listInitialState, { type, payload }) {
   switch (type) {
-    case REGISTER_FILTERLIST:
+    case REGISTER_LIST:
       return {
         ...listState,
         sort: payload.params.sort || listInitialState.sort,
+        filters: payload.params.filters || listInitialState.filters,
+        appliedFilters: payload.params.appliedFilters ||
+          listInitialState.appliedFilters,
+      }
+
+    case LOAD_LIST:
+      return {
+        ...listState,
+        loading: true,
+      }
+
+    case LOAD_LIST_SUCCESS:
+      return {
+        ...listState,
+        loading: false,
+        items: listState.items
+          .concat(payload.response.items),
+        additional: payload.response.hasOwnProperty('additional') ?
+          payload.response.additional :
+          listState.additional,
+      }
+
+    case LOAD_LIST_ERROR:
+      return {
+        ...listState,
+        loading: false,
       }
 
     default:
@@ -28,7 +49,10 @@ function listReducer(listState = listInitialState, { type, payload }) {
 }
 
 const listsActions = [
-  REGISTER_FILTERLIST,
+  REGISTER_LIST,
+  LOAD_LIST,
+  LOAD_LIST_SUCCESS,
+  LOAD_LIST_ERROR,
 ]
 
 export default function rootReducer(state = {}, action) {
@@ -45,7 +69,7 @@ export default function rootReducer(state = {}, action) {
   }
 
   switch (type) {
-    case DESTROY_FILTERLIST:
+    case DESTROY_LIST:
       return (({
         [payload.listId]: listForRemove,
         ...lists,
