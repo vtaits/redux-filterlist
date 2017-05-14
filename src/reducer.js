@@ -15,7 +15,7 @@ function listReducer(listState = listInitialState, { type, payload }) {
       return {
         ...listState,
         sort: payload.params.sort || listInitialState.sort,
-        filters: payload.params.filters || listInitialState.filters,
+        filters: payload.params.appliedFilters || listInitialState.filters,
         appliedFilters: payload.params.appliedFilters ||
           listInitialState.appliedFilters,
       }
