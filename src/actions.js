@@ -36,6 +36,18 @@ export function loadList(listId) {
 }
 
 export function loadListSuccess(listId, response) {
+  if (!response) {
+    throw new Error('Response is required')
+  }
+
+  if (!response.items) {
+    throw new Error('Response items is required')
+  }
+
+  if (!(response.items instanceof Array)) {
+    throw new Error('Response items should be array')
+  }
+
   return {
     type: LOAD_LIST_SUCCESS,
     payload: {
