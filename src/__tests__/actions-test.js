@@ -21,11 +21,27 @@ test('register list action is FSA', () => {
 })
 
 test('should create register list action', () => {
+  expect(registerList(1, {
+    appliedFilters: {},
+  }))
+    .toEqual({
+      type: REGISTER_LIST,
+      payload: {
+        listId: 1,
+        params: {
+          appliedFilters: {},
+        },
+      },
+    })
+})
+
+test('should set default params in register list action', () => {
   expect(registerList(1))
     .toEqual({
       type: REGISTER_LIST,
       payload: {
         listId: 1,
+        params: {},
       },
     })
 })

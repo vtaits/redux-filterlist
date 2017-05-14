@@ -7,7 +7,7 @@ import {
   LOAD_LIST_ERROR,
 } from './actionsTypes'
 
-export function registerList(listId, params) {
+export function registerList(listId, params = {}) {
   return {
     type: REGISTER_LIST,
     payload: {
