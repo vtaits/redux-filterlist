@@ -45,6 +45,9 @@ function listReducer(listState = listInitialState, { type, payload }) {
         error: payload.response ?
           payload.response.error :
           null,
+        additional: (payload.response && payload.response.hasOwnProperty('additional')) ?
+          payload.response.additional :
+          listState.additional,
       }
 
     default:
