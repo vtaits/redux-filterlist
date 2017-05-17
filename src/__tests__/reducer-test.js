@@ -22,17 +22,210 @@ test('should register empty list', () => {
 })
 
 test('should register two lists', () => {
-  const firstState = reducer({}, registerList(1, {}))
+  const state = reducer({}, registerList(1, {}))
 
-  expect(reducer(firstState, registerList(2))).toEqual({
+  expect(reducer(state, registerList(2))).toEqual({
     1: listInitialState,
     2: listInitialState,
   })
 })
 
-test('should set loading state', () => {
-  const firstState = reducer({}, registerList(1, {}))
-  const secondState = reducer(firstState, loadList(1))
+test('should throw an exception if list with id is already registered', () => {
+  expect(() => {
+    let state = reducer({}, registerList(1, {}))
+    reducer(state, registerList(1, {}))
+  })
+    .toThrowError('List with id "1" is already registered')
+})
 
-  expect(secondState[1].loading).toEqual(true)
+test('should destroy list', () => {
+  let state = reducer({}, registerList(1, {}))
+  state = reducer(state, registerList(2))
+
+  state = reducer(state, destroyList(1))
+
+  expect(state).toEqual({
+    2: listInitialState,
+  })
+})
+
+
+test('should set initial sort on list register', () => {
+  const state = reducer({}, registerList(1, {
+    sort: {
+      param: 'param',
+      asc: false,
+    },
+  }))
+
+  expect(state[1].sort).toEqual({
+    param: 'param',
+    asc: false,
+  })
+})
+
+test('should set initial filters on list register', () => {
+  const filters = {
+    filter1: 'value1',
+    filter2: 'value2',
+    filter3: ['value3', 'value4'],
+  }
+
+  const state = reducer({}, registerList(1, {
+    appliedFilters: filters,
+  }))
+
+  expect(state[1].filters).toEqual(filters)
+  expect(state[1].appliedFilters).toEqual(filters)
+})
+
+test('should set loading state', () => {
+  let state = reducer({}, registerList(1, {}))
+  state = reducer(state, loadList(1))
+
+  expect(state[1].loading).toEqual(true)
+})
+
+test('should load items and set additional if defined', () => {
+  let state = reducer({}, registerList(1, {}))
+  state = reducer(state, loadList(1))
+  state = reducer(state, loadListSuccess(1, {
+    items: [{
+      label: 1,
+      value: 1,
+    }, {
+      label: 2,
+      value: 2,
+    }],
+    additional: {
+      count: 2,
+    },
+  }))
+
+  expect(state[1].loading).toEqual(false)
+  expect(state[1].items).toEqual([{
+    label: 1,
+    value: 1,
+  }, {
+    label: 2,
+    value: 2,
+  }])
+  expect(state[1].additional).toEqual({
+    count: 2,
+  })
+
+  state = reducer(state, loadList(1))
+  state = reducer(state, loadListSuccess(1, {
+    items: [{
+      label: 3,
+      value: 3,
+    }, {
+      label: 4,
+      value: 4,
+    }],
+  }))
+
+  expect(state[1].items).toEqual([{
+    label: 1,
+    value: 1,
+  }, {
+    label: 2,
+    value: 2,
+  }, {
+    label: 3,
+    value: 3,
+  }, {
+    label: 4,
+    value: 4,
+  }])
+  expect(state[1].additional).toEqual({
+    count: 2,
+  })
+
+  state = reducer(state, loadList(1))
+  state = reducer(state, loadListSuccess(1, {
+    items: [{
+      label: 5,
+      value: 5,
+    }, {
+      label: 6,
+      value: 6,
+    }],
+    additional: null,
+  }))
+
+  expect(state[1].items).toEqual([{
+    label: 1,
+    value: 1,
+  }, {
+    label: 2,
+    value: 2,
+  }, {
+    label: 3,
+    value: 3,
+  }, {
+    label: 4,
+    value: 4,
+  }, {
+    label: 5,
+    value: 5,
+  }, {
+    label: 6,
+    value: 6,
+  }])
+  expect(state[1].additional).toEqual(null)
+})
+
+test('should set current list loading to false on load error', () => {
+  let state = reducer({}, registerList(1, {}))
+  state = reducer(state, registerList(2, {}))
+
+  state = reducer(state, loadList(1))
+  state = reducer(state, loadList(2))
+
+  state = reducer(state, loadListError(1))
+
+  expect(state[1].loading).toEqual(false)
+  expect(state[2].loading).toEqual(true)
+})
+
+test('should set list loading error and not change additional', () => {
+  let state = reducer({}, registerList(1, {}))
+
+  state = reducer(state, loadList(1))
+  state = reducer(state, loadListError(1, {
+    error: 'Error',
+  }))
+
+  expect(state[1].error).toEqual('Error')
+  expect(state[1].additional).toEqual(null)
+})
+
+test('should set list additional on load error', () => {
+  let state = reducer({}, registerList(1, {}))
+
+  state = reducer(state, loadList(1))
+  state = reducer(state, loadListError(1, {
+    error: 'Error',
+    additional: {
+      error: true,
+    },
+  }))
+
+  expect(state[1].additional).toEqual({
+    error: true,
+  })
+})
+
+test('should reset list loading error', () => {
+  let state = reducer({}, registerList(1, {}))
+
+  state = reducer(state, loadList(1))
+  state = reducer(state, loadListError(1, {
+    error: 'Error',
+  }))
+
+  state = reducer(state, loadList(1))
+
+  expect(state[1].error).toEqual(null)
 })

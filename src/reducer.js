@@ -9,11 +9,15 @@ import {
 
 import listInitialState from './listInitialState'
 
-function listReducer(listState = listInitialState, { type, payload }) {
+function listReducer(listState, { type, payload }) {
   switch (type) {
     case REGISTER_LIST:
+      if (listState) {
+        throw new Error(`List with id "${ payload.listId }" is already registered`)
+      }
+
       return {
-        ...listState,
+        ...listInitialState,
         sort: payload.params.sort || listInitialState.sort,
         filters: payload.params.appliedFilters || listInitialState.filters,
         appliedFilters: payload.params.appliedFilters ||
@@ -42,7 +46,7 @@ function listReducer(listState = listInitialState, { type, payload }) {
       return {
         ...listState,
         loading: false,
-        error: payload.response ?
+        error: (payload.response && payload.response.hasOwnProperty('error')) ?
           payload.response.error :
           null,
         additional: (payload.response && payload.response.hasOwnProperty('additional')) ?
@@ -77,10 +81,20 @@ export default function rootReducer(state = {}, action) {
 
   switch (type) {
     case DESTROY_LIST:
-      return (({
-        [payload.listId]: listForRemove,
-        ...lists,
-      }) => lists)(state)
+      return ((state) => {
+        const listIdStr = payload.listId.toString()
+
+        return Object.keys(state)
+          .reduce((res, listId) => {
+            if (listIdStr === listId) {
+              return res
+            }
+
+            res[listId] = state[listId]
+
+            return res
+          }, {})
+      })(state)
 
     default:
       return state
