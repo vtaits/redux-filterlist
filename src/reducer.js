@@ -7,7 +7,7 @@ import {
   LOAD_LIST_ERROR,
 } from './actionsTypes'
 
-import listInitialState from './listInitialState'
+import collectListInitialState from './collectListInitialState'
 
 function listReducer(listState, { type, payload }) {
   switch (type) {
@@ -16,13 +16,7 @@ function listReducer(listState, { type, payload }) {
         throw new Error(`List with id "${ payload.listId }" is already registered`)
       }
 
-      return {
-        ...listInitialState,
-        sort: payload.params.sort || listInitialState.sort,
-        filters: payload.params.appliedFilters || listInitialState.filters,
-        appliedFilters: payload.params.appliedFilters ||
-          listInitialState.appliedFilters,
-      }
+      return collectListInitialState(payload.params)
 
     case LOAD_LIST:
       return {

@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
-import listInitialState from './listInitialState'
+import collectListInitialState from './collectListInitialState'
 
 import * as actions from './actions'
 
@@ -18,7 +18,7 @@ export default function reduxFilterlist({
         [listId]: listState,
       },
     }) => ({
-      listState: listState || listInitialState,
+      listState: listState || collectListInitialState(params),
 
       listId,
       loadItems,

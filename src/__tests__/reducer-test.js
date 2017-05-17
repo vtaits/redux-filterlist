@@ -1,4 +1,5 @@
 import listInitialState from '../listInitialState'
+import collectListInitialState from '../collectListInitialState'
 import reducer from '../reducer'
 
 import {
@@ -50,33 +51,22 @@ test('should destroy list', () => {
 })
 
 
-test('should set initial sort on list register', () => {
-  const state = reducer({}, registerList(1, {
+test('should set list initial state such as collectListInitialState', () => {
+  const params = {
     sort: {
       param: 'param',
       asc: false,
     },
-  }))
-
-  expect(state[1].sort).toEqual({
-    param: 'param',
-    asc: false,
-  })
-})
-
-test('should set initial filters on list register', () => {
-  const filters = {
-    filter1: 'value1',
-    filter2: 'value2',
-    filter3: ['value3', 'value4'],
+    appliedFilters: {
+      filter1: 'value1',
+      filter2: 'value2',
+      filter3: ['value3', 'value4'],
+    },
   }
 
-  const state = reducer({}, registerList(1, {
-    appliedFilters: filters,
-  }))
+  const state = reducer({}, registerList(1, params))
 
-  expect(state[1].filters).toEqual(filters)
-  expect(state[1].appliedFilters).toEqual(filters)
+  expect(state[1]).toEqual(collectListInitialState(params))
 })
 
 test('should set loading state', () => {
