@@ -4,7 +4,8 @@ module.exports = {
         "es6": true,
         "jest/globals": true
     },
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "experimentalObjectRestSpread": true,
@@ -13,8 +14,8 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "jest",
-        "react"
+        "react",
+        "jest"
     ],
     "rules": {
         "indent": [

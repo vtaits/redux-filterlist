@@ -5,13 +5,23 @@ import collectListInitialState from './collectListInitialState'
 
 import * as actions from './actions'
 
-import ReduxFilterlistWrapper from './ReduxFilterlistWrapper'
-
-export default function reduxFilterlist({
+export default function reduxFilterlist(ReduxFilterlistWrapper, {
   listId,
   loadItems,
   ...params
 }) {
+  if (!listId) {
+    throw new Error('listId is required')
+  }
+
+  if (!loadItems) {
+    throw new Error('loadItems is required')
+  }
+
+  if (typeof loadItems !== 'function') {
+    throw new Error('loadItems should be a function')
+  }
+
   return function(WrappedComponent) {
     const mapStateToProps = ({
       reduxFilterlist: {

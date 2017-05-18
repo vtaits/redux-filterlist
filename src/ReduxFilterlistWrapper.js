@@ -1,16 +1,48 @@
 import {Component, createElement} from 'react'
+import PropTypes from 'prop-types'
 
 class ReduxFilterlistWrapper extends Component {
+  static propTypes = {
+    listId: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]).isRequired,
+    loadItems: PropTypes.func.isRequired,
+    listState: PropTypes.shape({
+      sort: PropTypes.shape({
+        param: PropTypes.string,
+        asc: PropTypes.bool.isRequired,
+      }).isRequired,
+      filters: PropTypes.object.isRequired,
+      appliedFilters: PropTypes.object.isRequired,
+      loading: PropTypes.bool.isRequired,
+      items: PropTypes.array.isRequired,
+      additional: PropTypes.any,
+      error: PropTypes.any,
+    }).isRequired,
+    listActions: PropTypes.shape({
+      registerList: PropTypes.func.isRequired,
+      destroyList: PropTypes.func.isRequired,
+      loadList: PropTypes.func.isRequired,
+      loadListSuccess: PropTypes.func.isRequired,
+      loadListError: PropTypes.func.isRequired,
+    }).isRequired,
+    WrappedComponent: PropTypes.func.isRequired,
+    params: PropTypes.object.isRequired,
+  }
+
   constructor(props) {
     super(props)
   }
 
-  loadItems() {
+  loadItems = () => {
     const {
       listId,
       loadItems,
       listState,
       listActions,
+      WrappedComponent,
+      params,
       ...props
     } = this.props
 
@@ -21,6 +53,8 @@ class ReduxFilterlistWrapper extends Component {
         listActions.loadListSuccess(listId, response)
       }, (response) => {
         listActions.loadListError(listId, response)
+
+        return Promise.reject(response)
       })
   }
 
@@ -35,6 +69,7 @@ class ReduxFilterlistWrapper extends Component {
 
   componentDidMount() {
     this.loadItems()
+      .catch(() => {})
   }
 
   componentWillUnmount() {
@@ -47,13 +82,17 @@ class ReduxFilterlistWrapper extends Component {
 
   collectComponentProps() {
     const {
+      listId,
       listState,
       listActions,
+      WrappedComponent,
+      params,
       ...props
     } = this.props
 
     return {
       ...props,
+      listId,
       listState,
       loadItems: this.loadItems,
     }

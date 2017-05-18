@@ -5,4 +5,8 @@ import * as _actionsTypes from './actionsTypes'
 export const actionsTypes = _actionsTypes
 
 export {default as reducer} from './reducer'
-export {default as reduxFilterlist} from './reduxFilterlist'
+
+import _reduxFilterlist from './reduxFilterlist'
+import ReduxFilterlistWrapper from './ReduxFilterlistWrapper'
+
+export const reduxFilterlist = _reduxFilterlist.bind(null, ReduxFilterlistWrapper)
