@@ -11,6 +11,7 @@ import {
   loadListError,
 
   setFilterValue,
+  applyFilter,
 } from '../actions'
 
 import {mount} from 'enzyme'
@@ -163,6 +164,7 @@ test('should provide the correct props', () => {
 
   expect(Object.keys(props).sort())
     .toEqual([
+      'applyFilter',
       'listId',
       'listState',
       'loadItems',
@@ -704,4 +706,136 @@ test('should dispatch setFilterValue from props', () => {
   expect(store.getActions()[0]).toEqual(
     setFilterValue('test', 'testFilter', 'testValue')
   )
+})
+
+test('should apply filter from props', () => {
+  const spy = sinon.spy(() => {
+    return Promise.resolve({
+      items: [{
+        id: 1,
+      }, {
+        id: 2,
+      }, {
+        id: 3,
+      }],
+      additional: {
+        count: 3,
+      },
+    })
+  })
+
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: spy,
+  })(TestChildComponent)
+
+  const store = mockStore({
+    reduxFilterlist: {},
+  })
+
+  const wrapper = mount(
+    <Provider store={ store }>
+      <Container />
+    </Provider>
+  )
+
+  return spy.returnValues[0]
+    .then(() => {
+      store.clearActions()
+
+      wrapper.find(TestChildComponent).props().setFilterValue('testFilter', 'testValue')
+
+      return wrapper.find(TestChildComponent).props().applyFilter('testFilter')
+        .then(() => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            setFilterValue('test', 'testFilter', 'testValue'),
+            applyFilter('test', 'testFilter'),
+            loadListSuccess('test', {
+              items: [{
+                id: 1,
+              }, {
+                id: 2,
+              }, {
+                id: 3,
+              }],
+              additional: {
+                count: 3,
+              },
+            }),
+          ])
+        }, () => {
+          throw new Error('Must resolve')
+        })
+    }, () => {
+      throw new Error('Must resolve')
+    })
+})
+
+test('should set load error calling applyFilter from props', () => {
+  let callsCount = 0
+  const spy = sinon.spy(() => {
+    if (callsCount === 0) {
+      ++callsCount
+
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      })
+    }
+
+    return Promise.reject({
+      error: 'Error',
+      additional: null,
+    })
+  })
+
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: spy,
+  })(TestChildComponent)
+
+  const store = mockStore({
+    reduxFilterlist: {},
+  })
+
+  const wrapper = mount(
+    <Provider store={ store }>
+      <Container />
+    </Provider>
+  )
+
+  return spy.returnValues[0]
+    .then(() => {
+      store.clearActions()
+
+      wrapper.find(TestChildComponent).props().setFilterValue('testFilter', 'testValue')
+
+      return wrapper.find(TestChildComponent).props().applyFilter('testFilter')
+        .then(() => {
+          throw new Error('Must reject')
+        }, () => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            setFilterValue('test', 'testFilter', 'testValue'),
+            applyFilter('test', 'testFilter'),
+            loadListError('test', {
+              error: 'Error',
+              additional: null,
+            }),
+          ])
+        })
+    }, () => {
+      throw new Error('Must resolve')
+    })
 })

@@ -29,6 +29,7 @@ class ReduxFilterlistWrapper extends Component {
       loadListError: PropTypes.func.isRequired,
 
       setFilterValue: PropTypes.func.isRequired,
+      applyFilter: PropTypes.func.isRequired,
     }).isRequired,
     WrappedComponent: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
@@ -38,7 +39,7 @@ class ReduxFilterlistWrapper extends Component {
     super(props)
   }
 
-  loadItems = () => {
+  requestItems() {
     const {
       listId,
       loadItems,
@@ -49,8 +50,6 @@ class ReduxFilterlistWrapper extends Component {
       ...props
     } = this.props
 
-    listActions.loadList(listId)
-
     return loadItems(listState, props)
       .then((response) => {
         listActions.loadListSuccess(listId, response)
@@ -59,6 +58,28 @@ class ReduxFilterlistWrapper extends Component {
 
         return Promise.reject(response)
       })
+  }
+
+  loadItems = () => {
+    const {
+      listId,
+      listActions,
+    } = this.props
+
+    listActions.loadList(listId)
+
+    return this.requestItems()
+  }
+
+  applyFilter = (filterName) => {
+    const {
+      listId,
+      listActions,
+    } = this.props
+
+    listActions.applyFilter(listId, filterName)
+
+    return this.requestItems()
   }
 
   componentWillMount() {
@@ -99,6 +120,7 @@ class ReduxFilterlistWrapper extends Component {
       listState,
       loadItems: this.loadItems,
       setFilterValue: listActions.setFilterValue.bind(null, listId),
+      applyFilter: this.applyFilter,
     }
   }
 

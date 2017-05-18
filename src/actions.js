@@ -7,6 +7,7 @@ import {
   LOAD_LIST_ERROR,
 
   SET_FILTER_VALUE,
+  APPLY_FILTER,
 } from './actionsTypes'
 
 export function registerList(listId, params = {}) {
@@ -80,6 +81,20 @@ export function setFilterValue(listId, filterName, value) {
       listId,
       filterName,
       value,
+    },
+  }
+}
+
+export function applyFilter(listId, filterName) {
+  if (!filterName) {
+    throw new Error('Filter name is required')
+  }
+
+  return {
+    type: APPLY_FILTER,
+    payload: {
+      listId,
+      filterName,
     },
   }
 }

@@ -7,6 +7,7 @@ import {
   LOAD_LIST_ERROR,
 
   SET_FILTER_VALUE,
+  APPLY_FILTER,
 } from '../actionsTypes'
 
 import {
@@ -18,6 +19,7 @@ import {
   loadListError,
 
   setFilterValue,
+  applyFilter,
 } from '../actions'
 
 import {isFSA} from 'flux-standard-action'
@@ -183,6 +185,28 @@ test('should create set filter value action', () => {
 test('should throw an exception in set filter value action if filterName is not defined', () => {
   expect(() => {
     setFilterValue(1)
+  })
+    .toThrowError('Filter name is required')
+})
+
+test('apply filter action is FSA', () => {
+  expect(isFSA(applyFilter(1, 'testFilter'))).toBeTruthy()
+})
+
+test('should create apply filter action', () => {
+  expect(applyFilter(1, 'testFilter'))
+    .toEqual({
+      type: APPLY_FILTER,
+      payload: {
+        listId: 1,
+        filterName: 'testFilter',
+      },
+    })
+})
+
+test('should throw an exception in apply filter action if filterName is not defined', () => {
+  expect(() => {
+    applyFilter(1)
   })
     .toThrowError('Filter name is required')
 })

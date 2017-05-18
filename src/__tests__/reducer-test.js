@@ -11,6 +11,7 @@ import {
   loadListError,
 
   setFilterValue,
+  applyFilter,
 } from '../actions'
 
 test('should work with empty state', () => {
@@ -224,9 +225,31 @@ test('should reset list loading error', () => {
 })
 
 test('should set filter value', () => {
-  let state = reducer({}, registerList(1, {}))
+  let state = reducer({}, registerList(1, {
+    appliedFilters: {
+      'filter': 'value',
+    },
+  }))
 
   state = reducer(state, setFilterValue(1, 'testFilter', 'testValue'))
 
+  expect(state[1].filters.filter).toEqual('value')
   expect(state[1].filters.testFilter).toEqual('testValue')
+})
+
+test('should apply filter with setted value', () => {
+  let state = reducer({}, registerList(1, {
+    appliedFilters: {
+      'filter': 'value',
+    },
+  }))
+
+  state = reducer(state, setFilterValue(1, 'testFilter', 'testValue'))
+  state = reducer(state, applyFilter(1, 'testFilter'))
+
+  expect(state[1].appliedFilters.filter).toEqual('value')
+  expect(state[1].appliedFilters.testFilter).toEqual('testValue')
+  expect(state[1].loading).toEqual(true)
+  expect(state[1].error).toEqual(null)
+  expect(state[1].items).toEqual([])
 })

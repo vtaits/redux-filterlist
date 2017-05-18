@@ -8,3 +8,4 @@ export const LOAD_LIST_SUCCESS = `${prefix}LOAD_LIST_SUCCESS`
 export const LOAD_LIST_ERROR = `${prefix}LOAD_LIST_ERROR`
 
 export const SET_FILTER_VALUE = `${prefix}SET_FILTER_VALUE`
+export const APPLY_FILTER = `${prefix}APPLY_FILTER`
