@@ -13,6 +13,7 @@ class ReduxFilterlistWrapper extends Component {
         param: PropTypes.string,
         asc: PropTypes.bool.isRequired,
       }).isRequired,
+      initialFilters: PropTypes.object.isRequired,
       filters: PropTypes.object.isRequired,
       appliedFilters: PropTypes.object.isRequired,
       loading: PropTypes.bool.isRequired,

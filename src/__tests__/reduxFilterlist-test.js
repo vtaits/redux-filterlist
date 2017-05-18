@@ -179,6 +179,7 @@ test('should provide the correct props', () => {
       'appliedFilters',
       'error',
       'filters',
+      'initialFilters',
       'items',
       'loading',
       'sort',
@@ -212,6 +213,7 @@ test('should provide the correct list state', () => {
             param: 'test',
             asc: true,
           },
+          initialFilters: {},
           filters: {},
           appliedFilters: {},
           loading: false,
@@ -232,6 +234,7 @@ test('should provide the correct list state', () => {
       param: 'test',
       asc: true,
     },
+    initialFilters: {},
     filters: {},
     appliedFilters: {},
     loading: false,
@@ -243,6 +246,9 @@ test('should provide the correct list state', () => {
 
 test('should provide the correct list state at init', () => {
   const params = {
+    initialFilters: {
+      filter: '',
+    },
     sort: {
       param: 'param',
       asc: false,
@@ -303,6 +309,9 @@ test('should dispatch registerList on init', () => {
       })
     },
 
+    initialFilters: {
+      filter: '',
+    },
     appliedFilters: {
       filter: 'value',
     },
@@ -324,6 +333,9 @@ test('should dispatch registerList on init', () => {
 
   expect(store.getActions()[0]).toEqual(
     registerList('test', {
+      initialFilters: {
+        filter: '',
+      },
       appliedFilters: {
         filter: 'value',
       },
@@ -410,6 +422,7 @@ test('should provide correct values to loadItems and call once on render', () =>
             param: 'test',
             asc: true,
           },
+          initialFilters: {},
           filters: {},
           appliedFilters: {},
           loading: false,
@@ -432,6 +445,7 @@ test('should provide correct values to loadItems and call once on render', () =>
         param: 'test',
         asc: true,
       },
+      initialFilters: {},
       filters: {},
       appliedFilters: {},
       loading: false,
