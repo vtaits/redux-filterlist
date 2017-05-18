@@ -10,6 +10,8 @@ import {
   APPLY_FILTER,
   SET_AND_APPLY_FILTER,
   RESET_FILTER,
+
+  SET_FILTERS_VALUES,
 } from './actionsTypes'
 
 export function registerList(listId, params = {}) {
@@ -126,6 +128,20 @@ export function resetFilter(listId, filterName) {
     payload: {
       listId,
       filterName,
+    },
+  }
+}
+
+export function setFiltersValues(listId, values) {
+  if (!values) {
+    throw new Error('Values is required')
+  }
+
+  return {
+    type: SET_FILTERS_VALUES,
+    payload: {
+      listId,
+      values,
     },
   }
 }

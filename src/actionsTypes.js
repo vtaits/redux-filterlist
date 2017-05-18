@@ -11,3 +11,5 @@ export const SET_FILTER_VALUE = `${prefix}SET_FILTER_VALUE`
 export const APPLY_FILTER = `${prefix}APPLY_FILTER`
 export const SET_AND_APPLY_FILTER = `${prefix}SET_AND_APPLY_FILTER`
 export const RESET_FILTER = `${prefix}RESET_FILTER`
+
+export const SET_FILTERS_VALUES = `${prefix}SET_FILTERS_VALUES`

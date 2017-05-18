@@ -36,6 +36,8 @@ class ReduxFilterlistWrapper extends Component {
       applyFilter: PropTypes.func.isRequired,
       setAndApplyFilter: PropTypes.func.isRequired,
       resetFilter: PropTypes.func.isRequired,
+
+      setFiltersValues: PropTypes.func.isRequired,
     }).isRequired,
 
     WrappedComponent: PropTypes.func.isRequired,
@@ -152,6 +154,7 @@ class ReduxFilterlistWrapper extends Component {
       applyFilter: this.applyFilter,
       setAndApplyFilter: this.setAndApplyFilter,
       resetFilter: this.resetFilter,
+      setFiltersValues: listActions.setFiltersValues.bind(null, listId),
     }
   }
 
