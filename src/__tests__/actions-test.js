@@ -12,6 +12,7 @@ import {
   RESET_FILTER,
 
   SET_FILTERS_VALUES,
+  APPLY_FILTERS,
 } from '../actionsTypes'
 
 import {
@@ -28,6 +29,7 @@ import {
   resetFilter,
 
   setFiltersValues,
+  applyFilters,
 } from '../actions'
 
 import {isFSA} from 'flux-standard-action'
@@ -288,9 +290,39 @@ test('should create set filters values action', () => {
     })
 })
 
-test('should throw an exception in reset filter action if values is not defined', () => {
+test('should throw an exception in set filters values action if values is not defined', () => {
   expect(() => {
     setFiltersValues(1)
   })
     .toThrowError('Values is required')
+})
+
+test('apply filters values action is FSA', () => {
+  expect(isFSA(applyFilters(1, ['filter1', 'filter2']))).toBeTruthy()
+})
+
+test('should create apply filters values action', () => {
+  expect(applyFilters(1, ['filter1', 'filter2']))
+    .toEqual({
+      type: APPLY_FILTERS,
+      payload: {
+        listId: 1,
+        filtersNames: ['filter1', 'filter2'],
+      },
+    })
+})
+
+test('should throw an exception in apply filters action if filters names is not defined', () => {
+  expect(() => {
+    applyFilters(1)
+  })
+    .toThrowError('Filters names is required')
+})
+
+
+test('should throw an exception in apply filters action if filters names is not an array', () => {
+  expect(() => {
+    applyFilters(1, 123)
+  })
+    .toThrowError('Filters names should be an array')
 })

@@ -12,6 +12,7 @@ import {
   RESET_FILTER,
 
   SET_FILTERS_VALUES,
+  APPLY_FILTERS,
 } from './actionsTypes'
 
 export function registerList(listId, params = {}) {
@@ -142,6 +143,25 @@ export function setFiltersValues(listId, values) {
     payload: {
       listId,
       values,
+    },
+  }
+}
+
+
+export function applyFilters(listId, filtersNames) {
+  if (!filtersNames) {
+    throw new Error('Filters names is required')
+  }
+
+  if (!(filtersNames instanceof Array)) {
+    throw new Error('Filters names should be an array')
+  }
+
+  return {
+    type: APPLY_FILTERS,
+    payload: {
+      listId,
+      filtersNames,
     },
   }
 }
