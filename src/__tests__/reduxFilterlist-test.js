@@ -9,6 +9,8 @@ import {
   loadList,
   loadListSuccess,
   loadListError,
+
+  setFilterValue,
 } from '../actions'
 
 import {mount} from 'enzyme'
@@ -164,6 +166,7 @@ test('should provide the correct props', () => {
       'listId',
       'listState',
       'loadItems',
+      'setFilterValue',
     ])
 
   expect(Object.keys(props.listState).sort())
@@ -655,4 +658,50 @@ test('should set load error calling loadItems from props', () => {
     }, () => {
       throw new Error('Must resolve')
     })
+})
+
+test('should dispatch setFilterValue from props', () => {
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: () => {
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      })
+    },
+
+    appliedFilters: {
+      filter: 'value',
+    },
+    sort: {
+      param: 'param',
+      asc: false,
+    },
+  })(TestChildComponent)
+
+  const store = mockStore({
+    reduxFilterlist: {},
+  })
+
+  const wrapper = mount(
+    <Provider store={ store }>
+      <Container />
+    </Provider>
+  )
+
+  store.clearActions()
+
+  wrapper.find(TestChildComponent).props().setFilterValue('testFilter', 'testValue')
+
+  expect(store.getActions()[0]).toEqual(
+    setFilterValue('test', 'testFilter', 'testValue')
+  )
 })

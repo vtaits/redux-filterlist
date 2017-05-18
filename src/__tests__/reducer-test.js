@@ -5,9 +5,12 @@ import reducer from '../reducer'
 import {
   registerList,
   destroyList,
+
   loadList,
   loadListSuccess,
   loadListError,
+
+  setFilterValue,
 } from '../actions'
 
 test('should work with empty state', () => {
@@ -218,4 +221,12 @@ test('should reset list loading error', () => {
   state = reducer(state, loadList(1))
 
   expect(state[1].error).toEqual(null)
+})
+
+test('should set filter value', () => {
+  let state = reducer({}, registerList(1, {}))
+
+  state = reducer(state, setFilterValue(1, 'testFilter', 'testValue'))
+
+  expect(state[1].filters.testFilter).toEqual('testValue')
 })

@@ -5,6 +5,8 @@ import {
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
+
+  SET_FILTER_VALUE,
 } from './actionsTypes'
 
 import collectListInitialState from './collectListInitialState'
@@ -48,6 +50,14 @@ function listReducer(listState, { type, payload }) {
           listState.additional,
       }
 
+    case SET_FILTER_VALUE:
+      return {
+        ...listState,
+        filters: {
+          [payload.filterName]: payload.value,
+        },
+      }
+
     default:
       return listState
   }
@@ -58,6 +68,7 @@ const listsActions = [
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
+  SET_FILTER_VALUE,
 ]
 
 export default function rootReducer(state = {}, action) {

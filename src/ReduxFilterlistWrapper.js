@@ -23,9 +23,12 @@ class ReduxFilterlistWrapper extends Component {
     listActions: PropTypes.shape({
       registerList: PropTypes.func.isRequired,
       destroyList: PropTypes.func.isRequired,
+
       loadList: PropTypes.func.isRequired,
       loadListSuccess: PropTypes.func.isRequired,
       loadListError: PropTypes.func.isRequired,
+
+      setFilterValue: PropTypes.func.isRequired,
     }).isRequired,
     WrappedComponent: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
@@ -95,6 +98,7 @@ class ReduxFilterlistWrapper extends Component {
       listId,
       listState,
       loadItems: this.loadItems,
+      setFilterValue: listActions.setFilterValue.bind(null, listId),
     }
   }
 

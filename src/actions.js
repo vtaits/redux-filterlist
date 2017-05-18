@@ -5,6 +5,8 @@ import {
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
+
+  SET_FILTER_VALUE,
 } from './actionsTypes'
 
 export function registerList(listId, params = {}) {
@@ -63,6 +65,21 @@ export function loadListError(listId, response) {
     payload: {
       listId,
       response,
+    },
+  }
+}
+
+export function setFilterValue(listId, filterName, value) {
+  if (!filterName) {
+    throw new Error('Filter name is required')
+  }
+
+  return {
+    type: SET_FILTER_VALUE,
+    payload: {
+      listId,
+      filterName,
+      value,
     },
   }
 }
