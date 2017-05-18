@@ -13,6 +13,7 @@ import {
   setFilterValue,
   applyFilter,
   setAndApplyFilter,
+  resetFilter,
 } from '../actions'
 
 test('should work with empty state', () => {
@@ -268,6 +269,28 @@ test('should set and apply filter', () => {
   expect(state[1].appliedFilters.filter).toEqual('value')
   expect(state[1].filters.testFilter).toEqual('testValue')
   expect(state[1].appliedFilters.testFilter).toEqual('testValue')
+  expect(state[1].loading).toEqual(true)
+  expect(state[1].error).toEqual(null)
+  expect(state[1].items).toEqual([])
+})
+
+test('should reset filter', () => {
+  let state = reducer({}, registerList(1, {
+    initialFilters: {
+      testFilter: 'initialValue',
+    },
+    appliedFilters: {
+      filter: 'value',
+      testFilter: 'testValue',
+    },
+  }))
+
+  state = reducer(state, resetFilter(1, 'testFilter'))
+
+  expect(state[1].filters.filter).toEqual('value')
+  expect(state[1].appliedFilters.filter).toEqual('value')
+  expect(state[1].filters.testFilter).toEqual('initialValue')
+  expect(state[1].appliedFilters.testFilter).toEqual('initialValue')
   expect(state[1].loading).toEqual(true)
   expect(state[1].error).toEqual(null)
   expect(state[1].items).toEqual([])
