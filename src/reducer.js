@@ -8,6 +8,7 @@ import {
 
   SET_FILTER_VALUE,
   APPLY_FILTER,
+  SET_AND_APPLY_FILTER,
 } from './actionsTypes'
 
 import collectListInitialState from './collectListInitialState'
@@ -72,6 +73,22 @@ function listReducer(listState, { type, payload }) {
         items: [],
       }
 
+    case SET_AND_APPLY_FILTER:
+      return {
+        ...listState,
+        filters: {
+          ...listState.filters,
+          [payload.filterName]: payload.value,
+        },
+        appliedFilters: {
+          ...listState.appliedFilters,
+          [payload.filterName]: payload.value,
+        },
+        loading: true,
+        error: null,
+        items: [],
+      }
+
     default:
       return listState
   }
@@ -84,6 +101,7 @@ const listsActions = [
   LOAD_LIST_ERROR,
   SET_FILTER_VALUE,
   APPLY_FILTER,
+  SET_AND_APPLY_FILTER,
 ]
 
 export default function rootReducer(state = {}, action) {
