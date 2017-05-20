@@ -40,6 +40,7 @@ class ReduxFilterlistWrapper extends Component {
       setFiltersValues: PropTypes.func.isRequired,
       applyFilters: PropTypes.func.isRequired,
       setAndApplyFilters: PropTypes.func.isRequired,
+      resetFilters: PropTypes.func.isRequired,
     }).isRequired,
 
     WrappedComponent: PropTypes.func.isRequired,
@@ -137,6 +138,17 @@ class ReduxFilterlistWrapper extends Component {
     return this.requestItems()
   }
 
+  resetFilters = (filtersNames) => {
+    const {
+      listId,
+      listActions,
+    } = this.props
+
+    listActions.resetFilters(listId, filtersNames)
+
+    return this.requestItems()
+  }
+
   componentWillMount() {
     const {
       listId,
@@ -183,6 +195,7 @@ class ReduxFilterlistWrapper extends Component {
       setFiltersValues: listActions.setFiltersValues.bind(null, listId),
       applyFilters: this.applyFilters,
       setAndApplyFilters: this.setAndApplyFilters,
+      resetFilters: this.resetFilters,
     }
   }
 
