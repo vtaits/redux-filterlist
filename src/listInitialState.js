@@ -3,6 +3,7 @@ const listInitialState = {
     param: null,
     asc: true,
   },
+  alwaysResetFilters: {},
   initialFilters: {},
   filters: {},
   appliedFilters: {},

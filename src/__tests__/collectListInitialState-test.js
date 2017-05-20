@@ -33,3 +33,16 @@ test('should set initial filters', () => {
   expect(state.filters).toEqual(filters)
   expect(state.appliedFilters).toEqual(filters)
 })
+
+test('should set filters for resetting', () => {
+  const alwaysResetFilters = {
+    filter1: 'value1',
+    filter2: 'value2',
+  }
+
+  const state = collectListInitialState({
+    alwaysResetFilters,
+  })
+
+  expect(state.alwaysResetFilters).toEqual(alwaysResetFilters)
+})

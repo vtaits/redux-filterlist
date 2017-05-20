@@ -190,6 +190,7 @@ test('should provide the correct props', () => {
   expect(Object.keys(props.listState).sort())
     .toEqual([
       'additional',
+      'alwaysResetFilters',
       'appliedFilters',
       'error',
       'filters',
