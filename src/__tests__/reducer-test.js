@@ -70,6 +70,9 @@ test('should set list initial state such as collectListInitialState', () => {
       param: 'param',
       asc: false,
     },
+    alwaysResetFilters: {
+      page: 1,
+    },
     appliedFilters: {
       filter1: 'value1',
       filter2: 'value2',
@@ -248,14 +251,20 @@ test('should set filter value', () => {
 
 test('should apply filter with setted value', () => {
   let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+      testFilter: 'testResetted',
+    },
     appliedFilters: {
-      'filter': 'value',
+      page: 2,
+      filter: 'value',
     },
   }))
 
   state = reducer(state, setFilterValue(1, 'testFilter', 'testValue'))
   state = reducer(state, applyFilter(1, 'testFilter'))
 
+  expect(state[1].appliedFilters.page).toEqual(1)
   expect(state[1].appliedFilters.filter).toEqual('value')
   expect(state[1].appliedFilters.testFilter).toEqual('testValue')
   expect(state[1].loading).toEqual(true)
@@ -265,13 +274,19 @@ test('should apply filter with setted value', () => {
 
 test('should set and apply filter', () => {
   let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+      testFilter: 'testResetted',
+    },
     appliedFilters: {
-      'filter': 'value',
+      page: 2,
+      filter: 'value',
     },
   }))
 
   state = reducer(state, setAndApplyFilter(1, 'testFilter', 'testValue'))
 
+  expect(state[1].appliedFilters.page).toEqual(1)
   expect(state[1].filters.filter).toEqual('value')
   expect(state[1].appliedFilters.filter).toEqual('value')
   expect(state[1].filters.testFilter).toEqual('testValue')
@@ -283,10 +298,15 @@ test('should set and apply filter', () => {
 
 test('should reset filter', () => {
   let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+      testFilter: 'testResetted',
+    },
     initialFilters: {
       testFilter: 'initialValue',
     },
     appliedFilters: {
+      page: 2,
       filter: 'value',
       testFilter: 'testValue',
     },
@@ -294,6 +314,7 @@ test('should reset filter', () => {
 
   state = reducer(state, resetFilter(1, 'testFilter'))
 
+  expect(state[1].appliedFilters.page).toEqual(1)
   expect(state[1].filters.filter).toEqual('value')
   expect(state[1].appliedFilters.filter).toEqual('value')
   expect(state[1].filters.testFilter).toEqual('initialValue')
@@ -323,7 +344,11 @@ test('should set multiple filters values', () => {
 
 test('should apply multiple filters with stored values', () => {
   let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
     appliedFilters: {
+      page: 2,
       filter1: 'value1',
       filter2: 'value2',
     },
@@ -340,6 +365,7 @@ test('should apply multiple filters with stored values', () => {
     'filter3',
   ]))
 
+  expect(state[1].appliedFilters.page).toEqual(1)
   expect(state[1].filters.filter1).toEqual('value1_changed')
   expect(state[1].filters.filter2).toEqual('value2_changed')
   expect(state[1].filters.filter3).toEqual('value3')
@@ -353,7 +379,11 @@ test('should apply multiple filters with stored values', () => {
 
 test('should set and apply multiple filters', () => {
   let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
     appliedFilters: {
+      page: 2,
       filter1: 'value1',
       filter2: 'value2',
     },
@@ -364,6 +394,7 @@ test('should set and apply multiple filters', () => {
     filter3: 'value3',
   }))
 
+  expect(state[1].appliedFilters.page).toEqual(1)
   expect(state[1].filters.filter1).toEqual('value1')
   expect(state[1].filters.filter2).toEqual('value2_changed')
   expect(state[1].filters.filter3).toEqual('value3')
@@ -377,12 +408,16 @@ test('should set and apply multiple filters', () => {
 
 test('should reset multiple filters', () => {
   let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
     initialFilters: {
       filter1: 'initialValue1',
       filter2: 'initialValue2',
       filter3: 'initialValue3',
     },
     appliedFilters: {
+      page: 2,
       filter1: 'value1',
       filter2: 'value2',
       filter3: 'value3',
@@ -391,6 +426,7 @@ test('should reset multiple filters', () => {
 
   state = reducer(state, resetFilters(1, ['filter2', 'filter3']))
 
+  expect(state[1].appliedFilters.page).toEqual(1)
   expect(state[1].filters.filter1).toEqual('value1')
   expect(state[1].filters.filter2).toEqual('initialValue2')
   expect(state[1].filters.filter3).toEqual('initialValue3')
@@ -404,11 +440,15 @@ test('should reset multiple filters', () => {
 
 test('should reset all filters', () => {
   let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
     initialFilters: {
       filter1: 'initialValue1',
       filter2: 'initialValue2',
     },
     appliedFilters: {
+      page: 2,
       filter1: 'value1',
       filter2: 'value2',
       filter3: 'value3',
@@ -417,6 +457,7 @@ test('should reset all filters', () => {
 
   state = reducer(state, resetAllFilters(1))
 
+  expect(state[1].appliedFilters.page).toEqual(1)
   expect(state[1].filters.filter1).toEqual('initialValue1')
   expect(state[1].filters.filter2).toEqual('initialValue2')
   expect(state[1].filters.hasOwnProperty('filter3')).toEqual(false)

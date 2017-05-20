@@ -271,6 +271,9 @@ test('should provide the correct list state at init', () => {
     appliedFilters: {
       filter: 'value',
     },
+    alwaysResetFilters: {
+      page: 1,
+    },
   }
 
   const Container = _reduxFilterlist(TestWrapperComponent, {
