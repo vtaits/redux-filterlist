@@ -54,3 +54,26 @@ test('should set catchRejects', () => {
 
   expect(state.catchRejects).toEqual(true)
 })
+
+test('should set isDefaultSortAsc true', () => {
+  const state = collectListInitialState({
+    isDefaultSortAsc: true,
+  })
+
+  expect(state.isDefaultSortAsc).toEqual(true)
+})
+
+test('should set isDefaultSortAsc false', () => {
+  const state = collectListInitialState({
+    isDefaultSortAsc: true,
+  })
+
+  expect(state.isDefaultSortAsc).toEqual(true)
+})
+
+test('should no set isDefaultSortAsc (true by default)', () => {
+  const state = collectListInitialState({
+  })
+
+  expect(state.isDefaultSortAsc).toEqual(true)
+})

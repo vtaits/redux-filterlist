@@ -217,6 +217,7 @@ test('should provide the correct props', () => {
       'error',
       'filters',
       'initialFilters',
+      'isDefaultSortAsc',
       'items',
       'loading',
       'requestId',
