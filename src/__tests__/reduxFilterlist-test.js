@@ -19,6 +19,8 @@ import {
   applyFilters,
   setAndApplyFilters,
   resetFilters,
+
+  resetAllFilters,
 } from '../actions'
 
 import {mount} from 'enzyme'
@@ -176,6 +178,7 @@ test('should provide the correct props', () => {
       'listId',
       'listState',
       'loadItems',
+      'resetAllFilters',
       'resetFilter',
       'resetFilters',
       'setAndApplyFilter',
@@ -1291,6 +1294,90 @@ test('should set load error calling resetFilters from props', () => {
 
           expect(actions).toEqual([
             resetFilters('test', ['filter1', 'filter2']),
+            loadListError('test', {
+              error: 'Error',
+              additional: null,
+            }),
+          ])
+        })
+    })
+})
+
+test('should reset all filters from props', () => {
+  return initTestComponent('test', () => {
+    return Promise.resolve({
+      items: [{
+        id: 1,
+      }, {
+        id: 2,
+      }, {
+        id: 3,
+      }],
+      additional: {
+        count: 3,
+      },
+    })
+  }, {})
+    .then(({child, store}) => {
+      return child.props().resetAllFilters()
+        .then(() => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            resetAllFilters('test'),
+            loadListSuccess('test', {
+              items: [{
+                id: 1,
+              }, {
+                id: 2,
+              }, {
+                id: 3,
+              }],
+              additional: {
+                count: 3,
+              },
+            }),
+          ])
+        }, () => {
+          throw new Error('Must resolve')
+        })
+    })
+})
+
+test('should set load error calling resetAllFilters from props', () => {
+  let callsCount = 0
+  return initTestComponent('test', () => {
+    if (callsCount === 0) {
+      ++callsCount
+
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      })
+    }
+
+    return Promise.reject({
+      error: 'Error',
+      additional: null,
+    })
+  }, {})
+    .then(({child, store}) => {
+      return child.props().resetAllFilters()
+        .then(() => {
+          throw new Error('Must reject')
+        }, () => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            resetAllFilters('test'),
             loadListError('test', {
               error: 'Error',
               additional: null,

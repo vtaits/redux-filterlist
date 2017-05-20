@@ -19,6 +19,8 @@ import {
   applyFilters,
   setAndApplyFilters,
   resetFilters,
+
+  resetAllFilters,
 } from '../actions'
 
 test('should work with empty state', () => {
@@ -395,6 +397,32 @@ test('should reset multiple filters', () => {
   expect(state[1].appliedFilters.filter1).toEqual('value1')
   expect(state[1].appliedFilters.filter2).toEqual('initialValue2')
   expect(state[1].appliedFilters.filter3).toEqual('initialValue3')
+  expect(state[1].loading).toEqual(true)
+  expect(state[1].error).toEqual(null)
+  expect(state[1].items).toEqual([])
+})
+
+test('should reset all filters', () => {
+  let state = reducer({}, registerList(1, {
+    initialFilters: {
+      filter1: 'initialValue1',
+      filter2: 'initialValue2',
+    },
+    appliedFilters: {
+      filter1: 'value1',
+      filter2: 'value2',
+      filter3: 'value3',
+    },
+  }))
+
+  state = reducer(state, resetAllFilters(1))
+
+  expect(state[1].filters.filter1).toEqual('initialValue1')
+  expect(state[1].filters.filter2).toEqual('initialValue2')
+  expect(state[1].filters.hasOwnProperty('filter3')).toEqual(false)
+  expect(state[1].appliedFilters.filter1).toEqual('initialValue1')
+  expect(state[1].appliedFilters.filter2).toEqual('initialValue2')
+  expect(state[1].appliedFilters.hasOwnProperty('filter3')).toEqual(false)
   expect(state[1].loading).toEqual(true)
   expect(state[1].error).toEqual(null)
   expect(state[1].items).toEqual([])

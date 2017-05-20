@@ -15,6 +15,8 @@ import {
   APPLY_FILTERS,
   SET_AND_APPLY_FILTERS,
   RESET_FILTERS,
+
+  RESET_ALL_FILTERS,
 } from './actionsTypes'
 
 export function registerList(listId, params = {}) {
@@ -195,6 +197,15 @@ export function resetFilters(listId, filtersNames) {
     payload: {
       listId,
       filtersNames,
+    },
+  }
+}
+
+export function resetAllFilters(listId) {
+  return {
+    type: RESET_ALL_FILTERS,
+    payload: {
+      listId,
     },
   }
 }

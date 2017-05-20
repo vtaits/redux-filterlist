@@ -15,6 +15,8 @@ import {
   APPLY_FILTERS,
   SET_AND_APPLY_FILTERS,
   RESET_FILTERS,
+
+  RESET_ALL_FILTERS,
 } from '../actionsTypes'
 
 import {
@@ -34,6 +36,8 @@ import {
   applyFilters,
   setAndApplyFilters,
   resetFilters,
+
+  resetAllFilters,
 } from '../actions'
 
 import {isFSA} from 'flux-standard-action'
@@ -388,4 +392,18 @@ test('should throw an exception in reset filters action if filters names is not 
     resetFilters(1, 123)
   })
     .toThrowError('Filters names should be an array')
+})
+
+test('reset all filters action is FSA', () => {
+  expect(isFSA(resetAllFilters(1))).toBeTruthy()
+})
+
+test('should create reset all filters action', () => {
+  expect(resetAllFilters(1))
+    .toEqual({
+      type: RESET_ALL_FILTERS,
+      payload: {
+        listId: 1,
+      },
+    })
 })
