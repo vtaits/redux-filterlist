@@ -1396,3 +1396,48 @@ test('should set load error calling resetAllFilters from props', () => {
         })
     })
 })
+
+test('should call loadItemsSuccess once', () => {
+  return initTestComponent('test', () => {
+    return Promise.resolve({
+      items: [{
+        id: 1,
+      }, {
+        id: 2,
+      }, {
+        id: 3,
+      }],
+      additional: {
+        count: 3,
+      },
+    })
+  }, {})
+    .then(({child, store}) => {
+      return Promise.all([
+        child.props().loadItems().catch(() => {}),
+        child.props().loadItems(),
+      ])
+        .then(() => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            loadList('test'),
+            loadList('test'),
+            loadListSuccess('test', {
+              items: [{
+                id: 1,
+              }, {
+                id: 2,
+              }, {
+                id: 3,
+              }],
+              additional: {
+                count: 3,
+              },
+            }),
+          ])
+        }, () => {
+          throw new Error('Must resolve')
+        })
+    })
+})
