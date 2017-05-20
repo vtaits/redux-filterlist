@@ -22,6 +22,7 @@ class ReduxFilterlistWrapper extends Component {
       items: PropTypes.array.isRequired,
       additional: PropTypes.any,
       error: PropTypes.any,
+      catchRejects: PropTypes.bool,
       requestId: PropTypes.number.isRequired,
     }).isRequired,
 
@@ -117,6 +118,11 @@ class ReduxFilterlistWrapper extends Component {
 
             return Promise.reject(response)
           })
+      })
+      .catch((rejectData) => {
+        if (this.props.listState.catchRejects) {
+          return Promise.reject(rejectData)
+        }
       })
   }
 

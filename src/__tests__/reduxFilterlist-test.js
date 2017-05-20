@@ -213,6 +213,7 @@ test('should provide the correct props', () => {
       'additional',
       'alwaysResetFilters',
       'appliedFilters',
+      'catchRejects',
       'error',
       'filters',
       'initialFilters',
@@ -667,6 +668,7 @@ test('should set load error calling loadItems from props', () => {
   const Container = reduxFilterlist({
     listId: 'test',
     loadItems: spy,
+    catchRejects: true,
   })(TestChildComponent)
 
   const store = mockStore({
@@ -697,6 +699,72 @@ test('should set load error calling loadItems from props', () => {
               additional: null,
             }),
           ])
+        })
+    }, () => {
+      throw new Error('Must resolve')
+    })
+})
+
+test('should set load error calling loadItems from props without catchRejects', () => {
+  let callsCount = 0
+  const spy = sinon.spy(() => {
+    if (callsCount === 0) {
+      ++callsCount
+
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      })
+    }
+
+    return Promise.reject({
+      error: 'Error',
+      additional: null,
+    })
+  })
+
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: spy,
+    catchRejects: false,
+  })(TestChildComponent)
+
+  const store = mockStore({
+    reduxFilterlist: {},
+  })
+
+  const wrapper = mount(
+    <Provider store={ store }>
+      <Container />
+    </Provider>
+  )
+
+  return waitForSpyCall(spy)
+    .then(() => spy.returnValues[0])
+    .then(() => {
+      store.clearActions()
+
+      return wrapper.find(TestChildComponent).props().loadItems()
+        .then(() => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            loadList('test'),
+            loadListError('test', {
+              error: 'Error',
+              additional: null,
+            }),
+          ])
+        }, () => {
+          throw new Error('Must resolve')
         })
     }, () => {
       throw new Error('Must resolve')
@@ -827,7 +895,9 @@ test('should set load error calling applyFilter from props', () => {
       error: 'Error',
       additional: null,
     })
-  }, {})
+  }, {
+    catchRejects: true,
+  })
     .then(({child, store}) => {
       child.props().setFilterValue('testFilter', 'testValue')
 
@@ -914,7 +984,9 @@ test('should set load error calling setAndApplyFilter from props', () => {
       error: 'Error',
       additional: null,
     })
-  }, {})
+  }, {
+    catchRejects: true,
+  })
     .then(({child, store}) => {
       return child.props().setAndApplyFilter('testFilter', 'testValue')
         .then(() => {
@@ -998,7 +1070,9 @@ test('should set load error calling resetFilter from props', () => {
       error: 'Error',
       additional: null,
     })
-  }, {})
+  }, {
+    catchRejects: true,
+  })
     .then(({child, store}) => {
       return child.props().resetFilter('testFilter')
         .then(() => {
@@ -1114,7 +1188,9 @@ test('should set load error calling applyFilters from props', () => {
       error: 'Error',
       additional: null,
     })
-  }, {})
+  }, {
+    catchRejects: true,
+  })
     .then(({child, store}) => {
       return child.props().applyFilters(['filter1', 'filter2'])
         .then(() => {
@@ -1204,7 +1280,9 @@ test('should set load error calling setAndApplyFilters from props', () => {
       error: 'Error',
       additional: null,
     })
-  }, {})
+  }, {
+    catchRejects: true,
+  })
     .then(({child, store}) => {
       return child.props().setAndApplyFilters({
         filter1: 'value1',
@@ -1294,7 +1372,9 @@ test('should set load error calling resetFilters from props', () => {
       error: 'Error',
       additional: null,
     })
-  }, {})
+  }, {
+    catchRejects: true,
+  })
     .then(({child, store}) => {
       return child.props().resetFilters(['filter1', 'filter2'])
         .then(() => {
@@ -1378,7 +1458,9 @@ test('should set load error calling resetAllFilters from props', () => {
       error: 'Error',
       additional: null,
     })
-  }, {})
+  }, {
+    catchRejects: true,
+  })
     .then(({child, store}) => {
       return child.props().resetAllFilters()
         .then(() => {

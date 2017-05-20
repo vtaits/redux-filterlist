@@ -10,5 +10,6 @@ export default function collectListInitialState(params) {
     filters: params.appliedFilters || listInitialState.filters,
     appliedFilters: params.appliedFilters ||
       listInitialState.appliedFilters,
+    catchRejects: params.catchRejects || listInitialState.catchRejects,
   }
 }

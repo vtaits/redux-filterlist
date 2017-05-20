@@ -46,3 +46,11 @@ test('should set filters for resetting', () => {
 
   expect(state.alwaysResetFilters).toEqual(alwaysResetFilters)
 })
+
+test('should set catchRejects', () => {
+  const state = collectListInitialState({
+    catchRejects: true,
+  })
+
+  expect(state.catchRejects).toEqual(true)
+})
