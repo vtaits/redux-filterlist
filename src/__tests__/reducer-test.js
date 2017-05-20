@@ -21,6 +21,8 @@ import {
   resetFilters,
 
   resetAllFilters,
+
+  setSorting,
 } from '../actions'
 
 test('should work with empty state', () => {
@@ -464,6 +466,70 @@ test('should reset all filters', () => {
   expect(state[1].appliedFilters.filter1).toEqual('initialValue1')
   expect(state[1].appliedFilters.filter2).toEqual('initialValue2')
   expect(state[1].appliedFilters.hasOwnProperty('filter3')).toEqual(false)
+  expect(state[1].loading).toEqual(true)
+  expect(state[1].error).toEqual(null)
+  expect(state[1].items).toEqual([])
+})
+
+test('should set sorting with asc is isDefaultSortAsc (false)', () => {
+  let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
+    appliedFilters: {
+      page: 2,
+    },
+    isDefaultSortAsc: false,
+  }))
+
+  state = reducer(state, setSorting(1, 'id'))
+
+  expect(state[1].appliedFilters.page).toEqual(1)
+  expect(state[1].sort.param).toEqual('id')
+  expect(state[1].sort.asc).toEqual(false)
+  expect(state[1].loading).toEqual(true)
+  expect(state[1].error).toEqual(null)
+  expect(state[1].items).toEqual([])
+})
+
+test('should set sorting with asc is isDefaultSortAsc (true)', () => {
+  let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
+    appliedFilters: {
+      page: 2,
+    },
+    isDefaultSortAsc: true,
+  }))
+
+  state = reducer(state, setSorting(1, 'id'))
+
+  expect(state[1].appliedFilters.page).toEqual(1)
+  expect(state[1].sort.param).toEqual('id')
+  expect(state[1].sort.asc).toEqual(true)
+  expect(state[1].loading).toEqual(true)
+  expect(state[1].error).toEqual(null)
+  expect(state[1].items).toEqual([])
+})
+
+
+test('should set sorting with asc from payload', () => {
+  let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
+    appliedFilters: {
+      page: 2,
+    },
+    isDefaultSortAsc: false,
+  }))
+
+  state = reducer(state, setSorting(1, 'id', true))
+
+  expect(state[1].appliedFilters.page).toEqual(1)
+  expect(state[1].sort.param).toEqual('id')
+  expect(state[1].sort.asc).toEqual(true)
   expect(state[1].loading).toEqual(true)
   expect(state[1].error).toEqual(null)
   expect(state[1].items).toEqual([])

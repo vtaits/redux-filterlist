@@ -17,6 +17,8 @@ import {
   RESET_FILTERS,
 
   RESET_ALL_FILTERS,
+
+  SET_SORTING,
 } from './actionsTypes'
 
 import collectListInitialState from './collectListInitialState'
@@ -195,6 +197,17 @@ function listReducer(listState, { type, payload }) {
         },
       }))(getListStateBeforeChangeFiltes(listState))
 
+    case SET_SORTING:
+      return ((intermediateListState) => ({
+        ...intermediateListState,
+        sort: {
+          param: payload.param,
+          asc: typeof payload.asc === 'undefined' ?
+            listState.isDefaultSortAsc :
+            payload.asc,
+        },
+      }))(getListStateBeforeChangeFiltes(listState))
+
     default:
       return listState
   }
@@ -214,6 +227,7 @@ const listsActions = [
   SET_AND_APPLY_FILTERS,
   RESET_FILTERS,
   RESET_ALL_FILTERS,
+  SET_SORTING,
 ]
 
 export default function rootReducer(state = {}, action) {

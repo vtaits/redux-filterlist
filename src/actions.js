@@ -17,6 +17,8 @@ import {
   RESET_FILTERS,
 
   RESET_ALL_FILTERS,
+
+  SET_SORTING,
 } from './actionsTypes'
 
 export function registerList(listId, params = {}) {
@@ -206,6 +208,21 @@ export function resetAllFilters(listId) {
     type: RESET_ALL_FILTERS,
     payload: {
       listId,
+    },
+  }
+}
+
+export function setSorting(listId, param, asc) {
+  if (!param) {
+    throw new Error('Sorting param is required')
+  }
+
+  return {
+    type: SET_SORTING,
+    payload: {
+      listId,
+      param,
+      asc,
     },
   }
 }

@@ -21,6 +21,8 @@ import {
   resetFilters,
 
   resetAllFilters,
+
+  setSorting,
 } from '../actions'
 
 import {mount} from 'enzyme'
@@ -206,6 +208,7 @@ test('should provide the correct props', () => {
       'setAndApplyFilters',
       'setFilterValue',
       'setFiltersValues',
+      'setSorting',
     ])
 
   expect(Object.keys(props.listState).sort())
@@ -1521,6 +1524,92 @@ test('should call loadItemsSuccess once', () => {
           ])
         }, () => {
           throw new Error('Must resolve')
+        })
+    })
+})
+
+test('should set sorting from props', () => {
+  return initTestComponent('test', () => {
+    return Promise.resolve({
+      items: [{
+        id: 1,
+      }, {
+        id: 2,
+      }, {
+        id: 3,
+      }],
+      additional: {
+        count: 3,
+      },
+    })
+  }, {})
+    .then(({child, store}) => {
+      return child.props().setSorting('id', true)
+        .then(() => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            setSorting('test', 'id', true),
+            loadListSuccess('test', {
+              items: [{
+                id: 1,
+              }, {
+                id: 2,
+              }, {
+                id: 3,
+              }],
+              additional: {
+                count: 3,
+              },
+            }),
+          ])
+        }, () => {
+          throw new Error('Must resolve')
+        })
+    })
+})
+
+test('should set load error calling setSorting from props', () => {
+  let callsCount = 0
+  return initTestComponent('test', () => {
+    if (callsCount === 0) {
+      ++callsCount
+
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      })
+    }
+
+    return Promise.reject({
+      error: 'Error',
+      additional: null,
+    })
+  }, {
+    catchRejects: true,
+  })
+    .then(({child, store}) => {
+      return child.props().setSorting('id', true)
+        .then(() => {
+          throw new Error('Must reject')
+        }, () => {
+          const actions = store.getActions()
+
+          expect(actions).toEqual([
+            setSorting('test', 'id', true),
+            loadListError('test', {
+              error: 'Error',
+              additional: null,
+            }),
+          ])
         })
     })
 })

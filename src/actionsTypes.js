@@ -18,3 +18,5 @@ export const SET_AND_APPLY_FILTERS = `${prefix}SET_AND_APPLY_FILTERS`
 export const RESET_FILTERS = `${prefix}RESET_FILTERS`
 
 export const RESET_ALL_FILTERS = `${prefix}RESET_ALL_FILTERS`
+
+export const SET_SORTING = `${prefix}SET_SORTING`
