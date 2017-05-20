@@ -17,7 +17,7 @@ const Paginator = ({
 
   setPage,
 }) => {
-  const pagesLength = Math.floor(count / perPage)
+  const pagesLength = Math.ceil(count / perPage)
 
   return (
     <div>
