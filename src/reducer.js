@@ -203,7 +203,11 @@ function listReducer(listState, { type, payload }) {
         sort: {
           param: payload.param,
           asc: typeof payload.asc === 'undefined' ?
-            listState.isDefaultSortAsc :
+            (
+              listState.sort.param === payload.param ?
+                !listState.sort.asc :
+                listState.isDefaultSortAsc
+            ) :
             payload.asc,
         },
       }))(getListStateBeforeChangeFiltes(listState))

@@ -513,6 +513,26 @@ test('should set sorting with asc is isDefaultSortAsc (true)', () => {
   expect(state[1].items).toEqual([])
 })
 
+test('should set chang sort asc', () => {
+  let state = reducer({}, registerList(1, {
+    alwaysResetFilters: {
+      page: 1,
+    },
+    appliedFilters: {
+      page: 2,
+    },
+    isDefaultSortAsc: false,
+  }))
+
+  state = reducer(state, setSorting(1, 'id'))
+
+  expect(state[1].sort.param).toEqual('id')
+  expect(state[1].sort.asc).toEqual(false)
+
+  state = reducer(state, setSorting(1, 'id'))
+
+  expect(state[1].sort.asc).toEqual(true)
+})
 
 test('should set sorting with asc from payload', () => {
   let state = reducer({}, registerList(1, {
