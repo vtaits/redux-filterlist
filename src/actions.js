@@ -13,6 +13,7 @@ import {
 
   SET_FILTERS_VALUES,
   APPLY_FILTERS,
+  SET_AND_APPLY_FILTERS,
 } from './actionsTypes'
 
 export function registerList(listId, params = {}) {
@@ -147,7 +148,6 @@ export function setFiltersValues(listId, values) {
   }
 }
 
-
 export function applyFilters(listId, filtersNames) {
   if (!filtersNames) {
     throw new Error('Filters names is required')
@@ -162,6 +162,20 @@ export function applyFilters(listId, filtersNames) {
     payload: {
       listId,
       filtersNames,
+    },
+  }
+}
+
+export function setAndApplyFilters(listId, values) {
+  if (!values) {
+    throw new Error('Values is required')
+  }
+
+  return {
+    type: SET_AND_APPLY_FILTERS,
+    payload: {
+      listId,
+      values,
     },
   }
 }
