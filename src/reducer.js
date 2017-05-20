@@ -202,7 +202,7 @@ function listReducer(listState, { type, payload }) {
         ...intermediateListState,
         sort: {
           param: payload.param,
-          asc: typeof payload.asc === 'undefined' ?
+          asc: payload.asc === null ?
             (
               listState.sort.param === payload.param ?
                 !listState.sort.asc :

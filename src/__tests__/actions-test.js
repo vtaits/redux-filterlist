@@ -416,7 +416,7 @@ test('setSorting action is FSA', () => {
   expect(isFSA(setSorting(1, 'id', true))).toBeTruthy()
 })
 
-test('should create setSorting action', () => {
+test('should create setSorting action with asc', () => {
   expect(setSorting(1, 'id', true))
     .toEqual({
       type: SET_SORTING,
@@ -424,6 +424,18 @@ test('should create setSorting action', () => {
         listId: 1,
         param: 'id',
         asc: true,
+      },
+    })
+})
+
+test('should create setSorting action without asc', () => {
+  expect(setSorting(1, 'id'))
+    .toEqual({
+      type: SET_SORTING,
+      payload: {
+        listId: 1,
+        param: 'id',
+        asc: null,
       },
     })
 })

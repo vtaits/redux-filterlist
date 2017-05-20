@@ -222,7 +222,7 @@ export function setSorting(listId, param, asc) {
     payload: {
       listId,
       param,
-      asc,
+      asc: typeof asc === 'boolean' ? asc : null,
     },
   }
 }
