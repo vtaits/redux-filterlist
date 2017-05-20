@@ -35,6 +35,7 @@ function getListStateBeforeChangeFiltes(listState) {
     loading: true,
     error: null,
     items: [],
+    requestId: listState.requestId + 1,
   }
 }
 
@@ -52,6 +53,7 @@ function listReducer(listState, { type, payload }) {
         ...listState,
         loading: true,
         error: null,
+        requestId: listState.requestId + 1,
       }
 
     case LOAD_LIST_SUCCESS:

@@ -28,9 +28,14 @@ import sinon from 'sinon'
 
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import configureStore from 'redux-mock-store'
+import {combineReducers} from 'redux'
 
-const mockStore = configureStore([])
+import reducer from '../reducer'
+import _mockStore from '../utils/mockStore'
+
+const mockStore = _mockStore.bind(null, combineReducers({
+  reduxFilterlist: reducer,
+}))
 
 class TestWrapperComponent extends Component {
   render() {
@@ -45,6 +50,22 @@ class TestChildComponent extends Component {
 }
 
 const reduxFilterlist = _reduxFilterlist.bind(null, ReduxFilterlistWrapper)
+
+function waitForSpyCall(spy) {
+  return new Promise((resolve) => {
+    const iteration = () => {
+      if (spy.returnValues.length > 0) {
+        resolve()
+
+        return
+      }
+
+      setTimeout(iteration)
+    }
+
+    setTimeout(iteration)
+  })
+}
 
 test('should render wrapper and child components without error', () => {
   const Container = reduxFilterlist({
@@ -197,6 +218,7 @@ test('should provide the correct props', () => {
       'initialFilters',
       'items',
       'loading',
+      'requestId',
       'sort',
     ])
 })
@@ -411,7 +433,7 @@ test('should dispatch destroyList on unmount', () => {
   )
 })
 
-test('should provide correct values to loadItems and call once on render', () => {
+test('should call loadItems once on render and provide correct values', () => {
   const spy = sinon.spy(() => {
     return Promise.resolve({
       items: [{
@@ -432,48 +454,29 @@ test('should provide correct values to loadItems and call once on render', () =>
     loadItems: spy,
   })(TestChildComponent)
 
+  const store = mockStore({
+    reduxFilterlist: {
+    },
+  })
+
   mount(
-    <Provider store={ mockStore({
-      reduxFilterlist: {
-        'test': {
-          sort: {
-            param: 'test',
-            asc: true,
-          },
-          initialFilters: {},
-          filters: {},
-          appliedFilters: {},
-          loading: false,
-          items: [1, 2, 3],
-          additional: null,
-          error: null,
-        },
-      },
-    }) }>
+    <Provider store={ store }>
       <Container
         testProperty='testValue'
       />
     </Provider>
   )
 
-  expect(spy.callCount).toBe(1)
-  expect(spy.args).toEqual([
-    [{
-      sort: {
-        param: 'test',
-        asc: true,
-      },
-      initialFilters: {},
-      filters: {},
-      appliedFilters: {},
-      loading: false,
-      items: [1, 2, 3],
-      additional: null,
-      error: null,
-    }, {
-      testProperty: 'testValue',
-    }],
-  ])
+  const listState = store.getState().reduxFilterlist.test
+
+  return waitForSpyCall(spy)
+    .then(() => {
+      expect(spy.callCount).toBe(1)
+      expect(spy.args[0][0]).toBe(listState)
+      expect(spy.args[0][1]).toEqual({
+        testProperty: 'testValue',
+      })
+    })
 })
 
 test('should load items on init', () => {
@@ -507,7 +510,8 @@ test('should load items on init', () => {
     </Provider>
   )
 
-  return spy.returnValues[0]
+  return waitForSpyCall(spy)
+    .then(() => spy.returnValues[0])
     .then(() => {
       const actions = store.getActions()
 
@@ -562,7 +566,8 @@ test('should load items from props', () => {
     </Provider>
   )
 
-  return spy.returnValues[0]
+  return waitForSpyCall(spy)
+    .then(() => spy.returnValues[0])
     .then(() => {
       store.clearActions()
 
@@ -616,7 +621,8 @@ test('should set load error on init', () => {
     </Provider>
   )
 
-  return spy.returnValues[0]
+  return waitForSpyCall(spy)
+    .then(() => spy.returnValues[0])
     .then(() => {
       throw new Error('Must reject')
     }, () => {
@@ -673,7 +679,8 @@ test('should set load error calling loadItems from props', () => {
     </Provider>
   )
 
-  return spy.returnValues[0]
+  return waitForSpyCall(spy)
+    .then(() => spy.returnValues[0])
     .then(() => {
       store.clearActions()
 
@@ -706,9 +713,7 @@ function initTestComponent(listId, loadItems, params) {
     ...params,
   })(TestChildComponent)
 
-  const store = mockStore({
-    reduxFilterlist: {},
-  })
+  const store = mockStore()
 
   const wrapper = mount(
     <Provider store={ store }>
@@ -716,7 +721,8 @@ function initTestComponent(listId, loadItems, params) {
     </Provider>
   )
 
-  return spy.returnValues[0]
+  return waitForSpyCall(spy)
+    .then(() => spy.returnValues[0])
     .then(() => {
       store.clearActions()
 

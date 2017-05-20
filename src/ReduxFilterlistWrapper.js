@@ -22,6 +22,7 @@ class ReduxFilterlistWrapper extends Component {
       items: PropTypes.array.isRequired,
       additional: PropTypes.any,
       error: PropTypes.any,
+      requestId: PropTypes.number.isRequired,
     }).isRequired,
 
     listActions: PropTypes.shape({
@@ -52,24 +53,70 @@ class ReduxFilterlistWrapper extends Component {
     super(props)
   }
 
-  requestItems() {
-    const {
-      listId,
-      loadItems,
-      listState,
-      listActions,
-      WrappedComponent,
-      params,
-      ...props
-    } = this.props
+  requestItems(requestId) {
+    const incrementedRequestId = requestId + 1
 
-    return loadItems(listState, props)
-      .then((response) => {
-        listActions.loadListSuccess(listId, response)
-      }, (response) => {
-        listActions.loadListError(listId, response)
+    // wait for props update
+    return new Promise((resolve, reject) => {
+      const iteration = () => {
+        const requestId = this.props.listState.requestId
 
-        return Promise.reject(response)
+        if (requestId > incrementedRequestId) {
+          reject({
+            requestCanceled: true,
+          })
+
+          return
+        }
+
+        if (requestId === incrementedRequestId) {
+          resolve()
+
+          return
+        }
+
+        setTimeout(iteration)
+      }
+
+      setTimeout(iteration)
+    })
+      .then(() => {
+        const {
+          listId,
+          loadItems,
+          listState,
+          listActions,
+          WrappedComponent,
+          params,
+          ...props
+        } = this.props
+
+        if (incrementedRequestId !== listState.requestId) {
+          return Promise.reject({
+            requestCanceled: true,
+          })
+        }
+
+        return loadItems(listState, props)
+          .then((response) => {
+            if (incrementedRequestId !== this.props.listState.requestId) {
+              return Promise.reject({
+                requestCanceled: true,
+              })
+            }
+
+            listActions.loadListSuccess(listId, response)
+          }, (response) => {
+            if (incrementedRequestId !== this.props.listState.requestId) {
+              return Promise.reject({
+                requestCanceled: true,
+              })
+            }
+
+            listActions.loadListError(listId, response)
+
+            return Promise.reject(response)
+          })
       })
   }
 
@@ -77,88 +124,112 @@ class ReduxFilterlistWrapper extends Component {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.loadList(listId)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   applyFilter = (filterName) => {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.applyFilter(listId, filterName)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   setAndApplyFilter = (filterName, value) => {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.setAndApplyFilter(listId, filterName, value)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   resetFilter = (filterName) => {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.resetFilter(listId, filterName)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   applyFilters = (filtersNames) => {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.applyFilters(listId, filtersNames)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   setAndApplyFilters = (values) => {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.setAndApplyFilters(listId, values)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   resetFilters = (filtersNames) => {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.resetFilters(listId, filtersNames)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   resetAllFilters = () => {
     const {
       listId,
       listActions,
+      listState: {
+        requestId,
+      },
     } = this.props
 
     listActions.resetAllFilters(listId)
 
-    return this.requestItems()
+    return this.requestItems(requestId)
   }
 
   componentWillMount() {
