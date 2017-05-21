@@ -190,10 +190,22 @@ function listReducer(listState, { type, payload }) {
         filters: {
           ...listState.alwaysResetFilters,
           ...listState.initialFilters,
+          ...listState.saveFiltersOnResetAll
+            .reduce((res, filterName) => {
+              res[filterName] = listState.filters[filterName]
+
+              return res
+            }, {}),
         },
         appliedFilters: {
           ...listState.alwaysResetFilters,
           ...listState.initialFilters,
+          ...listState.saveFiltersOnResetAll
+            .reduce((res, filterName) => {
+              res[filterName] = listState.appliedFilters[filterName]
+
+              return res
+            }, {}),
         },
       }))(getListStateBeforeChangeFiltes(listState))
 

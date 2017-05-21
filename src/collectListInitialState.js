@@ -13,6 +13,8 @@ export default function collectListInitialState(params) {
     filters: params.appliedFilters || listInitialState.filters,
     appliedFilters: params.appliedFilters ||
       listInitialState.appliedFilters,
+    saveFiltersOnResetAll: params.saveFiltersOnResetAll ||
+      listInitialState.saveFiltersOnResetAll,
     catchRejects: params.catchRejects || listInitialState.catchRejects,
   }
 }

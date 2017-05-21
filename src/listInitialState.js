@@ -8,6 +8,7 @@ const listInitialState = {
   initialFilters: {},
   filters: {},
   appliedFilters: {},
+  saveFiltersOnResetAll: [],
   loading: false,
   items: [],
   additional: null,

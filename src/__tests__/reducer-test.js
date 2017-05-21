@@ -459,28 +459,39 @@ reducersForTest.forEach(({
       let state = reducer({}, registerList(1, {
         alwaysResetFilters: {
           page: 1,
+          teseSaveFilter1: 10,
+          teseSaveFilter2: 20,
         },
         initialFilters: {
           filter1: 'initialValue1',
           filter2: 'initialValue2',
         },
         appliedFilters: {
+          teseSaveFilter1: 30,
+          teseSaveFilter2: 40,
           page: 2,
           filter1: 'value1',
           filter2: 'value2',
           filter3: 'value3',
         },
+        saveFiltersOnResetAll: ['teseSaveFilter1', 'teseSaveFilter2'],
       }))
 
       state = reducer(state, resetAllFilters(1))
 
       expect(state[1].appliedFilters.page).toEqual(1)
+
       expect(state[1].filters.filter1).toEqual('initialValue1')
       expect(state[1].filters.filter2).toEqual('initialValue2')
       expect(state[1].filters.hasOwnProperty('filter3')).toEqual(false)
+
       expect(state[1].appliedFilters.filter1).toEqual('initialValue1')
       expect(state[1].appliedFilters.filter2).toEqual('initialValue2')
       expect(state[1].appliedFilters.hasOwnProperty('filter3')).toEqual(false)
+
+      expect(state[1].appliedFilters.teseSaveFilter1).toEqual(30)
+      expect(state[1].appliedFilters.teseSaveFilter2).toEqual(40)
+
       expect(state[1].loading).toEqual(true)
       expect(state[1].error).toEqual(null)
       expect(state[1].items).toEqual([])

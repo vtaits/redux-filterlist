@@ -77,3 +77,11 @@ test('should no set isDefaultSortAsc (true by default)', () => {
 
   expect(state.isDefaultSortAsc).toEqual(true)
 })
+
+test('should set saveFiltersOnResetAll', () => {
+  const state = collectListInitialState({
+    saveFiltersOnResetAll: ['filter1', 'filter2'],
+  })
+
+  expect(state.saveFiltersOnResetAll).toEqual(['filter1', 'filter2'])
+})
