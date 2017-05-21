@@ -241,6 +241,7 @@ export default reduxFilterlist({
   initialFilters: {
     perPage: 10,
   },
+  saveFiltersOnResetAll: ['perPage'],
   loadItems: ({
     sort,
     appliedFilters,
