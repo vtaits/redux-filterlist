@@ -33,7 +33,7 @@ import {Provider} from 'react-redux'
 import {combineReducers} from 'redux'
 
 import reducer from '../reducer'
-import _mockStore from '../utils/mockStore'
+import _mockStore from '../test-utils/mockStore'
 
 const mockStore = _mockStore.bind(null, combineReducers({
   reduxFilterlist: reducer,

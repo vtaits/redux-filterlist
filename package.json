@@ -5,7 +5,7 @@
   "main": "./dist/redux-filterlist.js",
   "scripts": {
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
-    "build:lib": "babel src --out-dir lib --ignore __tests__",
+    "build:lib": "babel src --out-dir lib --ignore __tests__,test-utils",
     "build:umd": "cross-env NODE_ENV=development webpack",
     "build:umd:min": "cross-env NODE_ENV=production webpack",
     "lint": "eslint src",
