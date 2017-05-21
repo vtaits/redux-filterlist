@@ -234,7 +234,7 @@ const listsActions = [
   SET_SORTING,
 ]
 
-export default function rootReducer(state = {}, action) {
+function rootReducer(state = {}, action) {
   const {
     type,
     payload,
@@ -267,4 +267,35 @@ export default function rootReducer(state = {}, action) {
     default:
       return state
   }
+}
+
+function pluginReducer(plugin, state, action) {
+  const intermediateState = rootReducer(state, action)
+
+  return Object.keys(plugin)
+    .reduce((res, listId) => {
+      if (intermediateState[listId]) {
+        res[listId] = plugin[listId](intermediateState[listId], action)
+      }
+
+      return res
+    }, {
+      ...intermediateState,
+    })
+}
+
+export default function reducerWithPlugin(state, action) {
+  return rootReducer(state, action)
+}
+
+reducerWithPlugin.plugin = function(plugin) {
+  if (typeof plugin !== 'object') {
+    throw new Error('Reducer plugin should be an obeject')
+  }
+
+  if (plugin === null) {
+    throw new Error('Reducer plugin can\'t be null')
+  }
+
+  return pluginReducer.bind(null, plugin)
 }
