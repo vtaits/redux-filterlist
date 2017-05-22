@@ -18,7 +18,127 @@ And next polyfills:
  - Promise
  - Array.prototype.includes
 
- An examples [here](https://github.com/vtaits/redux-filterlist/tree/master/examples).
+Examples are [here](https://github.com/vtaits/redux-filterlist/tree/master/examples).
+
+## Api
+
+### reduxFilterlist
+
+`reduxFilterlist` is a decorator that provides list state and actions to component.
+
+```
+import {reduxFilterlist} from 'redux-filterlist'
+
+reduxFilterlist({
+  ...params,
+})(List)
+```
+
+Params:
+
+| Name | Required | Type | Description |
+| ---- | -------- | ---- | ----------- |
+| listId | true | String or Number | the name of list and the key to where list's state will be mounted under the `redux-filterlist` reducer |
+| loadItems | true | Function | should return Promise that resolves with Object { options: [/* Array of loaded data */], additional: {} /* Additional info (total count etc.), can be null if not needed */ } and rejects with Object { error /* any, can be null if not needed */, additional } |
+| sort | false | Object | default sorting state of the list, should be an Object { param /* string, column id */ , asc /* boolean, asc or desc */ } |
+| isDefaultSortAsc | false | Boolean | default `asc` param after change sorting column (true by default) |
+| appliedFilters | false | Object | filters and their values that applied by default. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
+| initialFilters | false | Object | filters and their values that sets after filter reset. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
+| alwaysResetFilters | false | Object | filters and their values that sets after every filters or sorting change. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
+| saveFiltersOnResetAll | false | Array | filters names that not reset after `resetAllFilters` call. Should be [filterName1, filter2Name, ...] |
+| catchRejects | false | Boolean | by default if list loads with error, wrapper component catches Promise.reject inside. If `catchRejects` is true, wrapped component can catch this reject |
+
+### List state
+
+| Param | Description | Type |
+| ----- | ----------- | ---- |
+| loading | is list loading in this moment | Boolean |
+| items | loaded items | Array |
+| additional | additional info that can be recieved together with items | any |
+| error | error that can be received if list not loaded | any |
+| sort | sorting state of the list | Object, { param, asc } |
+| filters | current filters state on page (intermediate inputs values etc.) | Object { filterName1: filterValue, filter2Name: filter2Value, ... } |
+| appliedFilters | applied filters | Object { filterName1: filterValue, filter2Name: filter2Value, ... } |
+| isDefaultSortAsc | param from decorator | Boolean |
+| initialFilters | param from decorator | Object |
+| alwaysResetFilters | param from decorator | Object |
+| saveFiltersOnResetAll | param from decorator | Array |
+| catchRejects | param from decorator | Boolean |
+| requestId | **internal** | Integer |
+
+### Component props
+
+| Property | Type | Arguments | Description |
+| -------- | ---- | --------- | ----------- |
+| listId | String or Number | | param from decorator |
+| listState | Object | | current state of list |
+| loadItems | Function | | loads more items to page |
+| setFilterValue | Function | filterName, value | sets filter intermediate value |
+| applyFilter | Function | filterName | applies filter intermediate value, clears list and loads items |
+| setAndApplyFilter | Function | filterName, value | sets filter values, applies that, clears list and loads items |
+| resetFilter | Function | filterName | resets filter value to it initial value, applies that, clears list and loads items |
+| setFiltersValues | Function | Object { filterName1: filterValue, filter2Name: filter2Value, ... } | sets multiple filters intermediate values |
+| applyFilters | Function | Array [filterName1, filter2Name, ...] | applies multiple filters intermediate values, clears list and loads items |
+| setAndApplyFilters | Function | Object { filterName1: filterValue, filter2Name: filter2Value, ... } | sets multiple filters values, applies them, clears list and loads items |
+| resetFilters | Function | Array [filterName1, filter2Name, ...] | resets filters values to them initial values, applies them, clears list and loads items |
+| resetAllFilters | Function | | resets all filters (without `saveFiltersOnResetAll`) values to them initial values, applies them, clears list and loads items |
+| setSorting | Function | param, asc | sets sorting column. If asc defined and Boolean, sets it. Otherwise, if this column differs from previous sorting column, asc will be setted with `isDefaultSortAsc` param from decorator. Otherwise, it will be reverse `asc` param from previous state. |
+
+### reducer
+
+Stores lists states.
+
+```
+import {reducer as reduxFilterlistReducer} from 'redux-filterlist'
+```
+
+Should be mounted to **reduxFilterlist** in root reducer.
+
+```
+const reducers = combineReducers({
+  ...otherReducers,
+  reduxFilterlist: reduxFilterlistReducer,
+})
+
+const store = createStoreWithMiddleware(reducers)
+```
+
+### reducer.plugin
+
+Returns a list reducer that will also pass each action through additional reducers specified. In first argument takes an object with keys is lists ids and values is additional reducers that calls after each action dispatch if list mounted.
+
+Should be mounted to **reduxFilterlist** in root reducer instead of original reducer.
+
+```
+const reducers = combineReducers({
+  ...otherReducers,
+  reduxFilterlist: reduxFilterlistReducer.plugin({
+    pluginList: (state, {type, payload}) => {
+      switch (type) {
+        case CHECK:
+          return {
+            ...state,
+            items: state.items.map((car) => {
+              if (car.id === payload.carId) {
+                return {
+                  ...car,
+                  checked: payload.checked,
+                }
+              }
+
+              return car
+            }),
+          }
+
+        default:
+          return state
+      }
+    },
+  }),
+})
+
+const store = createStoreWithMiddleware(reducers)
+```
 
 ## Getting Started
 
@@ -42,8 +162,6 @@ const store = createStore(reducer)
 ### Step #2
 
 Decorate your list component with `reduxFilterlist()`. This will provide your component with props that provide information about list state and functions to filtration, sorting, loading and others.
-
-`loadItems` is function that should return Promise that resolves with Object { options: [/* Array of loaded data */], additional: {} /* Additional info (total count etc.), can be null if not needed */ }
 
 ```
 import React from 'react'
