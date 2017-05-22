@@ -1,11 +1,11 @@
 import React from 'react'
 
-import Paginator from './paginator'
-import Th from './th'
+import Paginator from './Paginator'
+import Th from './Th'
 
 import {reduxFilterlist} from 'redux-filterlist'
 
-import constructUrl from './construct-url'
+import constructUrl from './constructUrl'
 
 const List = ({
   listState: {
@@ -128,7 +128,7 @@ const List = ({
 )
 
 export default reduxFilterlist({
-  listId: 'pagination',
+  listId: 'sorting',
   alwaysResetFilters: {
     page: 1,
   },

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Paginator from './paginator'
+import Paginator from './Paginator'
 
 import {reduxFilterlist} from 'redux-filterlist'
 

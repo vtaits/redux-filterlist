@@ -1,6 +1,6 @@
 import fetchMock from 'fetch-mock'
 
-import carsGenerator from './cars-generator'
+import carsGenerator from './carsGenerator'
 
 function withDelay(response, time) {
   return new Promise((resolve, reject) => {
@@ -18,10 +18,24 @@ fetchMock.get(/\/cars/, function(url) {
   const page = parseInt(searchParams.get('page'))
   const perPage = parseInt(searchParams.get('per_page'))
 
+  const sort = searchParams.get('sort')
+  const desc = sort && sort[0] === '-'
+  const sortParam = sort && (desc ? sort.substring(1, sort.length) : sort)
+
+  const sortedCars = sort ?
+    cars.sort((car1, car2) => {
+      if (car1[sortParam] > car2[sortParam]) {
+        return desc ? -1 : 1
+      }
+
+      return desc ? 1 : -1
+    }) :
+    cars
+
   const offset = (page - 1) * perPage
 
   return withDelay({
-    cars: cars.slice(offset, offset + perPage),
+    cars: sortedCars.slice(offset, offset + perPage),
     count: cars.length,
   }, 2000)
 })

@@ -2,7 +2,7 @@ import 'babel-polyfill'
 import 'url-search-params-polyfill'
 import 'whatwg-fetch'
 
-import './mock-api'
+import './mockApi'
 
 import React from 'react'
 import {render} from 'react-dom'

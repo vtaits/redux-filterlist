@@ -1,6 +1,6 @@
 import fetchMock from 'fetch-mock'
 
-import carsGenerator from './cars-generator'
+import carsGenerator from './carsGenerator'
 
 function withDelay(response, time) {
   return new Promise((resolve, reject) => {

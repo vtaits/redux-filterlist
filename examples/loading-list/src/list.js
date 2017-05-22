@@ -71,7 +71,7 @@ const List = ({
 )
 
 export default reduxFilterlist({
-  listId: 'simple',
+  listId: 'loadingList',
   loadItems: ({
     items,
   }) => fetch(`/cars?offset=${ items.length }&limit=1`)
