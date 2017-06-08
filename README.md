@@ -47,6 +47,9 @@ Params:
 | alwaysResetFilters | false | Object | filters and their values that sets after every filters or sorting change. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
 | saveFiltersOnResetAll | false | Array | filters names that not reset after `resetAllFilters` call. Should be [filterName1, filter2Name, ...] |
 | catchRejects | false | Boolean | by default if list loads with error, wrapper component catches Promise.reject inside. If `catchRejects` is true, wrapped component can catch this reject |
+| onBeforeRequest | false | Function(listState, props) | hook that called before each items request |
+
+All params except for `listId`, `loadItems` and `onBeforeRequest` can be redefined with component props.
 
 ### List state
 
@@ -56,7 +59,7 @@ Params:
 | items | loaded items | Array |
 | additional | additional info that can be recieved together with items | any |
 | error | error that can be received if list not loaded | any |
-| sort | sorting state of the list | Object, { param, asc } |
+| sort | sorting state of the list | Object { param, asc } |
 | filters | current filters state on page (intermediate inputs values etc.) | Object { filterName1: filterValue, filter2Name: filter2Value, ... } |
 | appliedFilters | applied filters | Object { filterName1: filterValue, filter2Name: filter2Value, ... } |
 | isDefaultSortAsc | param from decorator | Boolean |
