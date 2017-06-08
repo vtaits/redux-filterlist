@@ -8,7 +8,7 @@ import * as actions from './actions'
 export default function reduxFilterlist(ReduxFilterlistWrapper, {
   listId,
   loadItems,
-  ...params
+  ...decoratorParams
 }) {
   if (!listId) {
     throw new Error('listId is required')
@@ -27,14 +27,21 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
       reduxFilterlist: {
         [listId]: listState,
       },
-    }) => ({
-      listState: listState || collectListInitialState(params),
+    }, componentProps) => {
+      const params = {
+        ...decoratorParams,
+        ...componentProps,
+      }
 
-      listId,
-      loadItems,
-      params,
-      WrappedComponent,
-    })
+      return {
+        listState: listState || collectListInitialState(params),
+
+        listId,
+        loadItems,
+        params,
+        WrappedComponent,
+      }
+    }
 
     const mapDispatchToProps = (dispatch) => ({
       listActions: bindActionCreators(actions, dispatch),

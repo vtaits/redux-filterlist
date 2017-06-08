@@ -337,6 +337,72 @@ test('should provide the correct list state at init', () => {
   expect(listState).toEqual(collectListInitialState(params))
 })
 
+test('should provide redefine decorator params by component props', () => {
+  const decoratorParams = {
+    initialFilters: {
+      filter: '',
+    },
+    sort: {
+      param: 'param',
+      asc: false,
+    },
+    appliedFilters: {
+      filter: 'value',
+    },
+    alwaysResetFilters: {
+      page: 1,
+    },
+  }
+
+  const componentProps = {
+    initialFilters: {
+      filter2: '',
+    },
+    appliedFilters: {
+      filter2: 'value2',
+    },
+  }
+
+  const resultParams = {
+    ...decoratorParams,
+    ...componentProps,
+  }
+
+  const Container = _reduxFilterlist(TestWrapperComponent, {
+    ...decoratorParams,
+    listId: 'test',
+    loadItems: () => {
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      })
+    },
+  })(TestChildComponent)
+
+  const wrapper = mount(
+    <Provider store={ mockStore({
+      reduxFilterlist: {
+      },
+    }) }>
+      <Container
+        {...componentProps}
+      />
+    </Provider>
+  )
+
+  const listState = wrapper.find(TestWrapperComponent).props().listState
+
+  expect(listState).toEqual(collectListInitialState(resultParams))
+})
+
 test('should dispatch registerList on init', () => {
   const Container = reduxFilterlist({
     listId: 'test',
