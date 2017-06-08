@@ -8,6 +8,7 @@ import * as actions from './actions'
 export default function reduxFilterlist(ReduxFilterlistWrapper, {
   listId,
   loadItems,
+  onBeforeRequest,
   ...decoratorParams
 }) {
   if (!listId) {
@@ -20,6 +21,11 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
 
   if (typeof loadItems !== 'function') {
     throw new Error('loadItems should be a function')
+  }
+
+  if (typeof onBeforeRequest !== 'undefined' &&
+    typeof onBeforeRequest !== 'function') {
+    throw new Error('onBeforeRequest should be a function')
   }
 
   return function(WrappedComponent) {
@@ -38,6 +44,7 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
 
         listId,
         loadItems,
+        onBeforeRequest,
         params,
         WrappedComponent,
       }

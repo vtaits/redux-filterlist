@@ -165,6 +165,28 @@ test('should throw an exception if loadItems is not a function', () => {
     .toThrowError('loadItems should be a function')
 })
 
+test('should throw an exception if onBeforeRequest defined and not a function', () => {
+  expect(() => {
+    const Container = reduxFilterlist({
+      listId: 'test',
+      loadItems: () => Promise.resolve({
+        items: [],
+        additional: null,
+      }),
+      onBeforeRequest: 123,
+    })(TestChildComponent)
+
+    mount(
+      <Provider store={ mockStore({
+        reduxFilterlist: {},
+      }) }>
+        <Container />
+      </Provider>
+    )
+  })
+    .toThrowError('onBeforeRequest should be a function')
+})
+
 test('should provide the correct props', () => {
   const Container = reduxFilterlist({
     listId: 'test',
@@ -602,6 +624,58 @@ test('should load items on init', () => {
           },
         }),
       ])
+    }, () => {
+      throw new Error('Must resolve')
+    })
+})
+
+test('should call onBeforeRequest on init', () => {
+  const loadItemsSpy = sinon.spy(() => {
+    return Promise.resolve({
+      items: [{
+        id: 1,
+      }, {
+        id: 2,
+      }, {
+        id: 3,
+      }],
+      additional: {
+        count: 3,
+      },
+    })
+  })
+
+  const onBeforeRequestSpy = sinon.spy(() => {})
+
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: loadItemsSpy,
+    onBeforeRequest: onBeforeRequestSpy,
+  })(TestChildComponent)
+
+  const store = mockStore({
+    reduxFilterlist: {},
+  })
+
+  mount(
+    <Provider store={ store }>
+      <Container
+        testProperty='testValue'
+      />
+    </Provider>
+  )
+
+  const listState = store.getState().reduxFilterlist.test
+
+  return waitForSpyCall(loadItemsSpy)
+    .then(() => loadItemsSpy.returnValues[0])
+    .then(() => {
+      expect(onBeforeRequestSpy.callCount).toEqual(1)
+      expect(onBeforeRequestSpy.args[0][0]).toBe(listState)
+      expect(onBeforeRequestSpy.args[0][1]).toEqual({
+        testProperty: 'testValue',
+      })
+
     }, () => {
       throw new Error('Must resolve')
     })

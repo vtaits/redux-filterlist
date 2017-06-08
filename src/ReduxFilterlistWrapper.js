@@ -9,6 +9,7 @@ class ReduxFilterlistWrapper extends Component {
     ]).isRequired,
 
     loadItems: PropTypes.func.isRequired,
+    onBeforeRequest: PropTypes.func,
 
     listState: PropTypes.shape({
       sort: PropTypes.shape({
@@ -90,6 +91,7 @@ class ReduxFilterlistWrapper extends Component {
           loadItems,
           listState,
           listActions,
+          onBeforeRequest,
           WrappedComponent,
           params,
           ...props
@@ -99,6 +101,10 @@ class ReduxFilterlistWrapper extends Component {
           return Promise.reject({
             requestCanceled: true,
           })
+        }
+
+        if (onBeforeRequest) {
+          onBeforeRequest(listState, props)
         }
 
         return loadItems(listState, props)
@@ -282,6 +288,7 @@ class ReduxFilterlistWrapper extends Component {
       listId,
       listState,
       listActions,
+      onBeforeRequest,
       WrappedComponent,
       params,
       ...props
