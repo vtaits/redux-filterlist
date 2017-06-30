@@ -51,7 +51,9 @@ class ReduxFilterlistWrapper extends Component {
     }).isRequired,
 
     WrappedComponent: PropTypes.func.isRequired,
-    params: PropTypes.object.isRequired,
+    reduxFilterlistParams: PropTypes.object.isRequired,
+
+    componentProps: PropTypes.object.isRequired,
   }
 
   constructor(props) {
@@ -87,14 +89,12 @@ class ReduxFilterlistWrapper extends Component {
     })
       .then(() => {
         const {
+          componentProps,
           listId,
           loadItems,
           listState,
           listActions,
           onBeforeRequest,
-          WrappedComponent,
-          params,
-          ...props
         } = this.props
 
         if (incrementedRequestId !== listState.requestId) {
@@ -104,10 +104,10 @@ class ReduxFilterlistWrapper extends Component {
         }
 
         if (onBeforeRequest) {
-          onBeforeRequest(listState, props)
+          onBeforeRequest(listState, componentProps)
         }
 
-        return loadItems(listState, props)
+        return loadItems(listState, componentProps)
           .then((response) => {
             if (incrementedRequestId !== this.props.listState.requestId) {
               return Promise.reject({
@@ -264,10 +264,10 @@ class ReduxFilterlistWrapper extends Component {
   componentWillMount() {
     const {
       listId,
-      params,
+      reduxFilterlistParams,
     } = this.props
 
-    this.props.listActions.registerList(listId, params)
+    this.props.listActions.registerList(listId, reduxFilterlistParams)
   }
 
   componentDidMount() {
@@ -285,17 +285,15 @@ class ReduxFilterlistWrapper extends Component {
 
   collectComponentProps() {
     const {
+      componentProps,
       listId,
       listState,
       listActions,
-      onBeforeRequest,
-      WrappedComponent,
-      params,
-      ...props
     } = this.props
 
     return {
-      ...props,
+      ...componentProps,
+
       listId,
       listState,
       loadItems: this.loadItems,

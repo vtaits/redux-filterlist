@@ -251,6 +251,46 @@ test('should provide the correct props', () => {
     ])
 })
 
+test('should provide props from wrapper component to child component', () => {
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: () => {
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      })
+    },
+  })(TestChildComponent)
+
+  const wrapper = mount(
+    <Provider store={ mockStore({
+      reduxFilterlist: {},
+    }) }>
+      <Container
+        testProperty='testValue'
+        params={{
+          testParam: 'testValue',
+        }}
+      />
+    </Provider>
+  )
+
+  const props = wrapper.find(TestChildComponent).props()
+
+  expect(props.testProperty).toEqual('testValue')
+  expect(props.params).toEqual({
+    testParam: 'testValue',
+  })
+})
+
 test('should provide the correct list state', () => {
   const Container = _reduxFilterlist(TestWrapperComponent, {
     listId: 'test',
