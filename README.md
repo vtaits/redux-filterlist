@@ -143,6 +143,27 @@ const reducers = combineReducers({
 const store = createStoreWithMiddleware(reducers)
 ```
 
+### filterlistPropTypes
+
+PropTypes of decorated component.
+
+```
+import {reduxFilterlist, filterlistPropTypes} from 'redux-filterlist'
+
+const List = (props) => {
+  ...
+}
+
+List.propTypes = {
+  ...filterlistPropTypes,
+  ...otherPropTypes,
+}
+
+reduxFilterlist({
+  ...params,
+})(List)
+```
+
 ## Getting Started
 
 ### Step #1
