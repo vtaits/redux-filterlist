@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {reduxFilterlist} from 'redux-filterlist'
+import {reduxFilterlist, filterlistPropTypes} from 'redux-filterlist'
 
 const List = ({
   listState: {
@@ -69,6 +69,10 @@ const List = ({
     }
   </div>
 )
+
+List.propTypes = {
+  ...filterlistPropTypes,
+}
 
 export default reduxFilterlist({
   listId: 'loadingList',

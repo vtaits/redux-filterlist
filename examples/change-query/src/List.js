@@ -3,7 +3,7 @@ import React from 'react'
 import Paginator from './Paginator'
 import Th from './Th'
 
-import {reduxFilterlist} from 'redux-filterlist'
+import {reduxFilterlist, filterlistPropTypes} from 'redux-filterlist'
 import {setSearchParams} from 'url-search-utils'
 
 import constructUrl from './constructUrl'
@@ -229,6 +229,10 @@ const List = ({
     }
   </div>
 )
+
+List.propTypes = {
+  ...filterlistPropTypes,
+}
 
 export default reduxFilterlist({
   listId: 'filters',
