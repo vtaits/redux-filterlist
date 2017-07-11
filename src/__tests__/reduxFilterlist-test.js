@@ -25,10 +25,13 @@ import {
   setSorting,
 } from '../actions'
 
+import {filterlistPropTypes} from '../propTypes'
+
 import {mount} from 'enzyme'
 import sinon from 'sinon'
 
 import React, {Component} from 'react'
+import checkPropTypes from 'check-prop-types'
 import {Provider} from 'react-redux'
 import {combineReducers} from 'redux'
 
@@ -249,6 +252,9 @@ test('should provide the correct props', () => {
       'saveFiltersOnResetAll',
       'sort',
     ])
+
+  expect(checkPropTypes(filterlistPropTypes, props, 'prop', 'TestChildComponent'))
+    .toBeFalsy()
 })
 
 test('should provide props from wrapper component to child component', () => {

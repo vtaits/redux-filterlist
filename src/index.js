@@ -9,4 +9,6 @@ export {default as reducer} from './reducer'
 import _reduxFilterlist from './reduxFilterlist'
 import ReduxFilterlistWrapper from './ReduxFilterlistWrapper'
 
+export {filterlistPropTypes} from './propTypes'
+
 export const reduxFilterlist = _reduxFilterlist.bind(null, ReduxFilterlistWrapper)

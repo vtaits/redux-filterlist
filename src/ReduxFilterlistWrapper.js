@@ -1,31 +1,16 @@
 import {Component, createElement} from 'react'
 import PropTypes from 'prop-types'
 
+import {listIdPropTypes, listStatePropTypes} from './propTypes'
+
 class ReduxFilterlistWrapper extends Component {
   static propTypes = {
-    listId: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]).isRequired,
+    listId: listIdPropTypes.isRequired,
 
     loadItems: PropTypes.func.isRequired,
     onBeforeRequest: PropTypes.func,
 
-    listState: PropTypes.shape({
-      sort: PropTypes.shape({
-        param: PropTypes.string,
-        asc: PropTypes.bool.isRequired,
-      }).isRequired,
-      initialFilters: PropTypes.object.isRequired,
-      filters: PropTypes.object.isRequired,
-      appliedFilters: PropTypes.object.isRequired,
-      loading: PropTypes.bool.isRequired,
-      items: PropTypes.array.isRequired,
-      additional: PropTypes.any,
-      error: PropTypes.any,
-      catchRejects: PropTypes.bool,
-      requestId: PropTypes.number.isRequired,
-    }).isRequired,
+    listState: listStatePropTypes.isRequired,
 
     listActions: PropTypes.shape({
       registerList: PropTypes.func.isRequired,
