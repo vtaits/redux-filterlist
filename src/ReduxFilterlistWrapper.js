@@ -176,6 +176,24 @@ class ReduxFilterlistWrapper extends Component {
     return this.requestItems(requestId)
   }
 
+  setFilterValue = (filterName, value) => {
+    const {
+      listId,
+      listActions,
+    } = this.props
+
+    listActions.setFilterValue(listId, filterName, value)
+  }
+
+  setFiltersValues = (values) => {
+    const {
+      listId,
+      listActions,
+    } = this.props
+
+    listActions.setFiltersValues(listId, values)
+  }
+
   applyFilters = (filtersNames) => {
     const {
       listId,
@@ -273,7 +291,6 @@ class ReduxFilterlistWrapper extends Component {
       componentProps,
       listId,
       listState,
-      listActions,
     } = this.props
 
     return {
@@ -283,12 +300,12 @@ class ReduxFilterlistWrapper extends Component {
       listState,
       loadItems: this.loadItems,
 
-      setFilterValue: listActions.setFilterValue.bind(null, listId),
+      setFilterValue: this.setFilterValue,
       applyFilter: this.applyFilter,
       setAndApplyFilter: this.setAndApplyFilter,
       resetFilter: this.resetFilter,
 
-      setFiltersValues: listActions.setFiltersValues.bind(null, listId),
+      setFiltersValues: this.setFiltersValues,
       applyFilters: this.applyFilters,
       setAndApplyFilters: this.setAndApplyFilters,
       resetFilters: this.resetFilters,
