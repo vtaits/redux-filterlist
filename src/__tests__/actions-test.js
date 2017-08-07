@@ -1,3 +1,5 @@
+import { isFSA } from 'flux-standard-action';
+
 import {
   REGISTER_LIST,
   DESTROY_LIST,
@@ -19,7 +21,7 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
-} from '../actionsTypes'
+} from '../actionsTypes';
 
 import {
   registerList,
@@ -42,13 +44,11 @@ import {
   resetAllFilters,
 
   setSorting,
-} from '../actions'
-
-import {isFSA} from 'flux-standard-action'
+} from '../actions';
 
 test('register list action is FSA', () => {
-  expect(isFSA(registerList(1))).toBeTruthy()
-})
+  expect(isFSA(registerList(1))).toBeTruthy();
+});
 
 test('should create register list action', () => {
   expect(registerList(1, {
@@ -62,8 +62,8 @@ test('should create register list action', () => {
           appliedFilters: {},
         },
       },
-    })
-})
+    });
+});
 
 test('should set default params in register list action', () => {
   expect(registerList(1))
@@ -73,12 +73,12 @@ test('should set default params in register list action', () => {
         listId: 1,
         params: {},
       },
-    })
-})
+    });
+});
 
 test('destroy list action is FSA', () => {
-  expect(isFSA(destroyList(1))).toBeTruthy()
-})
+  expect(isFSA(destroyList(1))).toBeTruthy();
+});
 
 test('should create destroy list action', () => {
   expect(destroyList(1))
@@ -87,12 +87,12 @@ test('should create destroy list action', () => {
       payload: {
         listId: 1,
       },
-    })
-})
+    });
+});
 
 test('load list action is FSA', () => {
-  expect(isFSA(loadList(1))).toBeTruthy()
-})
+  expect(isFSA(loadList(1))).toBeTruthy();
+});
 
 test('should create load list action', () => {
   expect(loadList(1))
@@ -101,15 +101,15 @@ test('should create load list action', () => {
       payload: {
         listId: 1,
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in load list success action without response', () => {
   expect(() => {
-    loadListSuccess(1)
+    loadListSuccess(1);
   })
-    .toThrowError('Response is required')
-})
+    .toThrowError('Response is required');
+});
 
 test('should throw an exception in load list success action without response items', () => {
   expect(() => {
@@ -117,25 +117,25 @@ test('should throw an exception in load list success action without response ite
       additional: {
         count: 3,
       },
-    })
+    });
   })
-    .toThrowError('Response items is required')
-})
+    .toThrowError('Response items is required');
+});
 
 test('should throw an exception in load list success action if response items is not array', () => {
   expect(() => {
     loadListSuccess(1, {
       items: 12,
-    })
+    });
   })
-    .toThrowError('Response items should be array')
-})
+    .toThrowError('Response items should be array');
+});
 
 test('load list success action is FSA', () => {
   expect(isFSA(loadListSuccess(1, {
-    items: [1, 2, 3]
-  }))).toBeTruthy()
-})
+    items: [1, 2, 3],
+  }))).toBeTruthy();
+});
 
 test('should create load list success action', () => {
   expect(loadListSuccess(1, {
@@ -155,8 +155,8 @@ test('should create load list success action', () => {
           },
         },
       },
-    })
-})
+    });
+});
 
 test('load list error action is FSA', () => {
   expect(isFSA(loadListError(1, {
@@ -164,8 +164,8 @@ test('load list error action is FSA', () => {
     additional: {
       count: 0,
     },
-  }))).toBeTruthy()
-})
+  }))).toBeTruthy();
+});
 
 test('should create load list error action', () => {
   expect(loadListError(1, {
@@ -185,12 +185,12 @@ test('should create load list error action', () => {
           },
         },
       },
-    })
-})
+    });
+});
 
 test('set filter value action is FSA', () => {
-  expect(isFSA(setFilterValue(1, 'testFilter', 'test'))).toBeTruthy()
-})
+  expect(isFSA(setFilterValue(1, 'testFilter', 'test'))).toBeTruthy();
+});
 
 test('should create set filter value action', () => {
   expect(setFilterValue(1, 'testFilter', 'test'))
@@ -201,19 +201,19 @@ test('should create set filter value action', () => {
         filterName: 'testFilter',
         value: 'test',
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in set filter value action if filterName is not defined', () => {
   expect(() => {
-    setFilterValue(1)
+    setFilterValue(1);
   })
-    .toThrowError('Filter name is required')
-})
+    .toThrowError('Filter name is required');
+});
 
 test('apply filter action is FSA', () => {
-  expect(isFSA(applyFilter(1, 'testFilter'))).toBeTruthy()
-})
+  expect(isFSA(applyFilter(1, 'testFilter'))).toBeTruthy();
+});
 
 test('should create apply filter action', () => {
   expect(applyFilter(1, 'testFilter'))
@@ -223,19 +223,19 @@ test('should create apply filter action', () => {
         listId: 1,
         filterName: 'testFilter',
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in apply filter action if filterName is not defined', () => {
   expect(() => {
-    applyFilter(1)
+    applyFilter(1);
   })
-    .toThrowError('Filter name is required')
-})
+    .toThrowError('Filter name is required');
+});
 
 test('set and apply filter action is FSA', () => {
-  expect(isFSA(setAndApplyFilter(1, 'testFilter', 'testValue'))).toBeTruthy()
-})
+  expect(isFSA(setAndApplyFilter(1, 'testFilter', 'testValue'))).toBeTruthy();
+});
 
 test('should create set and apply filter action', () => {
   expect(setAndApplyFilter(1, 'testFilter', 'testValue'))
@@ -246,19 +246,19 @@ test('should create set and apply filter action', () => {
         filterName: 'testFilter',
         value: 'testValue',
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in set and apply filter action if filterName is not defined', () => {
   expect(() => {
-    setAndApplyFilter(1)
+    setAndApplyFilter(1);
   })
-    .toThrowError('Filter name is required')
-})
+    .toThrowError('Filter name is required');
+});
 
 test('reset filter action is FSA', () => {
-  expect(isFSA(resetFilter(1, 'testFilter'))).toBeTruthy()
-})
+  expect(isFSA(resetFilter(1, 'testFilter'))).toBeTruthy();
+});
 
 test('should create reset filter action', () => {
   expect(resetFilter(1, 'testFilter'))
@@ -268,22 +268,22 @@ test('should create reset filter action', () => {
         listId: 1,
         filterName: 'testFilter',
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in reset filter action if filterName is not defined', () => {
   expect(() => {
-    resetFilter(1)
+    resetFilter(1);
   })
-    .toThrowError('Filter name is required')
-})
+    .toThrowError('Filter name is required');
+});
 
 test('set filters values action is FSA', () => {
   expect(isFSA(setFiltersValues(1, {
     filter1: 'value1',
     filter2: 'value2',
-  }))).toBeTruthy()
-})
+  }))).toBeTruthy();
+});
 
 test('should create set filters values action', () => {
   expect(setFiltersValues(1, {
@@ -299,19 +299,19 @@ test('should create set filters values action', () => {
           filter2: 'value2',
         },
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in set filters values action if values is not defined', () => {
   expect(() => {
-    setFiltersValues(1)
+    setFiltersValues(1);
   })
-    .toThrowError('Values is required')
-})
+    .toThrowError('Values is required');
+});
 
 test('apply filters values action is FSA', () => {
-  expect(isFSA(applyFilters(1, ['filter1', 'filter2']))).toBeTruthy()
-})
+  expect(isFSA(applyFilters(1, ['filter1', 'filter2']))).toBeTruthy();
+});
 
 test('should create apply filters values action', () => {
   expect(applyFilters(1, ['filter1', 'filter2']))
@@ -321,29 +321,29 @@ test('should create apply filters values action', () => {
         listId: 1,
         filtersNames: ['filter1', 'filter2'],
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in apply filters action if filters names is not defined', () => {
   expect(() => {
-    applyFilters(1)
+    applyFilters(1);
   })
-    .toThrowError('Filters names is required')
-})
+    .toThrowError('Filters names is required');
+});
 
 test('should throw an exception in apply filters action if filters names is not an array', () => {
   expect(() => {
-    applyFilters(1, 123)
+    applyFilters(1, 123);
   })
-    .toThrowError('Filters names should be an array')
-})
+    .toThrowError('Filters names should be an array');
+});
 
 test('set and apply filters action is FSA', () => {
   expect(isFSA(setAndApplyFilters(1, {
     filter1: 'value1',
     filter2: 'value2',
-  }))).toBeTruthy()
-})
+  }))).toBeTruthy();
+});
 
 test('should create set and apply filters action', () => {
   expect(setAndApplyFilters(1, {
@@ -359,19 +359,19 @@ test('should create set and apply filters action', () => {
           filter2: 'value2',
         },
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in set and apply filters action if values is not defined', () => {
   expect(() => {
-    setAndApplyFilters(1)
+    setAndApplyFilters(1);
   })
-    .toThrowError('Values is required')
-})
+    .toThrowError('Values is required');
+});
 
 test('reset filters action is FSA', () => {
-  expect(isFSA(resetFilters(1, ['filter1', 'filter2']))).toBeTruthy()
-})
+  expect(isFSA(resetFilters(1, ['filter1', 'filter2']))).toBeTruthy();
+});
 
 test('should create reset filters action', () => {
   expect(resetFilters(1, ['filter1', 'filter2']))
@@ -381,26 +381,26 @@ test('should create reset filters action', () => {
         listId: 1,
         filtersNames: ['filter1', 'filter2'],
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in reset filters action if filters names is not defined', () => {
   expect(() => {
-    resetFilters(1)
+    resetFilters(1);
   })
-    .toThrowError('Filters names is required')
-})
+    .toThrowError('Filters names is required');
+});
 
 test('should throw an exception in reset filters action if filters names is not an array', () => {
   expect(() => {
-    resetFilters(1, 123)
+    resetFilters(1, 123);
   })
-    .toThrowError('Filters names should be an array')
-})
+    .toThrowError('Filters names should be an array');
+});
 
 test('reset all filters action is FSA', () => {
-  expect(isFSA(resetAllFilters(1))).toBeTruthy()
-})
+  expect(isFSA(resetAllFilters(1))).toBeTruthy();
+});
 
 test('should create reset all filters action', () => {
   expect(resetAllFilters(1))
@@ -409,12 +409,12 @@ test('should create reset all filters action', () => {
       payload: {
         listId: 1,
       },
-    })
-})
+    });
+});
 
 test('setSorting action is FSA', () => {
-  expect(isFSA(setSorting(1, 'id', true))).toBeTruthy()
-})
+  expect(isFSA(setSorting(1, 'id', true))).toBeTruthy();
+});
 
 test('should create setSorting action with asc', () => {
   expect(setSorting(1, 'id', true))
@@ -425,8 +425,8 @@ test('should create setSorting action with asc', () => {
         param: 'id',
         asc: true,
       },
-    })
-})
+    });
+});
 
 test('should create setSorting action without asc', () => {
   expect(setSorting(1, 'id'))
@@ -437,12 +437,12 @@ test('should create setSorting action without asc', () => {
         param: 'id',
         asc: null,
       },
-    })
-})
+    });
+});
 
 test('should throw an exception in setSorting action if param is not defined', () => {
   expect(() => {
-    setSorting(1)
+    setSorting(1);
   })
-    .toThrowError('Sorting param is required')
-})
+    .toThrowError('Sorting param is required');
+});

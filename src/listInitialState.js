@@ -15,6 +15,6 @@ const listInitialState = {
   error: null,
   catchRejects: false,
   requestId: 0,
-}
+};
 
-export default listInitialState
+export default listInitialState;

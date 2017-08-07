@@ -19,7 +19,7 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
-} from './actionsTypes'
+} from './actionsTypes';
 
 export function registerList(listId, params = {}) {
   return {
@@ -28,7 +28,7 @@ export function registerList(listId, params = {}) {
       listId,
       params,
     },
-  }
+  };
 }
 
 export function destroyList(listId) {
@@ -37,7 +37,7 @@ export function destroyList(listId) {
     payload: {
       listId,
     },
-  }
+  };
 }
 
 export function loadList(listId) {
@@ -46,20 +46,20 @@ export function loadList(listId) {
     payload: {
       listId,
     },
-  }
+  };
 }
 
 export function loadListSuccess(listId, response) {
   if (!response) {
-    throw new Error('Response is required')
+    throw new Error('Response is required');
   }
 
   if (!response.items) {
-    throw new Error('Response items is required')
+    throw new Error('Response items is required');
   }
 
   if (!(response.items instanceof Array)) {
-    throw new Error('Response items should be array')
+    throw new Error('Response items should be array');
   }
 
   return {
@@ -68,7 +68,7 @@ export function loadListSuccess(listId, response) {
       listId,
       response,
     },
-  }
+  };
 }
 
 export function loadListError(listId, response) {
@@ -78,12 +78,12 @@ export function loadListError(listId, response) {
       listId,
       response,
     },
-  }
+  };
 }
 
 export function setFilterValue(listId, filterName, value) {
   if (!filterName) {
-    throw new Error('Filter name is required')
+    throw new Error('Filter name is required');
   }
 
   return {
@@ -93,12 +93,12 @@ export function setFilterValue(listId, filterName, value) {
       filterName,
       value,
     },
-  }
+  };
 }
 
 export function applyFilter(listId, filterName) {
   if (!filterName) {
-    throw new Error('Filter name is required')
+    throw new Error('Filter name is required');
   }
 
   return {
@@ -107,12 +107,12 @@ export function applyFilter(listId, filterName) {
       listId,
       filterName,
     },
-  }
+  };
 }
 
 export function setAndApplyFilter(listId, filterName, value) {
   if (!filterName) {
-    throw new Error('Filter name is required')
+    throw new Error('Filter name is required');
   }
 
   return {
@@ -122,12 +122,12 @@ export function setAndApplyFilter(listId, filterName, value) {
       filterName,
       value,
     },
-  }
+  };
 }
 
 export function resetFilter(listId, filterName) {
   if (!filterName) {
-    throw new Error('Filter name is required')
+    throw new Error('Filter name is required');
   }
 
   return {
@@ -136,12 +136,12 @@ export function resetFilter(listId, filterName) {
       listId,
       filterName,
     },
-  }
+  };
 }
 
 export function setFiltersValues(listId, values) {
   if (!values) {
-    throw new Error('Values is required')
+    throw new Error('Values is required');
   }
 
   return {
@@ -150,16 +150,16 @@ export function setFiltersValues(listId, values) {
       listId,
       values,
     },
-  }
+  };
 }
 
 export function applyFilters(listId, filtersNames) {
   if (!filtersNames) {
-    throw new Error('Filters names is required')
+    throw new Error('Filters names is required');
   }
 
   if (!(filtersNames instanceof Array)) {
-    throw new Error('Filters names should be an array')
+    throw new Error('Filters names should be an array');
   }
 
   return {
@@ -168,12 +168,12 @@ export function applyFilters(listId, filtersNames) {
       listId,
       filtersNames,
     },
-  }
+  };
 }
 
 export function setAndApplyFilters(listId, values) {
   if (!values) {
-    throw new Error('Values is required')
+    throw new Error('Values is required');
   }
 
   return {
@@ -182,16 +182,16 @@ export function setAndApplyFilters(listId, values) {
       listId,
       values,
     },
-  }
+  };
 }
 
 export function resetFilters(listId, filtersNames) {
   if (!filtersNames) {
-    throw new Error('Filters names is required')
+    throw new Error('Filters names is required');
   }
 
   if (!(filtersNames instanceof Array)) {
-    throw new Error('Filters names should be an array')
+    throw new Error('Filters names should be an array');
   }
 
   return {
@@ -200,7 +200,7 @@ export function resetFilters(listId, filtersNames) {
       listId,
       filtersNames,
     },
-  }
+  };
 }
 
 export function resetAllFilters(listId) {
@@ -209,12 +209,12 @@ export function resetAllFilters(listId) {
     payload: {
       listId,
     },
-  }
+  };
 }
 
 export function setSorting(listId, param, asc) {
   if (!param) {
-    throw new Error('Sorting param is required')
+    throw new Error('Sorting param is required');
   }
 
   return {
@@ -224,5 +224,5 @@ export function setSorting(listId, param, asc) {
       param,
       asc: typeof asc === 'boolean' ? asc : null,
     },
-  }
+  };
 }

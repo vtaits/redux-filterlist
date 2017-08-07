@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 export const listIdPropTypes = PropTypes.oneOfType([
   PropTypes.string,
   PropTypes.number,
-])
+]);
 
 export const listStatePropTypes = PropTypes.shape({
   sort: PropTypes.shape({
@@ -19,7 +19,7 @@ export const listStatePropTypes = PropTypes.shape({
   error: PropTypes.any,
   catchRejects: PropTypes.bool,
   requestId: PropTypes.number.isRequired,
-})
+});
 
 export const filterlistPropTypes = {
   listId: listIdPropTypes.isRequired,
@@ -40,4 +40,4 @@ export const filterlistPropTypes = {
   resetAllFilters: PropTypes.func.isRequired,
 
   setSorting: PropTypes.func.isRequired,
-}
+};

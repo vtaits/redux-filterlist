@@ -19,9 +19,9 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
-} from './actionsTypes'
+} from './actionsTypes';
 
-import collectListInitialState from './collectListInitialState'
+import collectListInitialState from './collectListInitialState';
 
 function getListStateBeforeChangeFiltes(listState) {
   return {
@@ -38,17 +38,17 @@ function getListStateBeforeChangeFiltes(listState) {
     error: null,
     items: [],
     requestId: listState.requestId + 1,
-  }
+  };
 }
 
 function listReducer(listState, { type, payload }) {
   switch (type) {
     case REGISTER_LIST:
       if (listState) {
-        throw new Error(`List with id "${ payload.listId }" is already registered`)
+        throw new Error(`List with id "${payload.listId}" is already registered`);
       }
 
-      return collectListInitialState(payload.params)
+      return collectListInitialState(payload.params);
 
     case LOAD_LIST:
       return {
@@ -56,7 +56,7 @@ function listReducer(listState, { type, payload }) {
         loading: true,
         error: null,
         requestId: listState.requestId + 1,
-      }
+      };
 
     case LOAD_LIST_SUCCESS:
       return {
@@ -64,22 +64,22 @@ function listReducer(listState, { type, payload }) {
         loading: false,
         items: listState.items
           .concat(payload.response.items),
-        additional: payload.response.hasOwnProperty('additional') ?
+        additional: typeof payload.response.additional !== 'undefined' ?
           payload.response.additional :
           listState.additional,
-      }
+      };
 
     case LOAD_LIST_ERROR:
       return {
         ...listState,
         loading: false,
-        error: (payload.response && payload.response.hasOwnProperty('error')) ?
+        error: (payload.response && typeof payload.response.error !== 'undefined') ?
           payload.response.error :
           null,
-        additional: (payload.response && payload.response.hasOwnProperty('additional')) ?
+        additional: (payload.response && typeof payload.response.additional !== 'undefined') ?
           payload.response.additional :
           listState.additional,
-      }
+      };
 
     case SET_FILTER_VALUE:
       return {
@@ -88,19 +88,19 @@ function listReducer(listState, { type, payload }) {
           ...listState.filters,
           [payload.filterName]: payload.value,
         },
-      }
+      };
 
     case APPLY_FILTER:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         appliedFilters: {
           ...intermediateListState.appliedFilters,
           [payload.filterName]: listState.filters[payload.filterName],
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     case SET_AND_APPLY_FILTER:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         filters: {
           ...intermediateListState.filters,
@@ -110,10 +110,10 @@ function listReducer(listState, { type, payload }) {
           ...intermediateListState.appliedFilters,
           [payload.filterName]: payload.value,
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     case RESET_FILTER:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         filters: {
           ...intermediateListState.filters,
@@ -123,7 +123,7 @@ function listReducer(listState, { type, payload }) {
           ...intermediateListState.appliedFilters,
           [payload.filterName]: listState.initialFilters[payload.filterName],
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     case SET_FILTERS_VALUES:
       return {
@@ -132,24 +132,24 @@ function listReducer(listState, { type, payload }) {
           ...listState.filters,
           ...payload.values,
         },
-      }
+      };
 
     case APPLY_FILTERS:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         appliedFilters: {
           ...intermediateListState.appliedFilters,
           ...payload.filtersNames
             .reduce((res, filterName) => {
-              res[filterName] = listState.filters[filterName]
+              res[filterName] = listState.filters[filterName];
 
-              return res
+              return res;
             }, {}),
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     case SET_AND_APPLY_FILTERS:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         filters: {
           ...intermediateListState.filters,
@@ -159,42 +159,42 @@ function listReducer(listState, { type, payload }) {
           ...intermediateListState.appliedFilters,
           ...payload.values,
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     case RESET_FILTERS:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         filters: {
           ...intermediateListState.filters,
           ...payload.filtersNames
             .reduce((res, filterName) => {
-              res[filterName] = listState.initialFilters[filterName]
+              res[filterName] = listState.initialFilters[filterName];
 
-              return res
+              return res;
             }, {}),
         },
         appliedFilters: {
           ...intermediateListState.appliedFilters,
           ...payload.filtersNames
             .reduce((res, filterName) => {
-              res[filterName] = listState.initialFilters[filterName]
+              res[filterName] = listState.initialFilters[filterName];
 
-              return res
+              return res;
             }, {}),
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     case RESET_ALL_FILTERS:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         filters: {
           ...listState.alwaysResetFilters,
           ...listState.initialFilters,
           ...listState.saveFiltersOnResetAll
             .reduce((res, filterName) => {
-              res[filterName] = listState.filters[filterName]
+              res[filterName] = listState.filters[filterName];
 
-              return res
+              return res;
             }, {}),
         },
         appliedFilters: {
@@ -202,15 +202,15 @@ function listReducer(listState, { type, payload }) {
           ...listState.initialFilters,
           ...listState.saveFiltersOnResetAll
             .reduce((res, filterName) => {
-              res[filterName] = listState.appliedFilters[filterName]
+              res[filterName] = listState.appliedFilters[filterName];
 
-              return res
+              return res;
             }, {}),
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     case SET_SORTING:
-      return ((intermediateListState) => ({
+      return (intermediateListState => ({
         ...intermediateListState,
         sort: {
           param: payload.param,
@@ -222,10 +222,10 @@ function listReducer(listState, { type, payload }) {
             ) :
             payload.asc,
         },
-      }))(getListStateBeforeChangeFiltes(listState))
+      }))(getListStateBeforeChangeFiltes(listState));
 
     default:
-      return listState
+      return listState;
   }
 }
 
@@ -244,70 +244,70 @@ const listsActions = [
   RESET_FILTERS,
   RESET_ALL_FILTERS,
   SET_SORTING,
-]
+];
 
 function rootReducer(state = {}, action) {
   const {
     type,
     payload,
-  } = action
+  } = action;
 
   if (listsActions.includes(type)) {
     return {
       ...state,
       [payload.listId]: listReducer(state[payload.listId], action),
-    }
+    };
   }
 
   switch (type) {
     case DESTROY_LIST:
-      return ((state) => {
-        const listIdStr = payload.listId.toString()
+      return ((currentState) => {
+        const listIdStr = payload.listId.toString();
 
-        return Object.keys(state)
+        return Object.keys(currentState)
           .reduce((res, listId) => {
             if (listIdStr === listId) {
-              return res
+              return res;
             }
 
-            res[listId] = state[listId]
+            res[listId] = currentState[listId];
 
-            return res
-          }, {})
-      })(state)
+            return res;
+          }, {});
+      })(state);
 
     default:
-      return state
+      return state;
   }
 }
 
 function pluginReducer(plugin, state, action) {
-  const intermediateState = rootReducer(state, action)
+  const intermediateState = rootReducer(state, action);
 
   return Object.keys(plugin)
     .reduce((res, listId) => {
       if (intermediateState[listId]) {
-        res[listId] = plugin[listId](intermediateState[listId], action)
+        res[listId] = plugin[listId](intermediateState[listId], action);
       }
 
-      return res
+      return res;
     }, {
       ...intermediateState,
-    })
+    });
 }
 
 export default function reducerWithPlugin(state, action) {
-  return rootReducer(state, action)
+  return rootReducer(state, action);
 }
 
-reducerWithPlugin.plugin = function(plugin) {
+reducerWithPlugin.plugin = (plugin) => {
   if (typeof plugin !== 'object') {
-    throw new Error('Reducer plugin should be an obeject')
+    throw new Error('Reducer plugin should be an obeject');
   }
 
   if (plugin === null) {
-    throw new Error('Reducer plugin can\'t be null')
+    throw new Error('Reducer plugin can\'t be null');
   }
 
-  return pluginReducer.bind(null, plugin)
-}
+  return pluginReducer.bind(null, plugin);
+};

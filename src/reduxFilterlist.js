@@ -1,9 +1,9 @@
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import collectListInitialState from './collectListInitialState'
+import collectListInitialState from './collectListInitialState';
 
-import * as actions from './actions'
+import * as actions from './actions';
 
 export default function reduxFilterlist(ReduxFilterlistWrapper, {
   listId,
@@ -12,23 +12,23 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
   ...decoratorParams
 }) {
   if (!listId) {
-    throw new Error('listId is required')
+    throw new Error('listId is required');
   }
 
   if (!loadItems) {
-    throw new Error('loadItems is required')
+    throw new Error('loadItems is required');
   }
 
   if (typeof loadItems !== 'function') {
-    throw new Error('loadItems should be a function')
+    throw new Error('loadItems should be a function');
   }
 
   if (typeof onBeforeRequest !== 'undefined' &&
     typeof onBeforeRequest !== 'function') {
-    throw new Error('onBeforeRequest should be a function')
+    throw new Error('onBeforeRequest should be a function');
   }
 
-  return function(WrappedComponent) {
+  return (WrappedComponent) => {
     const mapStateToProps = ({
       reduxFilterlist: {
         [listId]: listState,
@@ -37,7 +37,7 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
       const reduxFilterlistParams = {
         ...decoratorParams,
         ...componentProps,
-      }
+      };
 
       return {
         listState: listState || collectListInitialState(reduxFilterlistParams),
@@ -48,13 +48,13 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
         onBeforeRequest,
         reduxFilterlistParams,
         WrappedComponent,
-      }
-    }
+      };
+    };
 
-    const mapDispatchToProps = (dispatch) => ({
+    const mapDispatchToProps = dispatch => ({
       listActions: bindActionCreators(actions, dispatch),
-    })
+    });
 
-    return connect(mapStateToProps, mapDispatchToProps)(ReduxFilterlistWrapper)
-  }
+    return connect(mapStateToProps, mapDispatchToProps)(ReduxFilterlistWrapper);
+  };
 }

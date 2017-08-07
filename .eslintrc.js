@@ -4,7 +4,7 @@ module.exports = {
         "es6": true,
         "jest/globals": true
     },
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "extends": ["eslint:recommended", "airbnb"],
     "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
@@ -17,33 +17,23 @@ module.exports = {
         "react",
         "jest"
     ],
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js"]
+            },
+            "webpack": {
+                "config": "webpack.config.js"
+            }
+        }
+    },
     "rules": {
-        "indent": [
-            "error",
-            2,
-            {
-                "SwitchCase": 1
-            }
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "never"
-        ],
-        "no-unused-vars": [
-            "error",
-            {
-                "vars": "all",
-                "args": "after-used",
-                "ignoreRestSiblings": true
-            }
-        ]
+        // to do: remove after eslint config airbnb update
+        "jsx-a11y/href-no-hash": "off",
+        "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
+
+        "react/forbid-prop-types": "off",
+        "no-plusplus": "off",
+        "no-nested-ternary": "off"
     }
 };

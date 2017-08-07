@@ -1,14 +1,12 @@
-import * as _actions from './actions'
-export const actions = _actions
+import * as _actions from './actions';
+import * as _actionsTypes from './actionsTypes';
+import _reduxFilterlist from './reduxFilterlist';
+import ReduxFilterlistWrapper from './ReduxFilterlistWrapper';
 
-import * as _actionsTypes from './actionsTypes'
-export const actionsTypes = _actionsTypes
+export { default as reducer } from './reducer';
+export { filterlistPropTypes } from './propTypes';
 
-export {default as reducer} from './reducer'
+export const actions = _actions;
+export const actionsTypes = _actionsTypes;
 
-import _reduxFilterlist from './reduxFilterlist'
-import ReduxFilterlistWrapper from './ReduxFilterlistWrapper'
-
-export {filterlistPropTypes} from './propTypes'
-
-export const reduxFilterlist = _reduxFilterlist.bind(null, ReduxFilterlistWrapper)
+export const reduxFilterlist = _reduxFilterlist.bind(null, ReduxFilterlistWrapper);
