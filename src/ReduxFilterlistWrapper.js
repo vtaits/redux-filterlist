@@ -1,6 +1,8 @@
 import { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
 
+import isEqual from 'lodash.isequal';
+
 import { listIdPropTypes, listStatePropTypes } from './propTypes';
 
 class ReduxFilterlistWrapper extends Component {
@@ -57,6 +59,11 @@ class ReduxFilterlistWrapper extends Component {
   componentDidMount() {
     this.loadItems()
       .catch(() => {});
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return nextProps.listState !== this.props.listState ||
+      !isEqual(nextProps.componentProps, this.props.componentProps);
   }
 
   componentWillUnmount() {

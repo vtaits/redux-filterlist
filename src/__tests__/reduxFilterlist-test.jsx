@@ -708,6 +708,70 @@ test('should call onBeforeRequest on init', () => {
     });
 });
 
+test('should call render of child component only after list state of props change', () => {
+  const loadItemsSpy = sinon.spy(() => Promise.resolve({
+    items: [{
+      id: 1,
+    }, {
+      id: 2,
+    }, {
+      id: 3,
+    }],
+    additional: {
+      count: 3,
+    },
+  }));
+
+  const TestChildComponentSpy = sinon.spy(TestChildComponent);
+
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: loadItemsSpy,
+  })(TestChildComponentSpy);
+
+  const store = mockStore({
+    reduxFilterlist: {},
+  });
+
+  const PropsProviderComponent = (props) => (
+    <Provider store={store}>
+      <Container {...props} />
+    </Provider>
+  );
+
+  const wrapper = mount(
+    <PropsProviderComponent
+      testObjProperty={{
+        testProperty: 'testValue1',
+      }}
+    />,
+  );
+
+  expect(TestChildComponentSpy.callCount).toEqual(2);
+
+  wrapper.setProps({
+    testObjProperty: {
+      testProperty: 'testValue1',
+    },
+  });
+
+  expect(TestChildComponentSpy.callCount).toEqual(2);
+
+  wrapper.setProps({
+    testObjProperty: {
+      testProperty: 'testValue2',
+    },
+  });
+
+  expect(TestChildComponentSpy.callCount).toEqual(3);
+
+  return waitForSpyCall(loadItemsSpy)
+    .then(() => loadItemsSpy.returnValues[0])
+    .then(() => {
+      expect(TestChildComponentSpy.callCount).toEqual(4);
+    });
+});
+
 test('should load items from props', () => {
   const spy = sinon.spy(() => Promise.resolve({
     items: [{
