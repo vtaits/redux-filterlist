@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import Paginator from './Paginator'
 import Th from './Th'
@@ -230,7 +231,28 @@ const List = ({
 )
 
 List.propTypes = {
-  ...filterlistPropTypes,
+  ...filterlistPropTypes({
+    item: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      brand: PropTypes.string.isRequired,
+      owner: PropTypes.string.isRequired,
+      color: PropTypes.string.isRequired,
+    }),
+
+    additional: PropTypes.shape({
+      count: PropTypes.number.isRequired,
+    }),
+
+    filters: PropTypes.shape({
+      page: PropTypes.number.isRequired,
+      perPage: PropTypes.number.isRequired,
+      brand: PropTypes.string,
+      owner: PropTypes.string,
+      hideYellow: PropTypes.bool,
+      hideRed: PropTypes.bool,
+      hideBlue: PropTypes.bool,
+    }),
+  }),
 }
 
 export default reduxFilterlist({

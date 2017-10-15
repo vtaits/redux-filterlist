@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import {reduxFilterlist, filterlistPropTypes} from 'redux-filterlist'
 
@@ -68,7 +69,19 @@ const List = ({
 )
 
 List.propTypes = {
-  ...filterlistPropTypes,
+  ...filterlistPropTypes({
+    item: PropTypes.shape({
+      checked: PropTypes.bool.isRequired,
+      id: PropTypes.number.isRequired,
+      brand: PropTypes.string.isRequired,
+      owner: PropTypes.string.isRequired,
+      color: PropTypes.string.isRequired,
+    }),
+
+    additional: PropTypes.shape({
+      count: PropTypes.number.isRequired,
+    }),
+  }),
 }
 
 export default reduxFilterlist({

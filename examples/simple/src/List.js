@@ -56,7 +56,7 @@ const List = ({
 )
 
 List.propTypes = {
-  ...filterlistPropTypes,
+  ...filterlistPropTypes({}),
 }
 
 export default reduxFilterlist({
