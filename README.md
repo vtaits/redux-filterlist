@@ -155,7 +155,59 @@ const List = (props) => {
 }
 
 List.propTypes = {
-  ...filterlistPropTypes,
+  ...filterlistPropTypes({}),
+  ...otherPropTypes,
+}
+
+reduxFilterlist({
+  ...params,
+})(List)
+```
+
+#### Customization of list PropTypes
+
+```
+import {reduxFilterlist, filterlistPropTypes} from 'redux-filterlist'
+import PropTypes from 'prop-types';
+
+const List = (props) => {
+  ...
+}
+
+List.propTypes = {
+  ...filterlistPropTypes({
+    // PropTypes for all items from list state
+    // PropTypes.any by default
+    item: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+    }),
+
+    // PropTypes for `additional` from list state
+    // PropTypes.any by default
+    additional: PropTypes.shape({
+      count: PropTypes.number.isRequired,
+    }),
+
+    // PropTypes for `error` from list state
+    // PropTypes.any by default
+    error: PropTypes.shape({
+      status: PropTypes.oneOf([
+        403,
+        404,
+      ]).isRequired,
+
+      message: PropTypes.string.isRequired,
+    }),
+
+    // PropTypes from `filters` and `appliedFilters` from list state
+    // PropTypes.object by default
+    filters: PropTypes.shape({
+      page: PropTypes.number.isRequired,
+      pageSize: PropTypes.number.isRequired,
+      query: PropTypes.string,
+    }),
+  }),
   ...otherPropTypes,
 }
 
