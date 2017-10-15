@@ -249,7 +249,7 @@ test('should provide the correct props', () => {
       'sort',
     ]);
 
-  expect(checkPropTypes(filterlistPropTypes, props, 'prop', 'TestChildComponent'))
+  expect(checkPropTypes(filterlistPropTypes({}), props, 'prop', 'TestChildComponent'))
     .toBeFalsy();
 });
 
