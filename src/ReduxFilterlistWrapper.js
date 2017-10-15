@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import isEqual from 'lodash.isequal';
 
 import { listIdPropTypes, listStatePropTypes } from './propTypes';
+import { LoadListError, RequestCanceledError } from './errors';
 
 class ReduxFilterlistWrapper extends Component {
   static propTypes = {
@@ -227,11 +228,7 @@ class ReduxFilterlistWrapper extends Component {
         const currentRequestId = this.props.listState.requestId;
 
         if (currentRequestId > incrementedRequestId) {
-          reject({
-            requestCanceled: true,
-          });
-
-          return;
+          reject(new RequestCanceledError());
         }
 
         if (currentRequestId === incrementedRequestId) {
@@ -256,9 +253,7 @@ class ReduxFilterlistWrapper extends Component {
         } = this.props;
 
         if (incrementedRequestId !== listState.requestId) {
-          return Promise.reject({
-            requestCanceled: true,
-          });
+          return Promise.reject(new RequestCanceledError());
         }
 
         if (onBeforeRequest) {
@@ -268,9 +263,7 @@ class ReduxFilterlistWrapper extends Component {
         return loadItems(listState, componentProps)
           .then((response) => {
             if (incrementedRequestId !== this.props.listState.requestId) {
-              return Promise.reject({
-                requestCanceled: true,
-              });
+              return Promise.reject(new RequestCanceledError());
             }
 
             listActions.loadListSuccess(listId, response);
@@ -278,19 +271,17 @@ class ReduxFilterlistWrapper extends Component {
             return Promise.resolve();
           }, (response) => {
             if (incrementedRequestId !== this.props.listState.requestId) {
-              return Promise.reject({
-                requestCanceled: true,
-              });
+              return Promise.reject(new RequestCanceledError());
             }
 
             listActions.loadListError(listId, response);
 
-            return Promise.reject(response);
+            return Promise.reject(new LoadListError(response));
           });
       })
-      .catch((rejectData) => {
+      .catch((error) => {
         if (this.props.listState.catchRejects) {
-          return Promise.reject(rejectData);
+          return Promise.reject(error);
         }
 
         return Promise.resolve();

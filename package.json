@@ -41,35 +41,46 @@
     "redux": "^3.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
-    "babel-jest": "^20.0.3",
-    "babel-loader": "^7.0.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-jest": "^21.2.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
-    "check-prop-types": "^1.1.0",
-    "cross-env": "^5.0.0",
-    "enzyme": "^2.9.1",
-    "eslint": "^3.19.0",
-    "eslint-config-airbnb": "^15.1.0",
+    "check-prop-types": "^1.1.1",
+    "cross-env": "^5.0.5",
+    "enzyme": "^3.1.0",
+    "enzyme-adapter-react-16": "^1.0.1",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb": "^16.0.0",
     "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jest": "^20.0.1",
+    "eslint-plugin-jest": "^21.2.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.1.0",
+    "eslint-plugin-react": "^7.4.0",
     "flux-standard-action": "^1.2.0",
-    "jest": "^20.0.4",
+    "jest": "^21.2.1",
     "path": "^0.12.7",
-    "react": "^15.6.1",
-    "react-addons-test-utils": "^15.6.0",
-    "react-dom": "^15.6.1",
-    "react-redux": "^5.0.5",
-    "redux": "^3.7.1",
-    "sinon": "^2.3.6",
-    "webpack": "^2.5.1"
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.6",
+    "react-test-renderer": "^16.0.0",
+    "redux": "^3.7.2",
+    "sinon": "^4.0.1",
+    "webpack": "^3.7.1"
   },
   "dependencies": {
+    "es6-error": "^4.0.2",
     "lodash.isequal": "^4.5.0",
-    "prop-types": "^15.5.10"
+    "prop-types": "^15.6.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/examples/"
+    ],
+    "setupFiles": [
+      "./setup-jest.js"
+    ]
   }
 }

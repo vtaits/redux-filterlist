@@ -28,12 +28,9 @@ module.exports = {
         }
     },
     "rules": {
-        // to do: remove after eslint config airbnb update
-        "jsx-a11y/href-no-hash": "off",
-        "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
-
+        "function-paren-newline": ["error", "consistent"],
         "react/forbid-prop-types": "off",
         "no-plusplus": "off",
-        "no-nested-ternary": "off"
+        "no-nested-ternary": "off",
     }
 };

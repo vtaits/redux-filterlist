@@ -11,34 +11,30 @@ import listInitialState from '../listInitialState';
 
 describe('listIdPropTypes', () => {
   test('should accept number as list id', () => {
-    expect(
-      checkPropTypes(
-        {
-          id: listIdPropTypes,
-        },
-        {
-          id: 1,
-        },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+    expect(checkPropTypes(
+      {
+        id: listIdPropTypes,
+      },
+      {
+        id: 1,
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 
   test('should accept string as list id', () => {
-    expect(
-      checkPropTypes(
-        {
-          id: listIdPropTypes,
-        },
-        {
-          id: '1',
-        },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+    expect(checkPropTypes(
+      {
+        id: listIdPropTypes,
+      },
+      {
+        id: '1',
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 });
@@ -59,174 +55,162 @@ describe('listStatePropTypes', () => {
   });
 
   test('should accept listInitialState', () => {
-    expect(
-      checkPropTypes(
-        {
-          listState: listStatePropTypes({}),
-        },
-        {
-          listState: listInitialState,
-        },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+    expect(checkPropTypes(
+      {
+        listState: listStatePropTypes({}),
+      },
+      {
+        listState: listInitialState,
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 
   test('should accept custom items', () => {
-    expect(
-      checkPropTypes(
-        {
-          listState: listStatePropTypes({
-            item: PropTypes.shape({
-              id: PropTypes.number.isRequired,
-              name: PropTypes.string.isRequired,
-              value: PropTypes.shape({
-                label: PropTypes.string.isRequired,
-              }).isRequired,
-            }),
+    expect(checkPropTypes(
+      {
+        listState: listStatePropTypes({
+          item: PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            name: PropTypes.string.isRequired,
+            value: PropTypes.shape({
+              label: PropTypes.string.isRequired,
+            }).isRequired,
           }),
+        }),
+      },
+      {
+        listState: {
+          ...listInitialState,
+          items: [{
+            id: 1,
+            name: 'test string',
+            value: {
+              label: 'label of test object',
+            },
+          }],
         },
-        {
-          listState: {
-            ...listInitialState,
-            items: [{
-              id: 1,
-              name: 'test string',
-              value: {
-                label: 'label of test object',
-              },
-            }],
-          },
-        },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 
   test('should accept custom additional', () => {
-    expect(
-      checkPropTypes(
-        {
-          listState: listStatePropTypes({
-            additional: PropTypes.shape({
-              count: PropTypes.number.isRequired,
-              amazingParam: PropTypes.string.isRequired,
-            }),
+    expect(checkPropTypes(
+      {
+        listState: listStatePropTypes({
+          additional: PropTypes.shape({
+            count: PropTypes.number.isRequired,
+            amazingParam: PropTypes.string.isRequired,
           }),
-        },
-        {
-          listState: {
-            ...listInitialState,
-            additional: {
-              count: 123,
-              amazingParam: 'test',
-            },
+        }),
+      },
+      {
+        listState: {
+          ...listInitialState,
+          additional: {
+            count: 123,
+            amazingParam: 'test',
           },
         },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 
   test('should accept custom error', () => {
-    expect(
-      checkPropTypes(
-        {
-          listState: listStatePropTypes({
-            error: PropTypes.shape({
-              status: PropTypes.number.isRequired,
-              message: PropTypes.string.isRequired,
-            }),
+    expect(checkPropTypes(
+      {
+        listState: listStatePropTypes({
+          error: PropTypes.shape({
+            status: PropTypes.number.isRequired,
+            message: PropTypes.string.isRequired,
           }),
-        },
-        {
-          listState: {
-            ...listInitialState,
-            error: {
-              status: 500,
-              message: 'Test error',
-            },
+        }),
+      },
+      {
+        listState: {
+          ...listInitialState,
+          error: {
+            status: 500,
+            message: 'Test error',
           },
         },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 
   test('should accept custom filters', () => {
-    expect(
-      checkPropTypes(
-        {
-          listState: listStatePropTypes({
-            filters: PropTypes.shape({
-              strFilter: PropTypes.string,
-              numberFilter: PropTypes.number,
-              requiredNumberFilter: PropTypes.number.isRequired,
-            }),
+    expect(checkPropTypes(
+      {
+        listState: listStatePropTypes({
+          filters: PropTypes.shape({
+            strFilter: PropTypes.string,
+            numberFilter: PropTypes.number,
+            requiredNumberFilter: PropTypes.number.isRequired,
           }),
-        },
-        {
-          listState: {
-            ...listInitialState,
-            filters: {
-              strFilter: '123',
-              numberFilter: 123,
-              requiredNumberFilter: 456,
-            },
-            appliedFilters: {
-              requiredNumberFilter: 123,
-            },
-            error: {
-              status: 500,
-              message: 'Test error',
-            },
+        }),
+      },
+      {
+        listState: {
+          ...listInitialState,
+          filters: {
+            strFilter: '123',
+            numberFilter: 123,
+            requiredNumberFilter: 456,
+          },
+          appliedFilters: {
+            requiredNumberFilter: 123,
+          },
+          error: {
+            status: 500,
+            message: 'Test error',
           },
         },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 });
 
 describe('filterlistPropTypes', () => {
   test('should accept props of decorated component', () => {
-    expect(
-      checkPropTypes(
-        filterlistPropTypes({}),
-        {
-          listId: 1,
-          listState: listInitialState,
+    expect(checkPropTypes(
+      filterlistPropTypes({}),
+      {
+        listId: 1,
+        listState: listInitialState,
 
-          loadItems: () => {},
+        loadItems: () => {},
 
-          setFilterValue: () => {},
-          applyFilter: () => {},
-          setAndApplyFilter: () => {},
-          resetFilter: () => {},
+        setFilterValue: () => {},
+        applyFilter: () => {},
+        setAndApplyFilter: () => {},
+        resetFilter: () => {},
 
-          setFiltersValues: () => {},
-          applyFilters: () => {},
-          setAndApplyFilters: () => {},
-          resetFilters: () => {},
+        setFiltersValues: () => {},
+        applyFilters: () => {},
+        setAndApplyFilters: () => {},
+        resetFilters: () => {},
 
-          resetAllFilters: () => {},
+        resetAllFilters: () => {},
 
-          setSorting: () => {},
-        },
-        'prop',
-        'TestComponentName',
-      ),
-    )
+        setSorting: () => {},
+      },
+      'prop',
+      'TestComponentName',
+    ))
       .toBeFalsy();
   });
 });
