@@ -21,9 +21,6 @@ module.exports = {
     }],
   },
   resolve: {
-    alias: {
-      'redux-filterlist': path.join(__dirname, '../../dist/redux-filterlist.js'),
-    },
     modules: [
       'src',
       'node_modules',
