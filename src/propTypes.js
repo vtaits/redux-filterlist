@@ -38,7 +38,7 @@ export const listStatePropTypes = (listStateConfig) => {
   });
 };
 
-export const filterlistPropTypes = (listStateConfig) => ({
+export const filterlistPropTypes = listStateConfig => ({
   listId: listIdPropTypes.isRequired,
   listState: listStatePropTypes(listStateConfig).isRequired,
 
