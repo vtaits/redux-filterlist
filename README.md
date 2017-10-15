@@ -216,6 +216,71 @@ reduxFilterlist({
 })(List)
 ```
 
+## Testing
+
+For unit testing you can export component and decorated component separately, e.g.
+
+```
+import { reduxFilterlist } from 'redux-filterlist';
+
+export class ListComponent extends Component {
+  ...
+}
+
+export default reduxFilterlist({
+  ...params
+})(ListComponent);
+```
+
+Then, in you test file you can simulate various states using `filterlistProps`.
+
+```
+import { shallow } from 'enzyme';
+
+import { filterlistProps } from 'redux-filterlist/lib/fixtures'; // <---------
+
+import { ListComponent } from '../list';
+
+test('should render without crash', () => {
+  shallow(
+    <ListComponent
+      {...filterlistProps}
+    />
+  );
+});
+
+test('should render preloader in loading state', () => {
+  const wrapper = shallow(
+    <ListComponent
+      {...filterlistProps}
+      listState={{
+        ...filterlistProps.listState,
+        loading: true,
+      }}
+    />
+  );
+
+  // check if preloader is rendered
+});
+
+test('should render items', () => {
+  const wrapper = shallow(
+    <ListComponent
+      {...filterlistProps}
+      listState={{
+        ...filterlistProps.listState,
+        items: [
+          // items of list
+        ],
+      }}
+    />
+  );
+
+  // check rendered items
+});
+
+```
+
 ## Getting Started
 
 ### Step #1
