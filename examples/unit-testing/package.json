@@ -1,0 +1,42 @@
+{
+  "scripts": {
+    "start": "webpack-dev-server",
+    "test": "jest"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "fetch-mock": "^5.13.1",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-filterlist": "file:../../",
+    "redux-logger": "^3.0.6",
+    "whatwg-fetch": "^2.0.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "enzyme": "^3.1.0",
+    "enzyme-adapter-react-16": "^1.0.1",
+    "jest": "^21.2.1",
+    "path": "^0.12.7",
+    "react-test-renderer": "^16.0.0",
+    "webpack": "^3.7.1",
+    "webpack-dev-server": "^2.9.2"
+  },
+  "jest": {
+    "modulePaths": [
+      "src",
+      "node_modules"
+    ],
+    "setupFiles": [
+      "./setup-jest.js"
+    ]
+  }
+}
