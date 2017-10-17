@@ -19,6 +19,8 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
+
+  DELETE_ITEM,
 } from './actionsTypes';
 
 export function registerList(listId, params = {}) {
@@ -223,6 +225,17 @@ export function setSorting(listId, param, asc) {
       listId,
       param,
       asc: typeof asc === 'boolean' ? asc : null,
+    },
+  };
+}
+
+export function deleteItem(listId, itemIndex, additional) {
+  return {
+    type: DELETE_ITEM,
+    payload: {
+      listId,
+      itemIndex,
+      additional,
     },
   };
 }

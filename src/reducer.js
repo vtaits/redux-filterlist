@@ -19,6 +19,8 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
+
+  DELETE_ITEM,
 } from './actionsTypes';
 
 import collectListInitialState from './collectListInitialState';
@@ -224,6 +226,18 @@ function listReducer(listState, { type, payload }) {
         },
       }))(getListStateBeforeChangeFiltes(listState));
 
+    case DELETE_ITEM:
+      return {
+        ...listState,
+
+        items: listState.items
+          .filter((item, index) => index !== payload.itemIndex),
+
+        additional: typeof payload.additional !== 'undefined' ?
+          payload.additional :
+          listState.additional,
+      };
+
     default:
       return listState;
   }
@@ -244,6 +258,7 @@ const listsActions = [
   RESET_FILTERS,
   RESET_ALL_FILTERS,
   SET_SORTING,
+  DELETE_ITEM,
 ];
 
 function rootReducer(state = {}, action) {

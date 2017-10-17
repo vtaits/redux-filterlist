@@ -16,5 +16,6 @@ export const filterlistProps = {
   resetFilters: () => {},
   resetAllFilters: () => {},
   setSorting: () => {},
+  deleteItem: () => {},
 };
 /* eslint-enable import/prefer-default-export */

@@ -21,6 +21,8 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
+
+  DELETE_ITEM,
 } from '../actionsTypes';
 
 import {
@@ -44,6 +46,8 @@ import {
   resetAllFilters,
 
   setSorting,
+
+  deleteItem,
 } from '../actions';
 
 test('register list action is FSA', () => {
@@ -445,4 +449,26 @@ test('should throw an exception in setSorting action if param is not defined', (
     setSorting(1);
   })
     .toThrowError('Sorting param is required');
+});
+
+test('deleteItem action is FSA', () => {
+  expect(isFSA(deleteItem(1, 5, {
+    count: 10,
+  }))).toBeTruthy();
+});
+
+test('should create deleteItem action', () => {
+  expect(deleteItem(1, 5, {
+    count: 10,
+  }))
+    .toEqual({
+      type: DELETE_ITEM,
+      payload: {
+        listId: 1,
+        itemIndex: 5,
+        additional: {
+          count: 10,
+        },
+      },
+    });
 });

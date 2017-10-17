@@ -23,6 +23,8 @@ import {
   resetAllFilters,
 
   setSorting,
+
+  deleteItem,
 } from '../actions';
 
 const reducersForTest = [{
@@ -583,6 +585,100 @@ reducersForTest.forEach(({
       expect(state[1].loading).toEqual(true);
       expect(state[1].error).toEqual(null);
       expect(state[1].items).toEqual([]);
+    });
+  });
+
+  test('should delete item from list state and not change additional', () => {
+    let state = reducer({}, registerList(1, {}));
+    state = reducer(state, loadList(1));
+    state = reducer(state, loadListSuccess(1, {
+      items: [{
+        label: 1,
+        value: 1,
+      }, {
+        label: 2,
+        value: 2,
+      }, {
+        label: 3,
+        value: 3,
+      }, {
+        label: 4,
+        value: 4,
+      }, {
+        label: 5,
+        value: 5,
+      }],
+      additional: {
+        count: 5,
+      },
+    }));
+
+    state = reducer(state, deleteItem(1, 2));
+
+    expect(state[1].items).toEqual([{
+      label: 1,
+      value: 1,
+    }, {
+      label: 2,
+      value: 2,
+    }, {
+      label: 4,
+      value: 4,
+    }, {
+      label: 5,
+      value: 5,
+    }]);
+
+    expect(state[1].additional).toEqual({
+      count: 5,
+    });
+  });
+
+  test('should delete item from list state and change additional', () => {
+    let state = reducer({}, registerList(1, {}));
+    state = reducer(state, loadList(1));
+    state = reducer(state, loadListSuccess(1, {
+      items: [{
+        label: 1,
+        value: 1,
+      }, {
+        label: 2,
+        value: 2,
+      }, {
+        label: 3,
+        value: 3,
+      }, {
+        label: 4,
+        value: 4,
+      }, {
+        label: 5,
+        value: 5,
+      }],
+      additional: {
+        count: 5,
+      },
+    }));
+
+    state = reducer(state, deleteItem(1, 2, {
+      count: 4,
+    }));
+
+    expect(state[1].items).toEqual([{
+      label: 1,
+      value: 1,
+    }, {
+      label: 2,
+      value: 2,
+    }, {
+      label: 4,
+      value: 4,
+    }, {
+      label: 5,
+      value: 5,
+    }]);
+
+    expect(state[1].additional).toEqual({
+      count: 4,
     });
   });
 });
