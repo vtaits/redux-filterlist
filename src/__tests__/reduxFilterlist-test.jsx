@@ -33,6 +33,7 @@ import {
   setSorting,
 
   deleteItem,
+  updateItem,
 } from '../actions';
 
 import { filterlistPropTypes } from '../propTypes';
@@ -233,6 +234,7 @@ test('should provide the correct props', () => {
       'setFilterValue',
       'setFiltersValues',
       'setSorting',
+      'updateItem',
     ]);
 
   expect(Object.keys(props.listState).sort())
@@ -1792,6 +1794,38 @@ test('should delete list item from props', () => initTestComponent('test', () =>
 
     expect(actions).toEqual([
       deleteItem('test', 1, {
+        additional: 2,
+      }),
+    ]);
+  }, () => {
+    throw new Error('Must resolve');
+  }));
+
+test('should update list item from props', () => initTestComponent('test', () => Promise.resolve({
+  items: [{
+    id: 1,
+  }, {
+    id: 2,
+  }, {
+    id: 3,
+  }],
+  additional: {
+    count: 3,
+  },
+}), {})
+  .then(({ child, store }) => {
+    child.props().updateItem(1, {
+      id: 10,
+    }, {
+      additional: 2,
+    });
+
+    const actions = store.getActions();
+
+    expect(actions).toEqual([
+      updateItem('test', 1, {
+        id: 10,
+      }, {
         additional: 2,
       }),
     ]);

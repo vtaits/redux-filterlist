@@ -21,6 +21,7 @@ import {
   SET_SORTING,
 
   DELETE_ITEM,
+  UPDATE_ITEM,
 } from './actionsTypes';
 
 export function registerList(listId, params = {}) {
@@ -235,6 +236,18 @@ export function deleteItem(listId, itemIndex, additional) {
     payload: {
       listId,
       itemIndex,
+      additional,
+    },
+  };
+}
+
+export function updateItem(listId, itemIndex, item, additional) {
+  return {
+    type: UPDATE_ITEM,
+    payload: {
+      listId,
+      itemIndex,
+      item,
       additional,
     },
   };

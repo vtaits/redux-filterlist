@@ -23,6 +23,7 @@ import {
   SET_SORTING,
 
   DELETE_ITEM,
+  UPDATE_ITEM,
 } from '../actionsTypes';
 
 import {
@@ -48,6 +49,7 @@ import {
   setSorting,
 
   deleteItem,
+  updateItem,
 } from '../actions';
 
 test('register list action is FSA', () => {
@@ -466,6 +468,38 @@ test('should create deleteItem action', () => {
       payload: {
         listId: 1,
         itemIndex: 5,
+        additional: {
+          count: 10,
+        },
+      },
+    });
+});
+
+test('updateItem action is FSA', () => {
+  expect(isFSA(updateItem(1, 5, {
+    id: 12,
+    name: 'test',
+  }, {
+    count: 10,
+  }))).toBeTruthy();
+});
+
+test('should create updateItem action', () => {
+  expect(updateItem(1, 5, {
+    id: 12,
+    name: 'test',
+  }, {
+    count: 10,
+  }))
+    .toEqual({
+      type: UPDATE_ITEM,
+      payload: {
+        listId: 1,
+        itemIndex: 5,
+        item: {
+          id: 12,
+          name: 'test',
+        },
         additional: {
           count: 10,
         },

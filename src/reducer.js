@@ -21,6 +21,7 @@ import {
   SET_SORTING,
 
   DELETE_ITEM,
+  UPDATE_ITEM,
 } from './actionsTypes';
 
 import collectListInitialState from './collectListInitialState';
@@ -238,6 +239,24 @@ function listReducer(listState, { type, payload }) {
           listState.additional,
       };
 
+    case UPDATE_ITEM:
+      return {
+        ...listState,
+
+        items: listState.items
+          .map((item, index) => {
+            if (index === payload.itemIndex) {
+              return payload.item;
+            }
+
+            return item;
+          }),
+
+        additional: typeof payload.additional !== 'undefined' ?
+          payload.additional :
+          listState.additional,
+      };
+
     default:
       return listState;
   }
@@ -259,6 +278,7 @@ const listsActions = [
   RESET_ALL_FILTERS,
   SET_SORTING,
   DELETE_ITEM,
+  UPDATE_ITEM,
 ];
 
 function rootReducer(state = {}, action) {

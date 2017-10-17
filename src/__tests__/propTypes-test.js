@@ -209,6 +209,7 @@ describe('filterlistPropTypes', () => {
         setSorting: () => {},
 
         deleteItem: () => {},
+        updateItem: () => {},
       },
       'prop',
       'TestComponentName',

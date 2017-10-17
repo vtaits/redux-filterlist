@@ -25,6 +25,7 @@ import {
   setSorting,
 
   deleteItem,
+  updateItem,
 } from '../actions';
 
 const reducersForTest = [{
@@ -669,6 +670,112 @@ reducersForTest.forEach(({
     }, {
       label: 2,
       value: 2,
+    }, {
+      label: 4,
+      value: 4,
+    }, {
+      label: 5,
+      value: 5,
+    }]);
+
+    expect(state[1].additional).toEqual({
+      count: 4,
+    });
+  });
+
+  test('should update item and not change additional', () => {
+    let state = reducer({}, registerList(1, {}));
+    state = reducer(state, loadList(1));
+    state = reducer(state, loadListSuccess(1, {
+      items: [{
+        label: 1,
+        value: 1,
+      }, {
+        label: 2,
+        value: 2,
+      }, {
+        label: 3,
+        value: 3,
+      }, {
+        label: 4,
+        value: 4,
+      }, {
+        label: 5,
+        value: 5,
+      }],
+      additional: {
+        count: 5,
+      },
+    }));
+
+    state = reducer(state, updateItem(1, 2, {
+      label: 10,
+      value: 10,
+    }));
+
+    expect(state[1].items).toEqual([{
+      label: 1,
+      value: 1,
+    }, {
+      label: 2,
+      value: 2,
+    }, {
+      label: 10,
+      value: 10,
+    }, {
+      label: 4,
+      value: 4,
+    }, {
+      label: 5,
+      value: 5,
+    }]);
+
+    expect(state[1].additional).toEqual({
+      count: 5,
+    });
+  });
+
+  test('should update item and change additional', () => {
+    let state = reducer({}, registerList(1, {}));
+    state = reducer(state, loadList(1));
+    state = reducer(state, loadListSuccess(1, {
+      items: [{
+        label: 1,
+        value: 1,
+      }, {
+        label: 2,
+        value: 2,
+      }, {
+        label: 3,
+        value: 3,
+      }, {
+        label: 4,
+        value: 4,
+      }, {
+        label: 5,
+        value: 5,
+      }],
+      additional: {
+        count: 5,
+      },
+    }));
+
+    state = reducer(state, updateItem(1, 2, {
+      label: 10,
+      value: 10,
+    }, {
+      count: 4,
+    }));
+
+    expect(state[1].items).toEqual([{
+      label: 1,
+      value: 1,
+    }, {
+      label: 2,
+      value: 2,
+    }, {
+      label: 10,
+      value: 10,
     }, {
       label: 4,
       value: 4,
