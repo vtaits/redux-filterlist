@@ -1,3 +1,8 @@
+## 0.2.1 (October 18, 2017)
+
+ * Added `deleteItem` prop to decorated component for deleting items from list state.
+ * Added `updateItem` prop to decorated component for updating items in list state.
+
 ## 0.2.0 (October 16, 2017)
 
  * Now `filterlistPropTypes` are configurable. You can validate list items, additional data, errors and filters most strictly.
