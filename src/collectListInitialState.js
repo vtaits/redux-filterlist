@@ -11,6 +11,13 @@ export default function collectListInitialState(params) {
     /* eslint-enable no-prototype-builtins */
     alwaysResetFilters: params.alwaysResetFilters ||
       listInitialState.alwaysResetFilters,
+
+    /* eslint-disable no-prototype-builtins */
+    additional: params.hasOwnProperty('additional') ?
+      params.additional :
+      listInitialState.additional,
+    /* eslint-enable no-prototype-builtins */
+
     initialFilters: params.initialFilters || listInitialState.initialFilters,
     filters: params.appliedFilters || listInitialState.filters,
     appliedFilters: params.appliedFilters ||

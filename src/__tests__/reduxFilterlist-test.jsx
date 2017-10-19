@@ -418,6 +418,9 @@ test('should provide redefine decorator params by component props', () => {
     alwaysResetFilters: {
       page: 1,
     },
+    additional: {
+      count: 0,
+    },
   };
 
   const componentProps = {
@@ -426,6 +429,9 @@ test('should provide redefine decorator params by component props', () => {
     },
     appliedFilters: {
       filter2: 'value2',
+    },
+    additional: {
+      count: 10,
     },
   };
 

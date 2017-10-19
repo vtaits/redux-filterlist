@@ -85,3 +85,22 @@ test('should set saveFiltersOnResetAll', () => {
 
   expect(state.saveFiltersOnResetAll).toEqual(['filter1', 'filter2']);
 });
+
+test('should set additional', () => {
+  const state = collectListInitialState({
+    additional: {
+      count: 0,
+    },
+  });
+
+  expect(state.additional).toEqual({
+    count: 0,
+  });
+});
+
+test('should no set additional (null by default)', () => {
+  const state = collectListInitialState({
+  });
+
+  expect(state.additional).toEqual(null);
+});
