@@ -1,3 +1,7 @@
+## 0.2.2 (October 19, 2017)
+
+ * Allow set initial value of `additional` by param of decorator or prop of decorated component.
+
 ## 0.2.1 (October 18, 2017)
 
  * Added `deleteItem` prop to decorated component for deleting items from list state.
