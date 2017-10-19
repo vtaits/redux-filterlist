@@ -40,6 +40,7 @@ Params:
 | ---- | -------- | ---- | ----------- |
 | listId | true | String or Number | the name of list and the key to where list's state will be mounted under the `redux-filterlist` reducer |
 | loadItems | true | Function | should return Promise that resolves with Object { items: [/* Array of loaded data */], additional: {} /* Additional info (total count etc.), can be null if not needed */ } and rejects with Object { error /* any, can be null if not needed */, additional } |
+| additional | false | any | Additional info (total count etc.) setted by default |
 | sort | false | Object | default sorting state of the list, should be an Object { param /* string, column id */ , asc /* boolean, asc or desc */ } |
 | isDefaultSortAsc | false | Boolean | default `asc` param after change sorting column (true by default) |
 | appliedFilters | false | Object | filters and their values that applied by default. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
