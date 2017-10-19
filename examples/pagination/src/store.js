@@ -1,15 +1,15 @@
-import { combineReducers, createStore, applyMiddleware } from 'redux'
-import logger from 'redux-logger'
-import {reducer as reduxFilterlistReducer} from 'redux-filterlist'
+import { combineReducers, createStore, applyMiddleware } from 'redux';
+import logger from 'redux-logger';
+import { reducer as reduxFilterlistReducer } from 'redux-filterlist';
 
 const createStoreWithMiddleware = applyMiddleware(
   logger,
-)(createStore)
+)(createStore);
 
 const reducers = combineReducers({
   reduxFilterlist: reduxFilterlistReducer,
-})
+});
 
-const store = createStoreWithMiddleware(reducers)
+const store = createStoreWithMiddleware(reducers);
 
-export default store
+export default store;
