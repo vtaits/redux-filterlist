@@ -32,6 +32,7 @@ import {
 
   setSorting,
 
+  insertItem,
   deleteItem,
   updateItem,
 } from '../actions';
@@ -223,6 +224,7 @@ test('should provide the correct props', () => {
       'applyFilter',
       'applyFilters',
       'deleteItem',
+      'insertItem',
       'listId',
       'listState',
       'loadItems',
@@ -1778,6 +1780,38 @@ test('should set load error calling setSorting from props', () => {
           ]);
         }));
 });
+
+test('should insert item to list from props', () => initTestComponent('test', () => Promise.resolve({
+  items: [{
+    id: 1,
+  }, {
+    id: 2,
+  }, {
+    id: 3,
+  }],
+  additional: {
+    count: 3,
+  },
+}), {})
+  .then(({ child, store }) => {
+    child.props().insertItem(1, {
+      id: 4,
+    }, {
+      additional: 4,
+    });
+
+    const actions = store.getActions();
+
+    expect(actions).toEqual([
+      insertItem('test', 1, {
+        id: 4,
+      }, {
+        additional: 4,
+      }),
+    ]);
+  }, () => {
+    throw new Error('Must resolve');
+  }));
 
 test('should delete list item from props', () => initTestComponent('test', () => Promise.resolve({
   items: [{

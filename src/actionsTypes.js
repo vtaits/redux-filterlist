@@ -21,5 +21,6 @@ export const RESET_ALL_FILTERS = `${prefix}RESET_ALL_FILTERS`;
 
 export const SET_SORTING = `${prefix}SET_SORTING`;
 
+export const INSERT_ITEM = `${prefix}INSERT_ITEM`;
 export const DELETE_ITEM = `${prefix}DELETE_ITEM`;
 export const UPDATE_ITEM = `${prefix}UPDATE_ITEM`;

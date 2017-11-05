@@ -20,6 +20,7 @@ import {
 
   SET_SORTING,
 
+  INSERT_ITEM,
   DELETE_ITEM,
   UPDATE_ITEM,
 } from './actionsTypes';
@@ -226,6 +227,18 @@ export function setSorting(listId, param, asc) {
       listId,
       param,
       asc: typeof asc === 'boolean' ? asc : null,
+    },
+  };
+}
+
+export function insertItem(listId, itemIndex, item, additional) {
+  return {
+    type: INSERT_ITEM,
+    payload: {
+      listId,
+      itemIndex,
+      item,
+      additional,
     },
   };
 }

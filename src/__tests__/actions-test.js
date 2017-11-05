@@ -22,6 +22,7 @@ import {
 
   SET_SORTING,
 
+  INSERT_ITEM,
   DELETE_ITEM,
   UPDATE_ITEM,
 } from '../actionsTypes';
@@ -48,6 +49,7 @@ import {
 
   setSorting,
 
+  insertItem,
   deleteItem,
   updateItem,
 } from '../actions';
@@ -451,6 +453,38 @@ test('should throw an exception in setSorting action if param is not defined', (
     setSorting(1);
   })
     .toThrowError('Sorting param is required');
+});
+
+test('insertItem action is FSA', () => {
+  expect(isFSA(insertItem(1, 5, {
+    id: 12,
+    name: 'test',
+  }, {
+    count: 10,
+  }))).toBeTruthy();
+});
+
+test('should create insertItem action', () => {
+  expect(insertItem(1, 5, {
+    id: 12,
+    name: 'test',
+  }, {
+    count: 10,
+  }))
+    .toEqual({
+      type: INSERT_ITEM,
+      payload: {
+        listId: 1,
+        itemIndex: 5,
+        item: {
+          id: 12,
+          name: 'test',
+        },
+        additional: {
+          count: 10,
+        },
+      },
+    });
 });
 
 test('deleteItem action is FSA', () => {

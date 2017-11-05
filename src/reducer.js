@@ -1,3 +1,5 @@
+import arrayInsert from 'array-insert';
+
 import {
   REGISTER_LIST,
   DESTROY_LIST,
@@ -20,6 +22,7 @@ import {
 
   SET_SORTING,
 
+  INSERT_ITEM,
   DELETE_ITEM,
   UPDATE_ITEM,
 } from './actionsTypes';
@@ -227,6 +230,17 @@ function listReducer(listState, { type, payload }) {
         },
       }))(getListStateBeforeChangeFiltes(listState));
 
+    case INSERT_ITEM:
+      return {
+        ...listState,
+
+        items: arrayInsert(listState.items, payload.itemIndex, payload.item),
+
+        additional: typeof payload.additional !== 'undefined' ?
+          payload.additional :
+          listState.additional,
+      };
+
     case DELETE_ITEM:
       return {
         ...listState,
@@ -277,6 +291,7 @@ const listsActions = [
   RESET_FILTERS,
   RESET_ALL_FILTERS,
   SET_SORTING,
+  INSERT_ITEM,
   DELETE_ITEM,
   UPDATE_ITEM,
 ];
