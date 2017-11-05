@@ -5,7 +5,7 @@ import { filterlistPropTypes } from '../propTypes';
 
 test('should be a correct props of component', () => {
   expect(checkPropTypes(
-    filterlistPropTypes,
+    filterlistPropTypes({}),
     filterlistProps,
     'prop',
     'TestComponentName',
