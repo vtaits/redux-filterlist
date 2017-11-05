@@ -1,3 +1,7 @@
+## 0.2.3 (November 6, 2017)
+
+ * Added `insertItem` prop to decorated component for inserting items to list state.
+
 ## 0.2.2 (October 19, 2017)
 
  * Allow set initial value of `additional` by param of decorator or prop of decorated component.
