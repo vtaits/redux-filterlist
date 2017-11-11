@@ -1,3 +1,8 @@
+## 0.2.4 (November 12, 2017)
+
+ * Added `resetSorting` prop to decorated component for reset sorting.
+ * Added `saveFiltersOnResetAll` param to decorator for show previous list items while load request is pending.
+
 ## 0.2.3 (November 6, 2017)
 
  * Added `insertItem` prop to decorated component for inserting items to list state.
