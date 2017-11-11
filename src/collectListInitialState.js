@@ -24,6 +24,8 @@ export default function collectListInitialState(params) {
       listInitialState.appliedFilters,
     saveFiltersOnResetAll: params.saveFiltersOnResetAll ||
       listInitialState.saveFiltersOnResetAll,
+    saveItemsWhileLoad: params.saveItemsWhileLoad ||
+      listInitialState.saveItemsWhileLoad,
     catchRejects: params.catchRejects || listInitialState.catchRejects,
   };
 }

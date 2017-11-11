@@ -104,3 +104,18 @@ test('should no set additional (null by default)', () => {
 
   expect(state.additional).toEqual(null);
 });
+
+test('should set saveItemsWhileLoad', () => {
+  const state = collectListInitialState({
+    saveItemsWhileLoad: true,
+  });
+
+  expect(state.saveItemsWhileLoad).toEqual(true);
+});
+
+test('should no set saveItemsWhileLoad (false by default)', () => {
+  const state = collectListInitialState({
+  });
+
+  expect(state.saveItemsWhileLoad).toEqual(false);
+});

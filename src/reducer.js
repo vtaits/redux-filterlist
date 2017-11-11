@@ -43,7 +43,7 @@ function getListStateBeforeChangeFiltes(listState) {
     },
     loading: true,
     error: null,
-    items: [],
+    items: listState.saveItemsWhileLoad ? listState.items : [],
     requestId: listState.requestId + 1,
   };
 }
@@ -69,8 +69,11 @@ function listReducer(listState, { type, payload }) {
       return {
         ...listState,
         loading: false,
-        items: listState.items
-          .concat(payload.response.items),
+
+        items: listState.saveItemsWhileLoad ?
+          payload.response.items :
+          listState.items.concat(payload.response.items),
+
         additional: typeof payload.response.additional !== 'undefined' ?
           payload.response.additional :
           listState.additional,

@@ -255,6 +255,7 @@ test('should provide the correct props', () => {
       'loading',
       'requestId',
       'saveFiltersOnResetAll',
+      'saveItemsWhileLoad',
       'sort',
     ]);
 

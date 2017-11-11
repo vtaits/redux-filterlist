@@ -40,11 +40,124 @@ const reducersForTest = [{
   title: 'reducer with plugin',
 }];
 
+const resetListActions = [
+  {
+    fn: applyFilter.bind(null, 1, 'param'),
+    name: 'applyFilter',
+  },
+  {
+    fn: setAndApplyFilter.bind(null, 1, 'param', 'value'),
+    name: 'setAndApplyFilter',
+  },
+  {
+    fn: resetFilter.bind(null, 1, 'param'),
+    name: 'resetFilter',
+  },
+  {
+    fn: applyFilters.bind(null, 1, []),
+    name: 'applyFilters',
+  },
+  {
+    fn: setAndApplyFilters.bind(null, 1, {}),
+    name: 'setAndApplyFilters',
+  },
+  {
+    fn: resetFilters.bind(null, 1, []),
+    name: 'resetFilters',
+  },
+  {
+    fn: resetAllFilters.bind(null, 1),
+    name: 'resetAllFilters',
+  },
+  {
+    fn: setSorting.bind(null, 1, 'param'),
+    name: 'setSorting',
+  },
+  {
+    fn: resetSorting.bind(null, 1),
+    name: 'resetSorting',
+  },
+];
+
 reducersForTest.forEach(({
   reducer,
   title,
 }) => {
   describe(title, () => {
+    resetListActions.forEach(({
+      fn,
+      name,
+    }) => {
+      test(`should reset list state with action "${name}" and clean items`, () => {
+        let state = reducer({}, registerList(1, {
+          alwaysResetFilters: {
+            page: 1,
+          },
+          appliedFilters: {
+            page: 2,
+            filter: 'value',
+          },
+        }));
+        state = reducer(state, loadList(1));
+        state = reducer(state, loadListSuccess(1, {
+          items: [{
+            label: 1,
+            value: 1,
+          }, {
+            label: 2,
+            value: 2,
+          }],
+          additional: {
+            count: 2,
+          },
+        }));
+        state = reducer(state, fn());
+
+        expect(state[1].appliedFilters.page).toEqual(1);
+        expect(state[1].loading).toEqual(true);
+        expect(state[1].error).toEqual(null);
+        expect(state[1].items).toEqual([]);
+      });
+
+      test(`should reset list state with action "${name}" and not clean items`, () => {
+        let state = reducer({}, registerList(1, {
+          alwaysResetFilters: {
+            page: 1,
+          },
+          appliedFilters: {
+            page: 2,
+            filter: 'value',
+          },
+          saveItemsWhileLoad: true,
+        }));
+        state = reducer(state, loadList(1));
+        state = reducer(state, loadListSuccess(1, {
+          items: [{
+            label: 1,
+            value: 1,
+          }, {
+            label: 2,
+            value: 2,
+          }],
+          additional: {
+            count: 2,
+          },
+        }));
+        state = reducer(state, fn());
+
+        expect(state[1].appliedFilters.page).toEqual(1);
+        expect(state[1].loading).toEqual(true);
+        expect(state[1].error).toEqual(null);
+        expect(state[1].items).toEqual([{
+          label: 1,
+          value: 1,
+        }, {
+          label: 2,
+          value: 2,
+        }]);
+      });
+    });
+
     test('should work with empty state', () => {
       expect(reducer(undefined, {
         type: 'CUSTOM_ACTION',
@@ -202,6 +315,57 @@ reducersForTest.forEach(({
         value: 6,
       }]);
       expect(state[1].additional).toEqual(null);
+    });
+
+    test('should load items whits save on load', () => {
+      let state = reducer({}, registerList(1, {
+        saveItemsWhileLoad: true,
+      }));
+      state = reducer(state, loadList(1));
+      state = reducer(state, loadListSuccess(1, {
+        items: [{
+          label: 1,
+          value: 1,
+        }, {
+          label: 2,
+          value: 2,
+        }],
+        additional: {
+          count: 2,
+        },
+      }));
+
+      state = reducer(state, loadList(1));
+      state = reducer(state, loadListSuccess(1, {
+        items: [{
+          label: 3,
+          value: 3,
+        }, {
+          label: 4,
+          value: 4,
+        }, {
+          label: 5,
+          value: 5,
+        }],
+        additional: {
+          count: 3,
+        },
+      }));
+
+      expect(state[1].loading).toEqual(false);
+      expect(state[1].items).toEqual([{
+        label: 3,
+        value: 3,
+      }, {
+        label: 4,
+        value: 4,
+      }, {
+        label: 5,
+        value: 5,
+      }]);
+      expect(state[1].additional).toEqual({
+        count: 3,
+      });
     });
 
     test('should set current list loading to false on load error', () => {

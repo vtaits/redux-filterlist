@@ -138,6 +138,7 @@ class List extends Component {
 
 export default reduxFilterlist({
   listId: 'pagination',
+  saveItemsWhileLoad: true,
   alwaysResetFilters: {
     page: 1,
   },
