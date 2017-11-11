@@ -548,7 +548,7 @@ reducersForTest.forEach(({
       expect(state[1].items).toEqual([]);
     });
 
-    test('should set chang sort asc', () => {
+    test('should set change sort asc', () => {
       let state = reducer({}, registerList(1, {
         alwaysResetFilters: {
           page: 1,
