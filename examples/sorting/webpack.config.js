@@ -5,7 +5,7 @@ const context = path.join(__dirname, 'src')
 
 module.exports = {
   context,
-  entry: './index.js',
+  entry: './index.jsx',
   output: {
     path: path.join(__dirname, 'dist'),
     publicPath: '/dist/',
@@ -13,7 +13,7 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /(\.js)/,
+      test: [/(\.js)/, /(\.jsx)/],
       exclude: /(node_modules|dist)/,
       use: [{
         loader: 'babel-loader',
@@ -25,6 +25,6 @@ module.exports = {
       'src',
       'node_modules',
     ],
-    extensions: ['.js'],
+    extensions: ['.js', '.jsx'],
   },
 }
