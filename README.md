@@ -87,6 +87,7 @@ All params except for `listId`, `loadItems` and `onBeforeRequest` can be redefin
 | resetFilters | Function | Array [filterName1, filter2Name, ...] | resets filters values to them initial values, applies them, clears list and loads items |
 | resetAllFilters | Function | | resets all filters (without `saveFiltersOnResetAll`) values to them initial values, applies them, clears list and loads items |
 | setSorting | Function | param, asc | sets sorting column. If asc defined and Boolean, sets it. Otherwise, if this column differs from previous sorting column, asc will be setted with `isDefaultSortAsc` param from decorator. Otherwise, it will be reverse `asc` param from previous state. |
+| resetSorting | Function | | resets sorting. Sort param will be setted with null, asc will be setted with `isDefaultSortAsc` param from decorator. |
 | deleteItem | Function | index, additional | delete item with specified index from list. If `additional` defined, sets it. |
 | updateItem | Function | index, item, additional | update item by specified index. If `additional` defined, sets it. |
 
