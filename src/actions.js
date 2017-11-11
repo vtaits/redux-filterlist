@@ -19,6 +19,7 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
+  RESET_SORTING,
 
   INSERT_ITEM,
   DELETE_ITEM,
@@ -227,6 +228,15 @@ export function setSorting(listId, param, asc) {
       listId,
       param,
       asc: typeof asc === 'boolean' ? asc : null,
+    },
+  };
+}
+
+export function resetSorting(listId) {
+  return {
+    type: RESET_SORTING,
+    payload: {
+      listId,
     },
   };
 }

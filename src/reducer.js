@@ -21,6 +21,7 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
+  RESET_SORTING,
 
   INSERT_ITEM,
   DELETE_ITEM,
@@ -230,6 +231,15 @@ function listReducer(listState, { type, payload }) {
         },
       }))(getListStateBeforeChangeFiltes(listState));
 
+    case RESET_SORTING:
+      return (intermediateListState => ({
+        ...intermediateListState,
+        sort: {
+          param: null,
+          asc: listState.isDefaultSortAsc,
+        },
+      }))(getListStateBeforeChangeFiltes(listState));
+
     case INSERT_ITEM:
       return {
         ...listState,
@@ -291,6 +301,7 @@ const listsActions = [
   RESET_FILTERS,
   RESET_ALL_FILTERS,
   SET_SORTING,
+  RESET_SORTING,
   INSERT_ITEM,
   DELETE_ITEM,
   UPDATE_ITEM,

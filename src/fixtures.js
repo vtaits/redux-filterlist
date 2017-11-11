@@ -16,6 +16,7 @@ export const filterlistProps = {
   resetFilters: () => {},
   resetAllFilters: () => {},
   setSorting: () => {},
+  resetSorting: () => {},
   insertItem: () => {},
   deleteItem: () => {},
   updateItem: () => {},

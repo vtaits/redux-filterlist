@@ -207,6 +207,7 @@ describe('filterlistPropTypes', () => {
         resetAllFilters: () => {},
 
         setSorting: () => {},
+        resetSorting: () => {},
 
         insertItem: () => {},
         deleteItem: () => {},

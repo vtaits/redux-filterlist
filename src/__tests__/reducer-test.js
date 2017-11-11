@@ -23,6 +23,7 @@ import {
   resetAllFilters,
 
   setSorting,
+  resetSorting,
 
   insertItem,
   deleteItem,
@@ -584,6 +585,56 @@ reducersForTest.forEach(({
       expect(state[1].appliedFilters.page).toEqual(1);
       expect(state[1].sort.param).toEqual('id');
       expect(state[1].sort.asc).toEqual(true);
+      expect(state[1].loading).toEqual(true);
+      expect(state[1].error).toEqual(null);
+      expect(state[1].items).toEqual([]);
+    });
+
+    test('should reset sorting with asc is isDefaultSortAsc (true)', () => {
+      let state = reducer({}, registerList(1, {
+        sort: {
+          param: 'sortParam',
+          asc: false,
+        },
+        alwaysResetFilters: {
+          page: 1,
+        },
+        appliedFilters: {
+          page: 2,
+        },
+        isDefaultSortAsc: true,
+      }));
+
+      state = reducer(state, resetSorting(1));
+
+      expect(state[1].appliedFilters.page).toEqual(1);
+      expect(state[1].sort.param).toEqual(null);
+      expect(state[1].sort.asc).toEqual(true);
+      expect(state[1].loading).toEqual(true);
+      expect(state[1].error).toEqual(null);
+      expect(state[1].items).toEqual([]);
+    });
+
+    test('should reset sorting with asc is isDefaultSortAsc (false)', () => {
+      let state = reducer({}, registerList(1, {
+        sort: {
+          param: 'sortParam',
+          asc: false,
+        },
+        alwaysResetFilters: {
+          page: 1,
+        },
+        appliedFilters: {
+          page: 2,
+        },
+        isDefaultSortAsc: false,
+      }));
+
+      state = reducer(state, resetSorting(1));
+
+      expect(state[1].appliedFilters.page).toEqual(1);
+      expect(state[1].sort.param).toEqual(null);
+      expect(state[1].sort.asc).toEqual(false);
       expect(state[1].loading).toEqual(true);
       expect(state[1].error).toEqual(null);
       expect(state[1].items).toEqual([]);

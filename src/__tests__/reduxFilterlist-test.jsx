@@ -31,6 +31,7 @@ import {
   resetAllFilters,
 
   setSorting,
+  resetSorting,
 
   insertItem,
   deleteItem,
@@ -231,6 +232,7 @@ test('should provide the correct props', () => {
       'resetAllFilters',
       'resetFilter',
       'resetFilters',
+      'resetSorting',
       'setAndApplyFilter',
       'setAndApplyFilters',
       'setFilterValue',
@@ -1773,6 +1775,84 @@ test('should set load error calling setSorting from props', () => {
 
           expect(actions).toEqual([
             setSorting('test', 'id', true),
+            loadListError('test', {
+              error: 'Error',
+              additional: null,
+            }),
+          ]);
+        }));
+});
+
+test('should reset sorting from props', () => initTestComponent('test', () => Promise.resolve({
+  items: [{
+    id: 1,
+  }, {
+    id: 2,
+  }, {
+    id: 3,
+  }],
+  additional: {
+    count: 3,
+  },
+}), {})
+    .then(({ child, store }) => child.props().resetSorting()
+        .then(() => {
+          const actions = store.getActions();
+
+          expect(actions).toEqual([
+            resetSorting('test'),
+            loadListSuccess('test', {
+              items: [{
+                id: 1,
+              }, {
+                id: 2,
+              }, {
+                id: 3,
+              }],
+              additional: {
+                count: 3,
+              },
+            }),
+          ]);
+        }, () => {
+          throw new Error('Must resolve');
+        })));
+
+test('should set load error calling resetSorting from props', () => {
+  let callsCount = 0;
+  return initTestComponent('test', () => {
+    if (callsCount === 0) {
+      ++callsCount;
+
+      return Promise.resolve({
+        items: [{
+          id: 1,
+        }, {
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        additional: {
+          count: 3,
+        },
+      });
+    }
+
+    return Promise.reject({
+      error: 'Error',
+      additional: null,
+    });
+  }, {
+    catchRejects: true,
+  })
+    .then(({ child, store }) => child.props().resetSorting()
+        .then(() => {
+          throw new Error('Must reject');
+        }, () => {
+          const actions = store.getActions();
+
+          expect(actions).toEqual([
+            resetSorting('test'),
             loadListError('test', {
               error: 'Error',
               additional: null,

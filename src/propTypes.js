@@ -57,6 +57,7 @@ export const filterlistPropTypes = listStateConfig => ({
   resetAllFilters: PropTypes.func.isRequired,
 
   setSorting: PropTypes.func.isRequired,
+  resetSorting: PropTypes.func.isRequired,
 
   insertItem: PropTypes.func.isRequired,
   deleteItem: PropTypes.func.isRequired,

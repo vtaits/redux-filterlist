@@ -20,6 +20,7 @@ export const RESET_FILTERS = `${prefix}RESET_FILTERS`;
 export const RESET_ALL_FILTERS = `${prefix}RESET_ALL_FILTERS`;
 
 export const SET_SORTING = `${prefix}SET_SORTING`;
+export const RESET_SORTING = `${prefix}RESET_SORTING`;
 
 export const INSERT_ITEM = `${prefix}INSERT_ITEM`;
 export const DELETE_ITEM = `${prefix}DELETE_ITEM`;

@@ -36,6 +36,7 @@ class ReduxFilterlistWrapper extends Component {
       resetAllFilters: PropTypes.func.isRequired,
 
       setSorting: PropTypes.func.isRequired,
+      resetSorting: PropTypes.func.isRequired,
 
       insertItem: PropTypes.func.isRequired,
       deleteItem: PropTypes.func.isRequired,
@@ -135,6 +136,20 @@ class ReduxFilterlistWrapper extends Component {
     } = this.props;
 
     listActions.setSorting(listId, param, asc);
+
+    return this.requestItems(requestId);
+  }
+
+  resetSorting = () => {
+    const {
+      listId,
+      listActions,
+      listState: {
+        requestId,
+      },
+    } = this.props;
+
+    listActions.resetSorting(listId);
 
     return this.requestItems(requestId);
   }
@@ -346,6 +361,7 @@ class ReduxFilterlistWrapper extends Component {
       resetAllFilters: this.resetAllFilters,
 
       setSorting: this.setSorting,
+      resetSorting: this.resetSorting,
 
       insertItem: this.insertItem,
       deleteItem: this.deleteItem,

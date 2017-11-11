@@ -21,6 +21,7 @@ import {
   RESET_ALL_FILTERS,
 
   SET_SORTING,
+  RESET_SORTING,
 
   INSERT_ITEM,
   DELETE_ITEM,
@@ -48,6 +49,7 @@ import {
   resetAllFilters,
 
   setSorting,
+  resetSorting,
 
   insertItem,
   deleteItem,
@@ -453,6 +455,20 @@ test('should throw an exception in setSorting action if param is not defined', (
     setSorting(1);
   })
     .toThrowError('Sorting param is required');
+});
+
+test('resetSorting action is FSA', () => {
+  expect(isFSA(resetSorting(1))).toBeTruthy();
+});
+
+test('should create resetSorting action', () => {
+  expect(resetSorting(1))
+    .toEqual({
+      type: RESET_SORTING,
+      payload: {
+        listId: 1,
+      },
+    });
 });
 
 test('insertItem action is FSA', () => {
