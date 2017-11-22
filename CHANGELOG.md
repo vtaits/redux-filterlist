@@ -1,3 +1,7 @@
+## 0.2.5 (November 23, 2017)
+
+ * Don't throw error if list with specified id is alreade registered on page for prevent ssr errors.
+
 ## 0.2.4 (November 12, 2017)
 
  * Added `resetSorting` prop to decorated component for reset sorting.
