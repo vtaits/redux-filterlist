@@ -179,12 +179,12 @@ reducersForTest.forEach(({
       });
     });
 
-    test('should throw an exception if list with id is already registered', () => {
-      expect(() => {
-        const state = reducer({}, registerList(1, {}));
-        reducer(state, registerList(1, {}));
-      })
-        .toThrowError('List with id "1" is already registered');
+    test('should return prev state if list with id is already registered', () => {
+      let state = reducer({}, registerList(1, {}));
+      state = reducer(state, loadList(1));
+      const state2 = reducer(state, registerList(1, {}));
+
+      expect(state2).toEqual(state);
     });
 
     test('should destroy list', () => {

@@ -52,7 +52,7 @@ function listReducer(listState, { type, payload }) {
   switch (type) {
     case REGISTER_LIST:
       if (listState) {
-        throw new Error(`List with id "${payload.listId}" is already registered`);
+        return listState;
       }
 
       return collectListInitialState(payload.params);
