@@ -621,7 +621,7 @@ test('should call loadItems once on render and provide correct values', () => {
     });
 });
 
-test('should load items on init', () => {
+test('should load items on init by default', () => {
   const spy = sinon.spy(() => Promise.resolve({
     items: [{
       id: 1,
@@ -673,6 +673,39 @@ test('should load items on init', () => {
     }, () => {
       throw new Error('Must resolve');
     });
+});
+
+test('should not load items on init when autoload prop is false', () => {
+  const spy = sinon.spy(() => Promise.resolve({
+    items: [{
+      id: 1,
+    }, {
+      id: 2,
+    }, {
+      id: 3,
+    }],
+    additional: {
+      count: 3,
+    },
+  }));
+
+  const Container = reduxFilterlist({
+    listId: 'test',
+    loadItems: spy,
+    autoload: false,
+  })(TestChildComponent);
+
+  const store = mockStore({
+    reduxFilterlist: {},
+  });
+
+  mount(
+    <Provider store={store}>
+      <Container />
+    </Provider>,
+  );
+
+  expect(spy.notCalled).toBe(true);
 });
 
 test('should call onBeforeRequest on init', () => {

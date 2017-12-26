@@ -12,6 +12,7 @@ class ReduxFilterlistWrapper extends Component {
 
     loadItems: PropTypes.func.isRequired,
     onBeforeRequest: PropTypes.func,
+    autoload: PropTypes.bool,
 
     listState: listStatePropTypes({}).isRequired,
 
