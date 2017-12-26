@@ -50,6 +50,7 @@ Params:
 | catchRejects | false | Boolean | by default if list loads with error, wrapper component catches Promise.reject inside. If `catchRejects` is true, wrapped component can catch this reject |
 | saveItemsWhileLoad | false | Boolean | by default items are cleared if filters or sorting changed. If `saveItemsWhileLoad` is true, previous list items are saved while load request is pending |
 | onBeforeRequest | false | Function(listState, props) | hook that called before each items request |
+| autoload | false | Boolean | configure initial loading process |
 
 All params except for `listId`, `loadItems` and `onBeforeRequest` can be redefined with component props.
 
