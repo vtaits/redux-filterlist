@@ -51,6 +51,7 @@ class ReduxFilterlistWrapper extends Component {
 
   static defaultProps = {
     onBeforeRequest: null,
+    autoload: true,
   }
 
   componentWillMount() {
@@ -63,8 +64,11 @@ class ReduxFilterlistWrapper extends Component {
   }
 
   componentDidMount() {
-    this.loadItems()
-      .catch(() => {});
+    if (this.props.autoload) {
+      this.loadItems()
+        .catch(() => {
+        });
+    }
   }
 
   shouldComponentUpdate(nextProps) {

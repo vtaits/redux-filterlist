@@ -39,10 +39,13 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
         ...componentProps,
       };
 
+      const autoload = reduxFilterlistParams.autoload;
+
       return {
         listState: listState || collectListInitialState(reduxFilterlistParams),
 
         componentProps,
+        autoload,
         listId,
         loadItems,
         onBeforeRequest,
