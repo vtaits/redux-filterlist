@@ -1,3 +1,32 @@
+## 0.3.0 (January 3, 2018)
+
+ * Migrate async flow from Promise to async/await.
+ * Do not catch errors in `loadItems`.
+ * Removed `catchRejects`.
+ 
+ ### Breaking Changes
+ * For set error state you should use `LoadListError`.
+ 
+ ```
+ // old
+ 
+ return Promise.reject({
+  error: 'Error',
+  additional: null,
+});
+
+// new
+
+throw new LoadListError({
+  error: 'Error',
+  additional: null,
+});
+ ```
+
+## 0.2.6 (December 27, 2017)
+
+ * Added `autoload` param to decorator for ability to prevent requesting items on component render.
+
 ## 0.2.5 (November 23, 2017)
 
  * Don't throw error if list with specified id is alreade registered on page for prevent ssr errors.
