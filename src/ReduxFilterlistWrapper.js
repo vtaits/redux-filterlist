@@ -85,7 +85,7 @@ class ReduxFilterlistWrapper extends Component {
     this.props.listActions.destroyList(listId);
   }
 
-  setAndApplyFilter = (filterName, value) => {
+  setAndApplyFilter = async (filterName, value) => {
     const {
       listId,
       listActions,
@@ -96,7 +96,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.setAndApplyFilter(listId, filterName, value);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
   setFilterValue = (filterName, value) => {
@@ -117,7 +117,7 @@ class ReduxFilterlistWrapper extends Component {
     listActions.setFiltersValues(listId, values);
   }
 
-  setAndApplyFilters = (values) => {
+  setAndApplyFilters = async (values) => {
     const {
       listId,
       listActions,
@@ -128,10 +128,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.setAndApplyFilters(listId, values);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  setSorting = (param, asc) => {
+  setSorting = async (param, asc) => {
     const {
       listId,
       listActions,
@@ -142,10 +142,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.setSorting(listId, param, asc);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  resetSorting = () => {
+  resetSorting = async () => {
     const {
       listId,
       listActions,
@@ -156,7 +156,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetSorting(listId);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
   insertItem = (itemIndex, item, additional) => {
@@ -186,7 +186,7 @@ class ReduxFilterlistWrapper extends Component {
     listActions.updateItem(listId, itemIndex, item, additional);
   }
 
-  resetAllFilters = () => {
+  resetAllFilters = async () => {
     const {
       listId,
       listActions,
@@ -197,10 +197,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetAllFilters(listId);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  resetFilters = (filtersNames) => {
+  resetFilters = async (filtersNames) => {
     const {
       listId,
       listActions,
@@ -211,10 +211,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetFilters(listId, filtersNames);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  applyFilters = (filtersNames) => {
+  applyFilters = async (filtersNames) => {
     const {
       listId,
       listActions,
@@ -225,10 +225,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.applyFilters(listId, filtersNames);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  resetFilter = (filterName) => {
+  resetFilter = async (filterName) => {
     const {
       listId,
       listActions,
@@ -239,10 +239,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetFilter(listId, filterName);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  applyFilter = (filterName) => {
+  applyFilter = async (filterName) => {
     const {
       listId,
       listActions,
@@ -253,10 +253,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.applyFilter(listId, filterName);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  loadItems = () => {
+  loadItems = async () => {
     const {
       listId,
       listActions,
@@ -267,13 +267,10 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.loadList(listId);
 
-    return this.requestItems(requestId);
+    await this.requestItems(requestId);
   }
 
-  requestItems(requestId) {
-    const incrementedRequestId = requestId + 1;
-
-    // wait for props update
+  waitForRequestIdUpdate(incrementedRequestId) {
     return new Promise((resolve, reject) => {
       const iteration = () => {
         const currentRequestId = this.props.listState.requestId;
@@ -292,51 +289,71 @@ class ReduxFilterlistWrapper extends Component {
       };
 
       setTimeout(iteration);
-    })
-      .then(() => {
-        const {
-          componentProps,
-          listId,
-          loadItems,
-          listState,
-          listActions,
-          onBeforeRequest,
-        } = this.props;
+    });
+  }
 
-        if (incrementedRequestId !== listState.requestId) {
-          return Promise.reject(new RequestCanceledError());
-        }
+  async requestItems(requestId) {
+    const incrementedRequestId = requestId + 1;
 
-        if (onBeforeRequest) {
-          onBeforeRequest(listState, componentProps);
-        }
+    try {
+      await this.waitForRequestIdUpdate(incrementedRequestId);
+    } catch (error) {
+      if (this.props.listState.catchRejects) {
+        throw error;
+      }
 
-        return loadItems(listState, componentProps)
-          .then((response) => {
-            if (incrementedRequestId !== this.props.listState.requestId) {
-              return Promise.reject(new RequestCanceledError());
-            }
+      return;
+    }
 
-            listActions.loadListSuccess(listId, response);
+    const {
+      componentProps,
+      listId,
+      loadItems,
+      listState,
+      listActions,
+      onBeforeRequest,
+    } = this.props;
 
-            return Promise.resolve();
-          }, (response) => {
-            if (incrementedRequestId !== this.props.listState.requestId) {
-              return Promise.reject(new RequestCanceledError());
-            }
+    if (incrementedRequestId !== listState.requestId) {
+      if (this.props.listState.catchRejects) {
+        throw new RequestCanceledError();
+      }
 
-            listActions.loadListError(listId, response);
+      return;
+    }
 
-            return Promise.reject(new LoadListError(response));
-          });
-      })
-      .catch((error) => {
-        if (this.props.listState.catchRejects) {
-          return Promise.reject(error);
-        }
+    if (onBeforeRequest) {
+      onBeforeRequest(listState, componentProps);
+    }
 
-        return Promise.resolve();
-      });
+    let response;
+    let isSuccess;
+    try {
+      const successResponse = await loadItems(listState, componentProps);
+      response = successResponse;
+      isSuccess = true;
+    } catch (errorResponse) {
+      response = errorResponse;
+      isSuccess = false;
+    }
+
+    if (incrementedRequestId !== this.props.listState.requestId) {
+      if (this.props.listState.catchRejects) {
+        throw new RequestCanceledError();
+      }
+
+      return;
+    }
+
+    if (isSuccess) {
+      listActions.loadListSuccess(listId, response);
+    } else {
+      listActions.loadListError(listId, response);
+
+      if (this.props.listState.catchRejects) {
+        throw new LoadListError(response);
+      }
+    }
   }
 
   collectComponentProps() {
