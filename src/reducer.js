@@ -317,6 +317,12 @@ function rootReducer(state = {}, action) {
   } = action;
 
   if (listsActions.includes(type)) {
+    const currentState = state[payload.listId];
+
+    if (!currentState && type !== REGISTER_LIST) {
+      return state;
+    }
+
     return {
       ...state,
       [payload.listId]: listReducer(state[payload.listId], action),
@@ -325,20 +331,20 @@ function rootReducer(state = {}, action) {
 
   switch (type) {
     case DESTROY_LIST:
-      return ((currentState) => {
-        const listIdStr = payload.listId.toString();
+    {
+      const listIdStr = payload.listId.toString();
 
-        return Object.keys(currentState)
-          .reduce((res, listId) => {
-            if (listIdStr === listId) {
-              return res;
-            }
-
-            res[listId] = currentState[listId];
-
+      return Object.keys(state)
+        .reduce((res, listId) => {
+          if (listIdStr === listId) {
             return res;
-          }, {});
-      })(state);
+          }
+
+          res[listId] = state[listId];
+
+          return res;
+        }, {});
+    }
 
     default:
       return state;

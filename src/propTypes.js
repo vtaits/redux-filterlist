@@ -33,7 +33,6 @@ export const listStatePropTypes = (listStateConfig) => {
     items: PropTypes.arrayOf(item).isRequired,
     additional,
     error,
-    catchRejects: PropTypes.bool,
     requestId: PropTypes.number.isRequired,
   });
 };

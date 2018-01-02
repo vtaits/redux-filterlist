@@ -14,7 +14,6 @@ const listInitialState = {
   items: [],
   additional: null,
   error: null,
-  catchRejects: false,
   requestId: 0,
 };
 

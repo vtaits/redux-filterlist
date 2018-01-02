@@ -64,11 +64,9 @@ class ReduxFilterlistWrapper extends Component {
     this.props.listActions.registerList(listId, reduxFilterlistParams);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.props.autoload) {
-      this.loadItems()
-        .catch(() => {
-        });
+      await this.loadItems();
     }
   }
 
@@ -297,12 +295,12 @@ class ReduxFilterlistWrapper extends Component {
 
     try {
       await this.waitForRequestIdUpdate(incrementedRequestId);
-    } catch (error) {
-      if (this.props.listState.catchRejects) {
-        throw error;
+    } catch (catchedError) {
+      if (catchedError instanceof RequestCanceledError) {
+        return;
       }
 
-      return;
+      throw catchedError;
     }
 
     const {
@@ -315,10 +313,6 @@ class ReduxFilterlistWrapper extends Component {
     } = this.props;
 
     if (incrementedRequestId !== listState.requestId) {
-      if (this.props.listState.catchRejects) {
-        throw new RequestCanceledError();
-      }
-
       return;
     }
 
@@ -327,33 +321,36 @@ class ReduxFilterlistWrapper extends Component {
     }
 
     let response;
+    let error;
     let isSuccess;
     try {
       const successResponse = await loadItems(listState, componentProps);
       response = successResponse;
       isSuccess = true;
-    } catch (errorResponse) {
-      response = errorResponse;
+    } catch (catchedError) {
+      error = catchedError;
       isSuccess = false;
     }
 
     if (incrementedRequestId !== this.props.listState.requestId) {
-      if (this.props.listState.catchRejects) {
-        throw new RequestCanceledError();
-      }
-
       return;
     }
 
     if (isSuccess) {
       listActions.loadListSuccess(listId, response);
-    } else {
-      listActions.loadListError(listId, response);
-
-      if (this.props.listState.catchRejects) {
-        throw new LoadListError(response);
-      }
+      return;
     }
+
+    if (error instanceof RequestCanceledError) {
+      return;
+    }
+
+    if (error instanceof LoadListError) {
+      listActions.loadListError(listId, error.errors);
+      return;
+    }
+
+    throw error;
   }
 
   collectComponentProps() {
