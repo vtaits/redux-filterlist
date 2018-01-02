@@ -17,6 +17,7 @@ And next polyfills:
 
  - Promise
  - Array.prototype.includes
+ - regeneratorRuntime
 
 Examples are [here](https://github.com/vtaits/redux-filterlist/tree/master/examples).
 
@@ -39,7 +40,7 @@ Params:
 | Name | Required | Type | Description |
 | ---- | -------- | ---- | ----------- |
 | listId | true | String or Number | the name of list and the key to where list's state will be mounted under the `redux-filterlist` reducer |
-| loadItems | true | Function | should return Promise that resolves with Object { items: [/* Array of loaded data */], additional: {} /* Additional info (total count etc.), can be null if not needed */ } and rejects with Object { error /* any, can be null if not needed */, additional } |
+| loadItems | true | async Function | should return Object { items: [/* Array of loaded data */], additional: {} /* Additional info (total count etc.), can be null if not needed */ } or throw LoadListError with Object { error /* any, can be null if not needed */, additional } |
 | additional | false | any | Additional info (total count etc.) setted by default |
 | sort | false | Object | default sorting state of the list, should be an Object { param /* string, column id */ , asc /* boolean, asc or desc */ } |
 | isDefaultSortAsc | false | Boolean | default `asc` param after change sorting column (true by default) |
@@ -47,7 +48,6 @@ Params:
 | initialFilters | false | Object | filters and their values that sets after filter reset. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
 | alwaysResetFilters | false | Object | filters and their values that sets after every filters or sorting change. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
 | saveFiltersOnResetAll | false | Array | filters names that not reset after `resetAllFilters` call. Should be [filterName1, filter2Name, ...] |
-| catchRejects | false | Boolean | by default if list loads with error, wrapper component catches Promise.reject inside. If `catchRejects` is true, wrapped component can catch this reject |
 | saveItemsWhileLoad | false | Boolean | by default items are cleared if filters or sorting changed. If `saveItemsWhileLoad` is true, previous list items are saved while load request is pending |
 | onBeforeRequest | false | Function(listState, props) | hook that called before each items request |
 | autoload | false | Boolean | configure initial loading process |
@@ -69,7 +69,6 @@ All params except for `listId`, `loadItems` and `onBeforeRequest` can be redefin
 | initialFilters | param from decorator | Object |
 | alwaysResetFilters | param from decorator | Object |
 | saveFiltersOnResetAll | param from decorator | Array |
-| catchRejects | param from decorator | Boolean |
 | requestId | **internal** | Integer |
 
 ### Component props
