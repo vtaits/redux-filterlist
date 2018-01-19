@@ -114,6 +114,7 @@ reducersForTest.forEach(({
         state = reducer(state, fn());
 
         expect(state[1].appliedFilters.page).toEqual(1);
+        expect(state[1].shouldClean).toEqual(true);
         expect(state[1].loading).toEqual(true);
         expect(state[1].error).toEqual(null);
         expect(state[1].items).toEqual([]);
@@ -146,6 +147,7 @@ reducersForTest.forEach(({
         state = reducer(state, fn());
 
         expect(state[1].appliedFilters.page).toEqual(1);
+        expect(state[1].shouldClean).toEqual(true);
         expect(state[1].loading).toEqual(true);
         expect(state[1].error).toEqual(null);
         expect(state[1].items).toEqual([{
@@ -154,6 +156,30 @@ reducersForTest.forEach(({
         }, {
           label: 2,
           value: 2,
+        }]);
+
+        state = reducer(state, loadListSuccess(1, {
+          items: [{
+            label: 3,
+            value: 3,
+          }, {
+            label: 4,
+            value: 4,
+          }],
+          additional: {
+            count: 2,
+          },
+        }));
+
+        expect(state[1].shouldClean).toEqual(false);
+        expect(state[1].loading).toEqual(false);
+        expect(state[1].error).toEqual(null);
+        expect(state[1].items).toEqual([{
+          label: 3,
+          value: 3,
+        }, {
+          label: 4,
+          value: 4,
         }]);
       });
     });
@@ -220,11 +246,43 @@ reducersForTest.forEach(({
       expect(state[1]).toEqual(collectListInitialState(params));
     });
 
-    test('should set loading state', () => {
+    test('should set loading state with loadList', () => {
       let state = reducer({}, registerList(1, {}));
       state = reducer(state, loadList(1));
 
       expect(state[1].loading).toEqual(true);
+      expect(state[1].shouldClean).toEqual(false);
+    });
+
+    test('should reset loading and shouldClean with loadListSuccess action', () => {
+      let state = reducer({}, registerList(1, {}));
+      state = reducer(state, resetAllFilters(1));
+
+      expect(state[1].loading).toEqual(true);
+      expect(state[1].shouldClean).toEqual(true);
+
+      state = reducer(state, loadListSuccess(1, {
+        items: [],
+        additional: {},
+      }));
+
+      expect(state[1].loading).toEqual(false);
+      expect(state[1].shouldClean).toEqual(false);
+    });
+
+    test('should reset loading and shouldClean with loadListError action', () => {
+      let state = reducer({}, registerList(1, {}));
+      state = reducer(state, resetAllFilters(1));
+
+      expect(state[1].loading).toEqual(true);
+      expect(state[1].shouldClean).toEqual(true);
+
+      state = reducer(state, loadListError(1, {
+        additional: {},
+      }));
+
+      expect(state[1].loading).toEqual(false);
+      expect(state[1].shouldClean).toEqual(false);
     });
 
     test('should load items and set additional if defined', () => {
@@ -317,7 +375,7 @@ reducersForTest.forEach(({
       expect(state[1].additional).toEqual(null);
     });
 
-    test('should load items whits save on load', () => {
+    test('should load items with save on load', () => {
       let state = reducer({}, registerList(1, {
         saveItemsWhileLoad: true,
       }));
@@ -354,6 +412,12 @@ reducersForTest.forEach(({
 
       expect(state[1].loading).toEqual(false);
       expect(state[1].items).toEqual([{
+        label: 1,
+        value: 1,
+      }, {
+        label: 2,
+        value: 2,
+      }, {
         label: 3,
         value: 3,
       }, {

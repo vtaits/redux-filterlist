@@ -44,6 +44,7 @@ function getListStateBeforeChangeFiltes(listState) {
     loading: true,
     error: null,
     items: listState.saveItemsWhileLoad ? listState.items : [],
+    shouldClean: true,
     requestId: listState.requestId + 1,
   };
 }
@@ -62,6 +63,7 @@ function listReducer(listState, { type, payload }) {
         ...listState,
         loading: true,
         error: null,
+        shouldClean: false,
         requestId: listState.requestId + 1,
       };
 
@@ -70,13 +72,15 @@ function listReducer(listState, { type, payload }) {
         ...listState,
         loading: false,
 
-        items: listState.saveItemsWhileLoad ?
+        items: (listState.saveItemsWhileLoad && listState.shouldClean) ?
           payload.response.items :
           listState.items.concat(payload.response.items),
 
         additional: typeof payload.response.additional !== 'undefined' ?
           payload.response.additional :
           listState.additional,
+
+        shouldClean: false,
       };
 
     case LOAD_LIST_ERROR:
@@ -89,6 +93,8 @@ function listReducer(listState, { type, payload }) {
         additional: (payload.response && typeof payload.response.additional !== 'undefined') ?
           payload.response.additional :
           listState.additional,
+
+        shouldClean: false,
       };
 
     case SET_FILTER_VALUE:

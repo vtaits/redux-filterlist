@@ -262,6 +262,7 @@ test('should provide the correct props', () => {
       'requestId',
       'saveFiltersOnResetAll',
       'saveItemsWhileLoad',
+      'shouldClean',
       'sort',
     ]);
 
