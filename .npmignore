@@ -1,5 +1,8 @@
 examples
-.eslint*
-.npmignore
+src
 .babelrc
-webpack.*
+.eslint*
+.gitignore
+.npmignore
+setup-jest.js
+yarn.lock
