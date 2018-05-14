@@ -1,15 +1,19 @@
+## 0.3.2 (May 15, 2018)
+
+ * Added `redux@^4.0.0` to peerDependencies.
+
 ## 0.3.0 (January 3, 2018)
 
  * Migrate async flow from Promise to async/await.
  * Do not catch errors in `loadItems`.
  * Removed `catchRejects`.
- 
+
  ### Breaking Changes
  * For set error state you should use `LoadListError`.
- 
+
  ```
  // old
- 
+
  return Promise.reject({
   error: 'Error',
   additional: null,
