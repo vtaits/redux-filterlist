@@ -3,26 +3,27 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
-    "babel-polyfill": "^6.23.0",
-    "fetch-mock": "^5.10.0",
-    "prop-types": "^15.6.0",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-redux": "^5.0.4",
-    "redux": "^3.6.0",
-    "redux-filterlist": "file:../../",
-    "redux-logger": "^3.0.1",
-    "url-search-params-polyfill": "^1.2.0",
-    "whatwg-fetch": "^2.0.3"
+    "babel-polyfill": "^6.26.0",
+    "fetch-mock": "^6.4.2",
+    "prop-types": "^15.6.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-filterlist": "link:../../",
+    "redux-logger": "^3.0.6",
+    "url-search-params-polyfill": "^4.0.0",
+    "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
-    "babel-core": "^6.24.1",
-    "babel-loader": "^7.0.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "path": "^0.12.7",
-    "webpack": "^2.5.1",
-    "webpack-dev-server": "^2.4.5"
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3",
+    "webpack-dev-server": "^3.1.4"
   }
 }

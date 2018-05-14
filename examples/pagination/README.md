@@ -3,8 +3,8 @@
 ## To run locally
 
 ```
-npm install
-npm start
+yarn install
+yarn start
 ```
 
 Then open [`http://localhost:8080/`](http://localhost:8080/).

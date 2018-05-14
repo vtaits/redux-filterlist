@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-import {reduxFilterlist, filterlistPropTypes} from 'redux-filterlist'
+import { reduxFilterlist, filterlistPropTypes } from 'redux-filterlist';
 
 const List = ({
   listState: {
@@ -53,11 +53,11 @@ const List = ({
       )
     }
   </div>
-)
+);
 
 List.propTypes = {
   ...filterlistPropTypes({}),
-}
+};
 
 export default reduxFilterlist({
   listId: 'simple',
@@ -69,4 +69,4 @@ export default reduxFilterlist({
         count: cars.length,
       },
     })),
-})(List)
+})(List);

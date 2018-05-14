@@ -1,9 +1,9 @@
-const webpack = require('webpack')
-const path = require('path')
+const path = require('path');
 
-const context = path.join(__dirname, 'src')
+const context = path.join(__dirname, 'src');
 
 module.exports = {
+  mode: 'development',
   context,
   entry: './index.js',
   output: {
@@ -13,17 +13,10 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: [/(\.js)/, /(\.jsx)/],
-      exclude: /node_modules/,
+      test: /(\.js)/,
+      exclude: /(node_modules|dist)/,
       use: [{
         loader: 'babel-loader',
-        options: {
-          presets: [
-            ['env', { modules: false }],
-            'react',
-            'stage-2',
-          ],
-        },
       }],
     }],
   },
@@ -34,4 +27,4 @@ module.exports = {
     ],
     extensions: ['.js', '.jsx'],
   },
-}
+};
