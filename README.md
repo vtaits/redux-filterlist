@@ -7,10 +7,22 @@ A Higher Order Component using react-redux for creating lists with filters, sotr
 npm install redux-filterlist --save
 ```
 
+or
+
+```
+yarn add redux-filterlist
+```
+
 This package requiers next packages: react, redux, react-redux. Easy way to install:
 
 ```
 npm install react redux react-redux --save
+```
+
+or
+
+```
+yarn add react redux react-redux
 ```
 
 And next polyfills:
@@ -407,4 +419,3 @@ export default reduxFilterlist({
 ### Done
 
 An example [here](https://github.com/vtaits/redux-filterlist/tree/master/examples/simple).
-
