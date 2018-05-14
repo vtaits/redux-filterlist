@@ -21,9 +21,6 @@ module.exports = {
         "import/resolver": {
             "node": {
                 "extensions": [".js"]
-            },
-            "webpack": {
-                "config": "webpack.config.js"
             }
         }
     },
@@ -32,5 +29,13 @@ module.exports = {
         "react/forbid-prop-types": "off",
         "no-plusplus": "off",
         "no-nested-ternary": "off",
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+              "devDependencies": true,
+              "optionalDependencies": false,
+              "peerDependencies": true,
+            }
+        ],
     }
 };
