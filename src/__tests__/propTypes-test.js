@@ -5,6 +5,7 @@ import {
   listIdPropTypes,
   listStatePropTypes,
   filterlistPropTypes,
+  reduxFilterlistParamsShape,
 } from '../propTypes';
 
 import listInitialState from '../listInitialState';
@@ -212,6 +213,50 @@ describe('filterlistPropTypes', () => {
         insertItem: () => {},
         deleteItem: () => {},
         updateItem: () => {},
+      },
+      'prop',
+      'TestComponentName',
+    ))
+      .toBeFalsy();
+  });
+});
+
+describe('reduxFilterlistParamsShape', () => {
+  test('should accept empty object', () => {
+    expect(checkPropTypes(
+      {
+        reduxFilterlistParams: reduxFilterlistParamsShape,
+      },
+      {
+        reduxFilterlistParams: {},
+      },
+      'prop',
+      'TestComponentName',
+    ))
+      .toBeFalsy();
+  });
+
+  test('should accept full object', () => {
+    expect(checkPropTypes(
+      {
+        reduxFilterlistParams: reduxFilterlistParamsShape,
+      },
+      {
+        reduxFilterlistParams: {
+          autoload: true,
+          sort: {
+            param: 'test',
+            asc: false,
+          },
+          isDefaultSortAsc: true,
+          alwaysResetFilters: {},
+          additional: {},
+          initialFilters: {},
+          filters: {},
+          appliedFilters: {},
+          saveFiltersOnResetAll: ['filter1', 'filter2'],
+          saveItemsWhileLoad: true,
+        },
       },
       'prop',
       'TestComponentName',

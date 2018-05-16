@@ -5,6 +5,11 @@ export const listIdPropTypes = PropTypes.oneOfType([
   PropTypes.number,
 ]);
 
+const sortShape = PropTypes.shape({
+  param: PropTypes.string,
+  asc: PropTypes.bool.isRequired,
+});
+
 export const listStatePropTypes = (listStateConfig) => {
   if (typeof listStateConfig !== 'object') {
     throw new Error('List state config should be an object');
@@ -23,10 +28,7 @@ export const listStatePropTypes = (listStateConfig) => {
 
   return PropTypes.shape({
     autoload: PropTypes.bool.isRequired,
-    sort: PropTypes.shape({
-      param: PropTypes.string,
-      asc: PropTypes.bool.isRequired,
-    }).isRequired,
+    sort: sortShape.isRequired,
     initialFilters: PropTypes.object.isRequired,
     filters: filters.isRequired,
     appliedFilters: filters.isRequired,
@@ -62,4 +64,17 @@ export const filterlistPropTypes = listStateConfig => ({
   insertItem: PropTypes.func.isRequired,
   deleteItem: PropTypes.func.isRequired,
   updateItem: PropTypes.func.isRequired,
+});
+
+export const reduxFilterlistParamsShape = PropTypes.shape({
+  autoload: PropTypes.bool,
+  sort: sortShape,
+  isDefaultSortAsc: PropTypes.bool,
+  alwaysResetFilters: PropTypes.object,
+  additional: PropTypes.any,
+  initialFilters: PropTypes.object,
+  filters: PropTypes.object,
+  appliedFilters: PropTypes.object,
+  saveFiltersOnResetAll: PropTypes.arrayOf(PropTypes.string),
+  saveItemsWhileLoad: PropTypes.bool,
 });

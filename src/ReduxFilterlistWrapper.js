@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import isEqual from 'lodash.isequal';
 
-import { listIdPropTypes, listStatePropTypes } from './propTypes';
+import { listIdPropTypes, listStatePropTypes, reduxFilterlistParamsShape } from './propTypes';
 import { LoadListError, RequestCanceledError } from './errors';
 
 class ReduxFilterlistWrapper extends Component {
@@ -44,8 +44,9 @@ class ReduxFilterlistWrapper extends Component {
     }).isRequired,
 
     WrappedComponent: PropTypes.func.isRequired,
-    reduxFilterlistParams: PropTypes.object.isRequired,
+    reduxFilterlistParams: reduxFilterlistParamsShape.isRequired,
 
+    // eslint-disable-next-line react/forbid-prop-types
     componentProps: PropTypes.object.isRequired,
   }
 
