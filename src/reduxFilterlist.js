@@ -7,25 +7,10 @@ import * as actions from './actions';
 
 export default function reduxFilterlist(ReduxFilterlistWrapper, {
   listId,
-  loadItems,
-  onBeforeRequest,
   ...decoratorParams
 }) {
   if (!listId) {
     throw new Error('listId is required');
-  }
-
-  if (!loadItems) {
-    throw new Error('loadItems is required');
-  }
-
-  if (typeof loadItems !== 'function') {
-    throw new Error('loadItems should be a function');
-  }
-
-  if (typeof onBeforeRequest !== 'undefined' &&
-    typeof onBeforeRequest !== 'function') {
-    throw new Error('onBeforeRequest should be a function');
   }
 
   return (WrappedComponent) => {
@@ -38,6 +23,24 @@ export default function reduxFilterlist(ReduxFilterlistWrapper, {
         ...decoratorParams,
         ...componentProps,
       };
+
+      const {
+        loadItems,
+        onBeforeRequest,
+      } = reduxFilterlistParams;
+
+      if (!loadItems) {
+        throw new Error('loadItems is required');
+      }
+
+      if (typeof loadItems !== 'function') {
+        throw new Error('loadItems should be a function');
+      }
+
+      if (typeof onBeforeRequest !== 'undefined' &&
+        typeof onBeforeRequest !== 'function') {
+        throw new Error('onBeforeRequest should be a function');
+      }
 
       return {
         listState: listState || collectListInitialState(reduxFilterlistParams),
