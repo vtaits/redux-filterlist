@@ -111,3 +111,18 @@ test('should no set saveItemsWhileLoad (false by default)', () => {
 
   expect(state.saveItemsWhileLoad).toEqual(false);
 });
+
+test('should set autoload', () => {
+  const state = collectListInitialState({
+    autoload: false,
+  });
+
+  expect(state.autoload).toEqual(false);
+});
+
+test('should no set autoload (true by default)', () => {
+  const state = collectListInitialState({
+  });
+
+  expect(state.autoload).toEqual(true);
+});

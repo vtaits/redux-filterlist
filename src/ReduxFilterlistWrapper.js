@@ -12,7 +12,6 @@ class ReduxFilterlistWrapper extends Component {
 
     loadItems: PropTypes.func.isRequired,
     onBeforeRequest: PropTypes.func,
-    autoload: PropTypes.bool,
 
     listState: listStatePropTypes({}).isRequired,
 
@@ -52,7 +51,6 @@ class ReduxFilterlistWrapper extends Component {
 
   static defaultProps = {
     onBeforeRequest: null,
-    autoload: true,
   }
 
   componentWillMount() {
@@ -65,7 +63,7 @@ class ReduxFilterlistWrapper extends Component {
   }
 
   async componentDidMount() {
-    if (this.props.autoload) {
+    if (this.props.listState.autoload) {
       await this.loadItems();
     }
   }

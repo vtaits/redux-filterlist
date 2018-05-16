@@ -3,6 +3,12 @@ import listInitialState from './listInitialState';
 export default function collectListInitialState(params) {
   return {
     ...listInitialState,
+
+    /* eslint-disable no-prototype-builtins */
+    autoload: params.hasOwnProperty('autoload') ?
+      params.autoload :
+      listInitialState.autoload,
+
     sort: params.sort || listInitialState.sort,
     /* eslint-disable no-prototype-builtins */
     isDefaultSortAsc: params.hasOwnProperty('isDefaultSortAsc') ?

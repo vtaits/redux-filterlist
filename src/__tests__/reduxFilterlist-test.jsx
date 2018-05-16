@@ -253,6 +253,7 @@ test('should provide the correct props', () => {
       'additional',
       'alwaysResetFilters',
       'appliedFilters',
+      'autoload',
       'error',
       'filters',
       'initialFilters',

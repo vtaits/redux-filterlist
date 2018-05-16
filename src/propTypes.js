@@ -22,6 +22,7 @@ export const listStatePropTypes = (listStateConfig) => {
   } = listStateConfig;
 
   return PropTypes.shape({
+    autoload: PropTypes.bool.isRequired,
     sort: PropTypes.shape({
       param: PropTypes.string,
       asc: PropTypes.bool.isRequired,

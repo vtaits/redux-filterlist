@@ -1,4 +1,5 @@
 const listInitialState = {
+  autoload: true,
   sort: {
     param: null,
     asc: true,
