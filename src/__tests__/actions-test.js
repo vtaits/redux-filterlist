@@ -86,6 +86,46 @@ test('should set default params in register list action', () => {
     });
 });
 
+test('should provide only accepted params to register list action', () => {
+  expect(registerList(1, {
+    autoload: true,
+    sort: {
+      param: 'test',
+      asc: false,
+    },
+    isDefaultSortAsc: true,
+    alwaysResetFilters: {},
+    additional: {},
+    initialFilters: {},
+    filters: {},
+    appliedFilters: {},
+    saveFiltersOnResetAll: ['filter1', 'filter2'],
+    saveItemsWhileLoad: true,
+    otherParam: 'value',
+  }))
+    .toEqual({
+      type: REGISTER_LIST,
+      payload: {
+        listId: 1,
+        params: {
+          autoload: true,
+          sort: {
+            param: 'test',
+            asc: false,
+          },
+          isDefaultSortAsc: true,
+          alwaysResetFilters: {},
+          additional: {},
+          initialFilters: {},
+          filters: {},
+          appliedFilters: {},
+          saveFiltersOnResetAll: ['filter1', 'filter2'],
+          saveItemsWhileLoad: true,
+        },
+      },
+    });
+});
+
 test('destroy list action is FSA', () => {
   expect(isFSA(destroyList(1))).toBeTruthy();
 });

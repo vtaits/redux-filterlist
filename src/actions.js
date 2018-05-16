@@ -26,12 +26,33 @@ import {
   UPDATE_ITEM,
 } from './actionsTypes';
 
+const acceptedListParams = [
+  'autoload',
+  'sort',
+  'isDefaultSortAsc',
+  'alwaysResetFilters',
+  'additional',
+  'initialFilters',
+  'filters',
+  'appliedFilters',
+  'saveFiltersOnResetAll',
+  'saveItemsWhileLoad',
+];
+
 export function registerList(listId, params = {}) {
   return {
     type: REGISTER_LIST,
     payload: {
       listId,
-      params,
+      params: acceptedListParams.reduce((res, paramName) => {
+        const paramValue = params[paramName];
+
+        if (typeof paramValue !== 'undefined') {
+          res[paramName] = paramValue;
+        }
+
+        return res;
+      }, {}),
     },
   };
 }
