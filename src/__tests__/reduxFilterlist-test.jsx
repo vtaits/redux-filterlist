@@ -9,9 +9,7 @@ import { combineReducers } from 'redux';
 import _reduxFilterlist from '../reduxFilterlist';
 import ReduxFilterlistWrapper from '../ReduxFilterlistWrapper';
 import collectListInitialState from '../collectListInitialState';
-import {
-  LoadListError,
-} from '../errors';
+import { LoadListError } from '../errors';
 
 import {
   registerList,
@@ -350,7 +348,9 @@ test('should provide the correct list state', () => {
     </Provider>,
   );
 
-  const listState = wrapper.find(TestWrapperComponent).props().listState;
+  const {
+    listState,
+  } = wrapper.find(TestWrapperComponent).props();
 
   expect(listState).toEqual({
     sort: {
@@ -411,7 +411,9 @@ test('should provide the correct list state at init', () => {
     </Provider>,
   );
 
-  const listState = wrapper.find(TestWrapperComponent).props().listState;
+  const {
+    listState,
+  } = wrapper.find(TestWrapperComponent).props();
 
   expect(listState).toEqual(collectListInitialState(params));
 });
@@ -482,7 +484,9 @@ test('should provide redefine decorator params by component props', () => {
     </Provider>,
   );
 
-  const listState = wrapper.find(TestWrapperComponent).props().listState;
+  const {
+    listState,
+  } = wrapper.find(TestWrapperComponent).props();
 
   expect(listState).toEqual(collectListInitialState(resultParams));
 });
@@ -781,7 +785,7 @@ test('should call render of child component only after list state of props chang
     reduxFilterlist: {},
   });
 
-  const PropsProviderComponent = (props) => (
+  const PropsProviderComponent = props => (
     <Provider store={store}>
       <Container {...props} />
     </Provider>
@@ -910,7 +914,7 @@ test('should set load error on init', async () => {
 });
 
 /* TO DO: uncomment after fix async calls in jest */
-/*test('should throw error from loadItems on init', async (done) => {
+/* test('should throw error from loadItems on init', async (done) => {
   let isErrorThrown = false;
   try {
     const Container = reduxFilterlist({
@@ -942,7 +946,7 @@ test('should set load error on init', async () => {
   }
 
   expect(isErrorThrown).toEqual(true);
-});*/
+}); */
 
 test('should set load error calling loadItems from props', async () => {
   let callsCount = 0;

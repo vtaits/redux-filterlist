@@ -6,7 +6,7 @@
   "scripts": {
     "build": "yarn build:lib",
     "build:lib": "babel src --out-dir lib --ignore __tests__,test-utils",
-    "lint": "eslint src",
+    "lint": "eslint src --ext .js,.jsx",
     "test": "yarn lint && yarn test:unit",
     "test:unit": "jest",
     "test:unit:watch": "jest --watchAll",
