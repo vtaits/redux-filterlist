@@ -1,16 +1,11 @@
 import { mount } from 'enzyme';
-import sinon from 'sinon';
 
 import React from 'react';
-import checkPropTypes from 'check-prop-types';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import _reduxFilterlist from '../reduxFilterlist';
-import ReduxFilterlistWrapper from '../ReduxFilterlistWrapper';
 import collectListInitialState from '../collectListInitialState';
-import { LoadListError } from '../errors';
-
 import {
   registerList,
   destroyList,
@@ -38,8 +33,6 @@ import {
   deleteItem,
   updateItem,
 } from '../actions';
-
-import { filterlistPropTypes } from '../propTypes';
 
 import reducer from '../reducer';
 import _mockStore from '../test-utils/mockStore';
@@ -245,7 +238,7 @@ test('should provide correct componentProps', () => {
   });
 
   const props = page.getWrapperComponent().props();
-  
+
   expect(props.params).toEqual({
     testParam: 'testValue',
   });
