@@ -6,6 +6,8 @@ import {
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
 
+  SET_STATE_FROM_PROPS,
+
   SET_FILTER_VALUE,
   APPLY_FILTER,
   SET_AND_APPLY_FILTER,
@@ -39,20 +41,37 @@ const acceptedListParams = [
   'saveItemsWhileLoad',
 ];
 
-export function registerList(listId, params = {}) {
+export function registerList(listId, reduxFilterlistParams, componentProps) {
+  const params = acceptedListParams.reduce((res, paramName) => {
+    const paramValue = reduxFilterlistParams[paramName];
+
+    if (typeof paramValue !== 'undefined') {
+      res[paramName] = paramValue;
+    }
+
+    return res;
+  }, {});
+
+  if (reduxFilterlistParams.getStateFromProps) {
+    const {
+      appliedFilters,
+      sort,
+    } = reduxFilterlistParams.getStateFromProps(componentProps);
+
+    if (appliedFilters) {
+      params.appliedFilters = appliedFilters;
+    }
+
+    if (sort) {
+      params.sort = sort;
+    }
+  }
+
   return {
     type: REGISTER_LIST,
     payload: {
       listId,
-      params: acceptedListParams.reduce((res, paramName) => {
-        const paramValue = params[paramName];
-
-        if (typeof paramValue !== 'undefined') {
-          res[paramName] = paramValue;
-        }
-
-        return res;
-      }, {}),
+      params,
     },
   };
 }
@@ -103,6 +122,17 @@ export function loadListError(listId, response) {
     payload: {
       listId,
       response,
+    },
+  };
+}
+
+export function setStateFromProps(listId, appliedFilters, sort) {
+  return {
+    type: SET_STATE_FROM_PROPS,
+    payload: {
+      listId,
+      appliedFilters,
+      sort,
     },
   };
 }

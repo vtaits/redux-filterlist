@@ -19,6 +19,8 @@ class ReduxFilterlistWrapper extends Component {
       registerList: PropTypes.func.isRequired,
       destroyList: PropTypes.func.isRequired,
 
+      setStateFromProps: PropTypes.func.isRequired,
+
       loadList: PropTypes.func.isRequired,
       loadListSuccess: PropTypes.func.isRequired,
       loadListError: PropTypes.func.isRequired,
@@ -58,9 +60,10 @@ class ReduxFilterlistWrapper extends Component {
     const {
       listId,
       reduxFilterlistParams,
+      componentProps,
     } = this.props;
 
-    this.props.listActions.registerList(listId, reduxFilterlistParams);
+    this.props.listActions.registerList(listId, reduxFilterlistParams, componentProps);
   }
 
   async componentDidMount() {
@@ -74,12 +77,46 @@ class ReduxFilterlistWrapper extends Component {
       !isEqual(nextProps.componentProps, this.props.componentProps);
   }
 
+  async componentDidUpdate(prevProps) {
+    const {
+      shouldRecountFilters,
+      getStateFromProps,
+    } = this.props.reduxFilterlistParams;
+
+    if (
+      getStateFromProps &&
+      shouldRecountFilters &&
+      shouldRecountFilters(this.props.componentProps, prevProps.componentProps)
+    ) {
+      const {
+        appliedFilters,
+        sort,
+      } = getStateFromProps(this.props.componentProps);
+
+      await this.setStateFromProps(appliedFilters, sort);
+    }
+  }
+
   componentWillUnmount() {
     const {
       listId,
     } = this.props;
 
     this.props.listActions.destroyList(listId);
+  }
+
+  setStateFromProps = async (appliedFilters, sort) => {
+    const {
+      listId,
+      listActions,
+      listState: {
+        requestId,
+      },
+    } = this.props;
+
+    listActions.setStateFromProps(listId, appliedFilters, sort);
+
+    await this.requestItems(requestId);
   }
 
   setAndApplyFilter = async (filterName, value) => {

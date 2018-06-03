@@ -21,6 +21,8 @@ const listActions = {
   loadListSuccess: () => {},
   loadListError: () => {},
 
+  setStateFromProps: () => {},
+
   setFilterValue: () => {},
   applyFilter: () => {},
   setAndApplyFilter: () => {},
@@ -230,12 +232,19 @@ test('should call registerList on init', () => {
       registerList,
     },
 
+    componentProps: {
+      testProp: 'testValue',
+    },
+
     reduxFilterlistParams,
   });
 
   expect(registerList.mock.calls.length).toBe(1);
   expect(registerList.mock.calls[0][0]).toBe('testId');
   expect(registerList.mock.calls[0][1]).toBe(reduxFilterlistParams);
+  expect(registerList.mock.calls[0][2]).toEqual({
+    testProp: 'testValue',
+  });
 });
 
 test('should call destroyList on unmount', () => {

@@ -77,4 +77,7 @@ export const reduxFilterlistParamsShape = PropTypes.shape({
   appliedFilters: PropTypes.object,
   saveFiltersOnResetAll: PropTypes.arrayOf(PropTypes.string),
   saveItemsWhileLoad: PropTypes.bool,
+
+  shouldRecountState: PropTypes.func,
+  getStateFromProps: PropTypes.func,
 });

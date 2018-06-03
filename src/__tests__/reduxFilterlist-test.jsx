@@ -14,6 +14,8 @@ import {
   loadListSuccess,
   loadListError,
 
+  setStateFromProps,
+
   setFilterValue,
   applyFilter,
   setAndApplyFilter,
@@ -224,6 +226,7 @@ test('should provide the correct props', () => {
       'setFilterValue',
       'setFiltersValues',
       'setSorting',
+      'setStateFromProps',
       'updateItem',
     ]);
 });
@@ -387,6 +390,8 @@ test('should dispatch registerList', () => {
       param: 'param',
       asc: false,
     },
+  }, {
+    testProp: 'testValue',
   });
 
   expect(page.getStore().getActions()[0]).toEqual(
@@ -401,6 +406,8 @@ test('should dispatch registerList', () => {
         param: 'param',
         asc: false,
       },
+    }, {
+      testProp: 'testValue',
     }),
   );
 });
@@ -469,6 +476,26 @@ test('should dispatch loadListError', () => {
     loadListError('testId', {
       error: 'Error',
       additional: null,
+    }),
+  );
+});
+
+test('should dispatch setStateFromProps', () => {
+  const page = setup();
+
+  page.getListAction('setStateFromProps')('testId', {
+    filter: 'value',
+  }, {
+    param: 'test',
+    asc: true,
+  });
+
+  expect(page.getStore().getActions()[0]).toEqual(
+    setStateFromProps('testId', {
+      filter: 'value',
+    }, {
+      param: 'test',
+      asc: true,
     }),
   );
 });

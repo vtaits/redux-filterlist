@@ -10,6 +10,8 @@ import {
   loadListSuccess,
   loadListError,
 
+  setStateFromProps,
+
   setFilterValue,
   applyFilter,
   setAndApplyFilter,
@@ -41,6 +43,15 @@ const reducersForTest = [{
 }];
 
 const resetListActions = [
+  {
+    fn: setStateFromProps.bind(null, 1, {
+      filter: 'value',
+    }, {
+      param: 'test',
+      asc: true,
+    }),
+    name: 'setStateFromProps',
+  },
   {
     fn: applyFilter.bind(null, 1, 'param'),
     name: 'applyFilter',
@@ -97,7 +108,7 @@ reducersForTest.forEach(({
             page: 2,
             filter: 'value',
           },
-        }));
+        }, {}));
         state = reducer(state, loadList(1));
         state = reducer(state, loadListSuccess(1, {
           items: [{
@@ -130,7 +141,7 @@ reducersForTest.forEach(({
             filter: 'value',
           },
           saveItemsWhileLoad: true,
-        }));
+        }, {}));
         state = reducer(state, loadList(1));
         state = reducer(state, loadListSuccess(1, {
           items: [{
@@ -191,31 +202,31 @@ reducersForTest.forEach(({
     });
 
     test('should register empty list', () => {
-      expect(reducer({}, registerList(1, {}))).toEqual({
+      expect(reducer({}, registerList(1, {}, {}))).toEqual({
         1: listInitialState,
       });
     });
 
     test('should register two lists', () => {
-      const state = reducer({}, registerList(1, {}));
+      const state = reducer({}, registerList(1, {}, {}));
 
-      expect(reducer(state, registerList(2))).toEqual({
+      expect(reducer(state, registerList(2, {}, {}))).toEqual({
         1: listInitialState,
         2: listInitialState,
       });
     });
 
     test('should return prev state if list with id is already registered', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
       state = reducer(state, loadList(1));
-      const state2 = reducer(state, registerList(1, {}));
+      const state2 = reducer(state, registerList(1, {}, {}));
 
       expect(state2).toEqual(state);
     });
 
     test('should destroy list', () => {
-      let state = reducer({}, registerList(1, {}));
-      state = reducer(state, registerList(2));
+      let state = reducer({}, registerList(1, {}, {}));
+      state = reducer(state, registerList(2, {}, {}));
 
       state = reducer(state, destroyList(1));
 
@@ -241,13 +252,13 @@ reducersForTest.forEach(({
         },
       };
 
-      const state = reducer({}, registerList(1, params));
+      const state = reducer({}, registerList(1, params, {}));
 
       expect(state[1]).toEqual(collectListInitialState(params));
     });
 
     test('should set loading state with loadList', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
       state = reducer(state, loadList(1));
 
       expect(state[1].loading).toEqual(true);
@@ -255,7 +266,7 @@ reducersForTest.forEach(({
     });
 
     test('should reset loading and shouldClean with loadListSuccess action', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
       state = reducer(state, resetAllFilters(1));
 
       expect(state[1].loading).toEqual(true);
@@ -271,7 +282,7 @@ reducersForTest.forEach(({
     });
 
     test('should reset loading and shouldClean with loadListError action', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
       state = reducer(state, resetAllFilters(1));
 
       expect(state[1].loading).toEqual(true);
@@ -286,7 +297,7 @@ reducersForTest.forEach(({
     });
 
     test('should load items and set additional if defined', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
       state = reducer(state, loadList(1));
       state = reducer(state, loadListSuccess(1, {
         items: [{
@@ -378,7 +389,7 @@ reducersForTest.forEach(({
     test('should load items with save on load', () => {
       let state = reducer({}, registerList(1, {
         saveItemsWhileLoad: true,
-      }));
+      }, {}));
       state = reducer(state, loadList(1));
       state = reducer(state, loadListSuccess(1, {
         items: [{
@@ -433,8 +444,8 @@ reducersForTest.forEach(({
     });
 
     test('should set current list loading to false on load error', () => {
-      let state = reducer({}, registerList(1, {}));
-      state = reducer(state, registerList(2, {}));
+      let state = reducer({}, registerList(1, {}, {}));
+      state = reducer(state, registerList(2, {}, {}));
 
       state = reducer(state, loadList(1));
       state = reducer(state, loadList(2));
@@ -446,7 +457,7 @@ reducersForTest.forEach(({
     });
 
     test('should set list loading error and not change additional', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
 
       state = reducer(state, loadList(1));
       state = reducer(state, loadListError(1, {
@@ -458,7 +469,7 @@ reducersForTest.forEach(({
     });
 
     test('should set list additional on load error', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
 
       state = reducer(state, loadList(1));
       state = reducer(state, loadListError(1, {
@@ -474,7 +485,7 @@ reducersForTest.forEach(({
     });
 
     test('should reset list loading error', () => {
-      let state = reducer({}, registerList(1, {}));
+      let state = reducer({}, registerList(1, {}, {}));
 
       state = reducer(state, loadList(1));
       state = reducer(state, loadListError(1, {
@@ -486,12 +497,100 @@ reducersForTest.forEach(({
       expect(state[1].error).toEqual(null);
     });
 
+    test('should set applied filters and sort with setStateFromProps', () => {
+      let state = reducer({}, registerList(1, {
+        appliedFilters: {
+          filter: 'value',
+        },
+
+        sort: {
+          param: 'test',
+          asc: true,
+        },
+      }, {}));
+
+      state = reducer(state, setStateFromProps(1, {
+        filter: 'value2',
+      }, {
+        param: 'test2',
+        asc: false,
+      }));
+
+      expect(state[1].filters).toEqual({
+        filter: 'value2',
+      });
+      expect(state[1].appliedFilters).toEqual({
+        filter: 'value2',
+      });
+      expect(state[1].sort).toEqual({
+        param: 'test2',
+        asc: false,
+      });
+    });
+
+    test('should set only applied filters with setStateFromProps', () => {
+      let state = reducer({}, registerList(1, {
+        appliedFilters: {
+          filter: 'value',
+        },
+
+        sort: {
+          param: 'test',
+          asc: true,
+        },
+      }, {}));
+
+      state = reducer(state, setStateFromProps(1, {
+        filter: 'value2',
+      }, null));
+
+      expect(state[1].filters).toEqual({
+        filter: 'value2',
+      });
+      expect(state[1].appliedFilters).toEqual({
+        filter: 'value2',
+      });
+      expect(state[1].sort).toEqual({
+        param: 'test',
+        asc: true,
+      });
+    });
+
+    test('should set only sort with setStateFromProps', () => {
+      let state = reducer({}, registerList(1, {
+        appliedFilters: {
+          filter: 'value',
+        },
+
+        sort: {
+          param: 'test',
+          asc: true,
+        },
+      }, {}));
+
+      state = reducer(state, setStateFromProps(1, null, {
+        param: 'test2',
+        asc: false,
+      }));
+
+      expect(state[1].filters).toEqual({
+        filter: 'value',
+      });
+      expect(state[1].appliedFilters).toEqual({
+        filter: 'value',
+      });
+      expect(state[1].sort).toEqual({
+        param: 'test2',
+        asc: false,
+      });
+    });
+
     test('should set filter value', () => {
       let state = reducer({}, registerList(1, {
         appliedFilters: {
           filter: 'value',
         },
-      }));
+      }, {}));
 
       state = reducer(state, setFilterValue(1, 'testFilter', 'testValue'));
 
@@ -509,7 +608,7 @@ reducersForTest.forEach(({
           page: 2,
           filter: 'value',
         },
-      }));
+      }, {}));
 
       state = reducer(state, setFilterValue(1, 'testFilter', 'testValue'));
       state = reducer(state, applyFilter(1, 'testFilter'));
@@ -532,7 +631,7 @@ reducersForTest.forEach(({
           page: 2,
           filter: 'value',
         },
-      }));
+      }, {}));
 
       state = reducer(state, setAndApplyFilter(1, 'testFilter', 'testValue'));
 
@@ -560,7 +659,7 @@ reducersForTest.forEach(({
           filter: 'value',
           testFilter: 'testValue',
         },
-      }));
+      }, {}));
 
       state = reducer(state, resetFilter(1, 'testFilter'));
 
@@ -580,7 +679,7 @@ reducersForTest.forEach(({
           filter1: 'value1',
           filter2: 'value2',
         },
-      }));
+      }, {}));
 
       state = reducer(state, setFiltersValues(1, {
         filter2: 'value2_changed',
@@ -602,7 +701,7 @@ reducersForTest.forEach(({
           filter1: 'value1',
           filter2: 'value2',
         },
-      }));
+      }, {}));
 
       state = reducer(state, setFiltersValues(1, {
         filter1: 'value1_changed',
@@ -637,7 +736,7 @@ reducersForTest.forEach(({
           filter1: 'value1',
           filter2: 'value2',
         },
-      }));
+      }, {}));
 
       state = reducer(state, setAndApplyFilters(1, {
         filter2: 'value2_changed',
@@ -672,7 +771,7 @@ reducersForTest.forEach(({
           filter2: 'value2',
           filter3: 'value3',
         },
-      }));
+      }, {}));
 
       state = reducer(state, resetFilters(1, ['filter2', 'filter3']));
 
@@ -708,7 +807,7 @@ reducersForTest.forEach(({
           filter3: 'value3',
         },
         saveFiltersOnResetAll: ['teseSaveFilter1', 'teseSaveFilter2'],
-      }));
+      }, {}));
 
       state = reducer(state, resetAllFilters(1));
 
@@ -743,7 +842,7 @@ reducersForTest.forEach(({
           page: 2,
         },
         isDefaultSortAsc: false,
-      }));
+      }, {}));
 
       state = reducer(state, setSorting(1, 'id'));
 
@@ -764,7 +863,7 @@ reducersForTest.forEach(({
           page: 2,
         },
         isDefaultSortAsc: true,
-      }));
+      }, {}));
 
       state = reducer(state, setSorting(1, 'id'));
 
@@ -785,7 +884,7 @@ reducersForTest.forEach(({
           page: 2,
         },
         isDefaultSortAsc: false,
-      }));
+      }, {}));
 
       state = reducer(state, setSorting(1, 'id'));
 
@@ -806,7 +905,7 @@ reducersForTest.forEach(({
           page: 2,
         },
         isDefaultSortAsc: false,
-      }));
+      }, {}));
 
       state = reducer(state, setSorting(1, 'id', true));
 
@@ -831,7 +930,7 @@ reducersForTest.forEach(({
           page: 2,
         },
         isDefaultSortAsc: true,
-      }));
+      }, {}));
 
       state = reducer(state, resetSorting(1));
 
@@ -856,7 +955,7 @@ reducersForTest.forEach(({
           page: 2,
         },
         isDefaultSortAsc: false,
-      }));
+      }, {}));
 
       state = reducer(state, resetSorting(1));
 
@@ -870,7 +969,7 @@ reducersForTest.forEach(({
   });
 
   test('should insert item to list state and not change additional', () => {
-    let state = reducer({}, registerList(1, {}));
+    let state = reducer({}, registerList(1, {}, {}));
     state = reducer(state, loadList(1));
     state = reducer(state, loadListSuccess(1, {
       items: [{
@@ -925,7 +1024,7 @@ reducersForTest.forEach(({
   });
 
   test('should insert item to list state and change additional', () => {
-    let state = reducer({}, registerList(1, {}));
+    let state = reducer({}, registerList(1, {}, {}));
     state = reducer(state, loadList(1));
     state = reducer(state, loadListSuccess(1, {
       items: [{
@@ -982,7 +1081,7 @@ reducersForTest.forEach(({
   });
 
   test('should delete item from list state and not change additional', () => {
-    let state = reducer({}, registerList(1, {}));
+    let state = reducer({}, registerList(1, {}, {}));
     state = reducer(state, loadList(1));
     state = reducer(state, loadListSuccess(1, {
       items: [{
@@ -1028,7 +1127,7 @@ reducersForTest.forEach(({
   });
 
   test('should delete item from list state and change additional', () => {
-    let state = reducer({}, registerList(1, {}));
+    let state = reducer({}, registerList(1, {}, {}));
     state = reducer(state, loadList(1));
     state = reducer(state, loadListSuccess(1, {
       items: [{
@@ -1076,7 +1175,7 @@ reducersForTest.forEach(({
   });
 
   test('should update item and not change additional', () => {
-    let state = reducer({}, registerList(1, {}));
+    let state = reducer({}, registerList(1, {}, {}));
     state = reducer(state, loadList(1));
     state = reducer(state, loadListSuccess(1, {
       items: [{
@@ -1128,7 +1227,7 @@ reducersForTest.forEach(({
   });
 
   test('should update item and change additional', () => {
-    let state = reducer({}, registerList(1, {}));
+    let state = reducer({}, registerList(1, {}, {}));
     state = reducer(state, loadList(1));
     state = reducer(state, loadListSuccess(1, {
       items: [{
@@ -1212,8 +1311,8 @@ test('should apply plugin action', () => {
     },
   });
 
-  let state = reducer({}, registerList(1, {}));
-  state = reducer(state, registerList(2, {}));
+  let state = reducer({}, registerList(1, {}, {}));
+  state = reducer(state, registerList(2, {}, {}));
 
   state = reducer(state, { type: 'TEST' });
 

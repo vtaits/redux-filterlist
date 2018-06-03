@@ -8,6 +8,8 @@ import {
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
 
+  SET_STATE_FROM_PROPS,
+
   SET_FILTER_VALUE,
   APPLY_FILTER,
   SET_AND_APPLY_FILTER,
@@ -96,6 +98,32 @@ function listReducer(listState, { type, payload }) {
 
         shouldClean: false,
       };
+
+    case SET_STATE_FROM_PROPS:
+    {
+      const resState = getListStateBeforeChangeFiltes(listState);
+
+      if (payload.appliedFilters) {
+        resState.filters = {
+          ...resState.filters,
+          ...payload.appliedFilters,
+        };
+
+        resState.appliedFilters = {
+          ...resState.appliedFilters,
+          ...payload.appliedFilters,
+        };
+      }
+
+      if (payload.sort) {
+        resState.sort = {
+          ...resState.sort,
+          ...payload.sort,
+        };
+      }
+
+      return resState;
+    }
 
     case SET_FILTER_VALUE:
       return {
@@ -300,6 +328,7 @@ const listsActions = [
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
+  SET_STATE_FROM_PROPS,
   SET_FILTER_VALUE,
   APPLY_FILTER,
   SET_AND_APPLY_FILTER,

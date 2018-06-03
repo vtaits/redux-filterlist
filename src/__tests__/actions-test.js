@@ -8,6 +8,8 @@ import {
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
 
+  SET_STATE_FROM_PROPS,
+
   SET_FILTER_VALUE,
   APPLY_FILTER,
   SET_AND_APPLY_FILTER,
@@ -36,6 +38,8 @@ import {
   loadListSuccess,
   loadListError,
 
+  setStateFromProps,
+
   setFilterValue,
   applyFilter,
   setAndApplyFilter,
@@ -57,13 +61,13 @@ import {
 } from '../actions';
 
 test('register list action is FSA', () => {
-  expect(isFSA(registerList(1))).toBeTruthy();
+  expect(isFSA(registerList(1, {}, {}))).toBeTruthy();
 });
 
 test('should create register list action', () => {
   expect(registerList(1, {
     appliedFilters: {},
-  }))
+  }, {}))
     .toEqual({
       type: REGISTER_LIST,
       payload: {
@@ -76,7 +80,7 @@ test('should create register list action', () => {
 });
 
 test('should set default params in register list action', () => {
-  expect(registerList(1))
+  expect(registerList(1, {}, {}))
     .toEqual({
       type: REGISTER_LIST,
       payload: {
@@ -102,7 +106,7 @@ test('should provide only accepted params to register list action', () => {
     saveFiltersOnResetAll: ['filter1', 'filter2'],
     saveItemsWhileLoad: true,
     otherParam: 'value',
-  }))
+  }, {}))
     .toEqual({
       type: REGISTER_LIST,
       payload: {
@@ -124,6 +128,109 @@ test('should provide only accepted params to register list action', () => {
         },
       },
     });
+});
+
+test('should redefine appliedFilters if getStateFromProps defined in register list action', () => {
+  const action = registerList(1, {
+    autoload: true,
+    sort: {
+      param: 'test',
+      asc: false,
+    },
+    isDefaultSortAsc: true,
+    alwaysResetFilters: {},
+    additional: {},
+    initialFilters: {},
+    appliedFilters: {
+      filter1: 'value1',
+    },
+    saveFiltersOnResetAll: ['filter1', 'filter2'],
+    saveItemsWhileLoad: true,
+    otherParam: 'value',
+
+    getStateFromProps: ({ otherFilters }) => ({
+      appliedFilters: otherFilters,
+    }),
+  }, {
+    otherFilters: {
+      filter1: 'value2',
+    },
+  });
+
+  expect(action).toEqual({
+    type: REGISTER_LIST,
+    payload: {
+      listId: 1,
+      params: {
+        autoload: true,
+        sort: {
+          param: 'test',
+          asc: false,
+        },
+        isDefaultSortAsc: true,
+        alwaysResetFilters: {},
+        additional: {},
+        initialFilters: {},
+        appliedFilters: {
+          filter1: 'value2',
+        },
+        saveFiltersOnResetAll: ['filter1', 'filter2'],
+        saveItemsWhileLoad: true,
+      },
+    },
+  });
+});
+
+test('should redefine sort if getStateFromProps defined in register list action', () => {
+  const action = registerList(1, {
+    autoload: true,
+    sort: {
+      param: 'test',
+      asc: false,
+    },
+    isDefaultSortAsc: true,
+    alwaysResetFilters: {},
+    additional: {},
+    initialFilters: {},
+    appliedFilters: {
+      filter1: 'value1',
+    },
+    saveFiltersOnResetAll: ['filter1', 'filter2'],
+    saveItemsWhileLoad: true,
+    otherParam: 'value',
+
+    getStateFromProps: ({ otherSort }) => ({
+      sort: otherSort,
+    }),
+  }, {
+    otherSort: {
+      param: 'otherTest',
+      asc: true,
+    },
+  });
+
+  expect(action).toEqual({
+    type: REGISTER_LIST,
+    payload: {
+      listId: 1,
+      params: {
+        autoload: true,
+        sort: {
+          param: 'otherTest',
+          asc: true,
+        },
+        isDefaultSortAsc: true,
+        alwaysResetFilters: {},
+        additional: {},
+        initialFilters: {},
+        appliedFilters: {
+          filter1: 'value1',
+        },
+        saveFiltersOnResetAll: ['filter1', 'filter2'],
+        saveItemsWhileLoad: true,
+      },
+    },
+  });
 });
 
 test('destroy list action is FSA', () => {
@@ -236,6 +343,40 @@ test('should create load list error action', () => {
         },
       },
     });
+});
+
+test('setStateFromProps action is FSA', () => {
+  const action = setStateFromProps(1, {
+    filter: 'value',
+  }, {
+    param: 'test',
+    asc: true,
+  });
+
+  expect(isFSA(action)).toBeTruthy();
+});
+
+test('should create setStateFromProps action', () => {
+  const action = setStateFromProps(1, {
+    filter: 'value',
+  }, {
+    param: 'test',
+    asc: true,
+  });
+
+  expect(action).toEqual({
+    type: SET_STATE_FROM_PROPS,
+    payload: {
+      listId: 1,
+      appliedFilters: {
+        filter: 'value',
+      },
+      sort: {
+        param: 'test',
+        asc: true,
+      },
+    },
+  });
 });
 
 test('set filter value action is FSA', () => {

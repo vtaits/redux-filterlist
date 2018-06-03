@@ -7,6 +7,8 @@ export const LOAD_LIST = `${prefix}LOAD_LIST`;
 export const LOAD_LIST_SUCCESS = `${prefix}LOAD_LIST_SUCCESS`;
 export const LOAD_LIST_ERROR = `${prefix}LOAD_LIST_ERROR`;
 
+export const SET_STATE_FROM_PROPS = `${prefix}SET_STATE_FROM_PROPS`;
+
 export const SET_FILTER_VALUE = `${prefix}SET_FILTER_VALUE`;
 export const APPLY_FILTER = `${prefix}APPLY_FILTER`;
 export const SET_AND_APPLY_FILTER = `${prefix}SET_AND_APPLY_FILTER`;
