@@ -56,73 +56,54 @@ const TestChildComponent = () => (
   <div />
 );
 
-const reduxFilterlist = _reduxFilterlist.bind(null, ReduxFilterlistWrapper);
+const testReduxFilterlist = _reduxFilterlist.bind(null, TestWrapperComponent);
 
-function waitForSpyCall(spy) {
-  return new Promise((resolve) => {
-    const iteration = () => {
-      if (spy.returnValues.length > 0) {
-        resolve();
+class PageObject {
+  constructor(decoratorParams, reducerState, props) {
+    const Container = testReduxFilterlist({
+      listId: 'testId',
+      loadItems: jest.fn(),
+      ...decoratorParams,
+    })(TestChildComponent);
 
-        return;
-      }
+    this.store = mockStore({
+      reduxFilterlist: reducerState,
+    });
 
-      setTimeout(iteration);
-    };
+    this.wrapper = mount(
+      <Provider store={this.store}>
+        <Container {...props} />
+      </Provider>,
+    );
+  }
 
-    setTimeout(iteration);
-  });
+  getStore() {
+    return this.store;
+  }
+
+  getWrapperComponent() {
+    return this.wrapper.find(TestWrapperComponent);
+  }
+
+  getListAction(actionName) {
+    return this.getWrapperComponent().prop('listActions')[actionName];
+  }
 }
 
-function mockAsyncCall(response) {
-  return () => Promise.resolve(response);
+function setup(decoratorParams = {}, reducerState = {}, props = {}) {
+  return new PageObject(decoratorParams, reducerState, props);
 }
 
-test('should render wrapper and child components without error', () => {
-  const Container = reduxFilterlist({
-    listId: 'test_render_without_error',
-    loadItems: mockAsyncCall({
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  })(TestChildComponent);
+test('should render wrapper component without error', () => {
+  const page = setup();
 
-  const wrapper = mount(
-    <Provider store={mockStore({
-      reduxFilterlist: {},
-    })}
-    >
-      <Container />
-    </Provider>,
-  );
-
-  expect(wrapper.find(ReduxFilterlistWrapper).length).toBe(1);
-  expect(wrapper.find(TestChildComponent).length).toBe(1);
+  expect(page.getWrapperComponent().length).toBe(1);
 });
 
 test('should throw an exception if listId is not defined', () => {
   expect(() => {
-    const Container = reduxFilterlist({
-      loadItems: mockAsyncCall({
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      }),
+    const Container = testReduxFilterlist({
+      loadItems: jest.fn(),
     })(TestChildComponent);
 
     mount(
@@ -139,8 +120,8 @@ test('should throw an exception if listId is not defined', () => {
 
 test('should throw an exception if loadItems is not defined', () => {
   expect(() => {
-    const Container = reduxFilterlist({
-      listId: 'test_throw_loadItems_not_defined',
+    const Container = testReduxFilterlist({
+      listId: 'testId',
     })(TestChildComponent);
 
     mount(
@@ -157,8 +138,8 @@ test('should throw an exception if loadItems is not defined', () => {
 
 test('should throw an exception if loadItems is not a function', () => {
   expect(() => {
-    const Container = reduxFilterlist({
-      listId: 'test_loadItems_is_not_a_function',
+    const Container = testReduxFilterlist({
+      listId: 'testId',
       loadItems: 123,
     })(TestChildComponent);
 
@@ -176,12 +157,9 @@ test('should throw an exception if loadItems is not a function', () => {
 
 test('should throw an exception if onBeforeRequest defined and not a function', () => {
   expect(() => {
-    const Container = reduxFilterlist({
-      listId: 'test_onBeforeRequest_is_not_a_function',
-      loadItems: mockAsyncCall({
-        items: [],
-        additional: null,
-      }),
+    const Container = testReduxFilterlist({
+      listId: 'testId',
+      loadItems: jest.fn(),
       onBeforeRequest: 123,
     })(TestChildComponent);
 
@@ -198,52 +176,20 @@ test('should throw an exception if onBeforeRequest defined and not a function', 
 });
 
 test('should provide the correct props', () => {
-  const Container = reduxFilterlist({
-    listId: 'test_correct_props',
-    loadItems: mockAsyncCall({
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  })(TestChildComponent);
+  const page = setup();
 
-  const wrapper = mount(
-    <Provider store={mockStore({
-      reduxFilterlist: {},
-    })}
-    >
-      <Container />
-    </Provider>,
-  );
-
-  const props = wrapper.find(TestChildComponent).props();
+  const props = page.getWrapperComponent().props();
 
   expect(Object.keys(props).sort())
     .toEqual([
-      'applyFilter',
-      'applyFilters',
-      'deleteItem',
-      'insertItem',
+      'WrappedComponent',
+      'componentProps',
+      'listActions',
       'listId',
       'listState',
       'loadItems',
-      'resetAllFilters',
-      'resetFilter',
-      'resetFilters',
-      'resetSorting',
-      'setAndApplyFilter',
-      'setAndApplyFilters',
-      'setFilterValue',
-      'setFiltersValues',
-      'setSorting',
-      'updateItem',
+      'onBeforeRequest',
+      'reduxFilterlistParams',
     ]);
 
   expect(Object.keys(props.listState).sort())
@@ -265,96 +211,75 @@ test('should provide the correct props', () => {
       'sort',
     ]);
 
-  expect(checkPropTypes(filterlistPropTypes({}), props, 'prop', 'TestChildComponent'))
-    .toBeFalsy();
+  expect(Object.keys(props.listActions).sort())
+    .toEqual([
+      'applyFilter',
+      'applyFilters',
+      'deleteItem',
+      'destroyList',
+      'insertItem',
+      'loadList',
+      'loadListError',
+      'loadListSuccess',
+      'registerList',
+      'resetAllFilters',
+      'resetFilter',
+      'resetFilters',
+      'resetSorting',
+      'setAndApplyFilter',
+      'setAndApplyFilters',
+      'setFilterValue',
+      'setFiltersValues',
+      'setSorting',
+      'updateItem',
+    ]);
 });
 
-test('should provide props from wrapper component to child component', () => {
-  const Container = reduxFilterlist({
-    listId: 'test_provide_correct_props',
-    loadItems: mockAsyncCall({
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  })(TestChildComponent);
+test('should provide correct componentProps', () => {
+  const page = setup({}, {}, {
+    testProperty: 'testValue',
 
-  const wrapper = mount(
-    <Provider store={mockStore({
-      reduxFilterlist: {},
-    })}
-    >
-      <Container
-        testProperty="testValue"
-        params={{
-          testParam: 'testValue',
-        }}
-      />
-    </Provider>,
-  );
+    params: {
+      testParam: 'testValue',
+    },
+  });
 
-  const props = wrapper.find(TestChildComponent).props();
-
-  expect(props.testProperty).toEqual('testValue');
+  const props = page.getWrapperComponent().props();
+  
   expect(props.params).toEqual({
     testParam: 'testValue',
+  });
+  expect(props.componentProps).toEqual({
+    testProperty: 'testValue',
+
+    params: {
+      testParam: 'testValue',
+    },
   });
 });
 
 test('should provide the correct list state', () => {
-  const Container = _reduxFilterlist(TestWrapperComponent, {
-    listId: 'test_provide_correct_list_state',
-    loadItems: mockAsyncCall({
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
+  const page = setup({}, {
+    testId: {
+      sort: {
+        param: 'testParam',
+        asc: true,
       },
-    }),
-  })(TestChildComponent);
+      initialFilters: {},
+      filters: {},
+      appliedFilters: {},
+      loading: false,
+      items: [1, 2, 3],
+      additional: null,
+      error: null,
+    },
+  });
 
-  const wrapper = mount(
-    <Provider store={mockStore({
-      reduxFilterlist: {
-        test_provide_correct_list_state: {
-          sort: {
-            param: 'test_provide_correct_list_state',
-            asc: true,
-          },
-          initialFilters: {},
-          filters: {},
-          appliedFilters: {},
-          loading: false,
-          items: [1, 2, 3],
-          additional: null,
-          error: null,
-        },
-      },
-    })}
-    >
-      <Container />
-    </Provider>,
-  );
-
-  const {
-    listState,
-  } = wrapper.find(TestWrapperComponent).props();
+  const listState = page.getWrapperComponent().prop('listState');
 
   expect(listState).toEqual({
     sort: {
-      param: 'test_provide_correct_list_state',
+      param: 'testParam',
       asc: true,
     },
     initialFilters: {},
@@ -384,36 +309,9 @@ test('should provide the correct list state at init', () => {
     },
   };
 
-  const Container = _reduxFilterlist(TestWrapperComponent, {
-    ...params,
-    listId: 'test_provide_correct_list_state_at_init',
-    loadItems: mockAsyncCall({
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  })(TestChildComponent);
+  const page = setup(params);
 
-  const wrapper = mount(
-    <Provider store={mockStore({
-      reduxFilterlist: {
-      },
-    })}
-    >
-      <Container />
-    </Provider>,
-  );
-
-  const {
-    listState,
-  } = wrapper.find(TestWrapperComponent).props();
+  const listState = page.getWrapperComponent().prop('listState');
 
   expect(listState).toEqual(collectListInitialState(params));
 });
@@ -455,58 +353,37 @@ test('should provide redefine decorator params by component props', () => {
     ...componentProps,
   };
 
-  const Container = _reduxFilterlist(TestWrapperComponent, {
-    ...decoratorParams,
-    listId: 'test_redefine_decorator_params',
-    loadItems: mockAsyncCall({
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  })(TestChildComponent);
+  const page = setup(decoratorParams, {}, componentProps);
 
-  const wrapper = mount(
-    <Provider store={mockStore({
-      reduxFilterlist: {
-      },
-    })}
-    >
-      <Container
-        {...componentProps}
-      />
-    </Provider>,
-  );
-
-  const {
-    listState,
-  } = wrapper.find(TestWrapperComponent).props();
+  const listState = page.getWrapperComponent().prop('listState');
 
   expect(listState).toEqual(collectListInitialState(resultParams));
 });
 
-test('should dispatch registerList on init', () => {
-  const Container = reduxFilterlist({
-    listId: 'test_dispatch_registerList_on_init',
-    loadItems: mockAsyncCall({
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
+test('should provide loadItems', () => {
+  const loadItems = jest.fn();
 
+  const page = setup({
+    loadItems,
+  });
+
+  expect(page.getWrapperComponent().prop('loadItems')).toBe(loadItems);
+});
+
+test('should provide onBeforeRequest', () => {
+  const onBeforeRequest = jest.fn();
+
+  const page = setup({
+    onBeforeRequest,
+  });
+
+  expect(page.getWrapperComponent().prop('onBeforeRequest')).toBe(onBeforeRequest);
+});
+
+test('should dispatch registerList', () => {
+  const page = setup();
+
+  page.getListAction('registerList')('testId', {
     initialFilters: {
       filter: '',
     },
@@ -517,20 +394,10 @@ test('should dispatch registerList on init', () => {
       param: 'param',
       asc: false,
     },
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
   });
 
-  mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  expect(store.getActions()[0]).toEqual(
-    registerList('test_dispatch_registerList_on_init', {
+  expect(page.getStore().getActions()[0]).toEqual(
+    registerList('testId', {
       initialFilters: {
         filter: '',
       },
@@ -545,10 +412,44 @@ test('should dispatch registerList on init', () => {
   );
 });
 
-test('should dispatch destroyList on unmount', () => {
-  const Container = reduxFilterlist({
-    listId: 'test_dispatch_destroyList_on_unmount',
-    loadItems: mockAsyncCall({
+test('should dispatch destroyList', () => {
+  const page = setup();
+
+  page.getListAction('destroyList')('testId');
+
+  expect(page.getStore().getActions()[0]).toEqual(
+    destroyList('testId'),
+  );
+});
+
+test('should dispatch loadList', () => {
+  const page = setup();
+
+  page.getListAction('loadList')('testId');
+
+  expect(page.getStore().getActions()[0]).toEqual(
+    loadList('testId'),
+  );
+});
+
+test('should dispatch loadListSuccess', () => {
+  const page = setup();
+
+  page.getListAction('loadListSuccess')('testId', {
+    items: [{
+      id: 1,
+    }, {
+      id: 2,
+    }, {
+      id: 3,
+    }],
+    additional: {
+      count: 3,
+    },
+  });
+
+  expect(page.getStore().getActions()[0]).toEqual(
+    loadListSuccess('testId', {
       items: [{
         id: 1,
       }, {
@@ -560,1416 +461,193 @@ test('should dispatch destroyList on unmount', () => {
         count: 3,
       },
     }),
-
-    appliedFilters: {
-      filter: 'value',
-    },
-    sort: {
-      param: 'param',
-      asc: false,
-    },
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  const wrapper = mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  store.clearActions();
-
-  wrapper.unmount();
-
-  expect(store.getActions()[0]).toEqual(
-    destroyList('test_dispatch_destroyList_on_unmount'),
   );
 });
 
-test('should call loadItems once on render and provide correct values', async () => {
-  const spy = sinon.spy(mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }));
+test('should dispatch loadListError', () => {
+  const page = setup();
 
-  const Container = reduxFilterlist({
-    listId: 'test_call_loadItems_once_on_render',
-    loadItems: spy,
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {
-    },
+  page.getListAction('loadListError')('testId', {
+    error: 'Error',
+    additional: null,
   });
 
-  mount(
-    <Provider store={store}>
-      <Container
-        testProperty="testValue"
-      />
-    </Provider>,
-  );
-
-  const listState = store.getState().reduxFilterlist.test_call_loadItems_once_on_render;
-
-  await waitForSpyCall(spy);
-
-  expect(spy.callCount).toBe(1);
-  expect(spy.args[0][0]).toBe(listState);
-  expect(spy.args[0][1]).toEqual({
-    testProperty: 'testValue',
-  });
-});
-
-test('should load items on init by default', async () => {
-  const spy = sinon.spy(mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }));
-
-  const Container = reduxFilterlist({
-    listId: 'test_loadItems_on_init',
-    loadItems: spy,
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  await waitForSpyCall(spy);
-
-  const actions = store.getActions();
-
-  expect(actions.slice(1, actions.length)).toEqual([
-    loadList('test_loadItems_on_init'),
-    loadListSuccess('test_loadItems_on_init', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
-});
-
-test('should not load items on init when autoload prop is false', () => {
-  const spy = sinon.spy(mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }));
-
-  const Container = reduxFilterlist({
-    listId: 'test',
-    loadItems: spy,
-    autoload: false,
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  expect(spy.notCalled).toBe(true);
-});
-
-test('should call onBeforeRequest on init', async () => {
-  const loadItemsSpy = sinon.spy(() => ({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }));
-
-  const onBeforeRequestSpy = sinon.spy(() => {});
-
-  const Container = reduxFilterlist({
-    listId: 'test',
-    loadItems: loadItemsSpy,
-    onBeforeRequest: onBeforeRequestSpy,
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  mount(
-    <Provider store={store}>
-      <Container
-        testProperty="testValue"
-      />
-    </Provider>,
-  );
-
-  const listState = store.getState().reduxFilterlist.test;
-
-  await waitForSpyCall(loadItemsSpy);
-
-  expect(onBeforeRequestSpy.callCount).toEqual(1);
-  expect(onBeforeRequestSpy.args[0][0]).toBe(listState);
-  expect(onBeforeRequestSpy.args[0][1]).toEqual({
-    testProperty: 'testValue',
-  });
-});
-
-test('should call render of child component only after list state of props change', async () => {
-  const loadItemsSpy = sinon.spy(mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }));
-
-  const TestChildComponentSpy = sinon.spy(TestChildComponent);
-
-  const Container = reduxFilterlist({
-    listId: 'test',
-    loadItems: loadItemsSpy,
-  })(TestChildComponentSpy);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  const PropsProviderComponent = props => (
-    <Provider store={store}>
-      <Container {...props} />
-    </Provider>
-  );
-
-  const wrapper = mount(
-    <PropsProviderComponent
-      testObjProperty={{
-        testProperty: 'testValue1',
-      }}
-    />,
-  );
-
-  expect(TestChildComponentSpy.callCount).toEqual(2);
-
-  wrapper.setProps({
-    testObjProperty: {
-      testProperty: 'testValue1',
-    },
-  });
-
-  expect(TestChildComponentSpy.callCount).toEqual(2);
-
-  wrapper.setProps({
-    testObjProperty: {
-      testProperty: 'testValue2',
-    },
-  });
-
-  expect(TestChildComponentSpy.callCount).toEqual(3);
-
-  await waitForSpyCall(loadItemsSpy);
-
-  expect(TestChildComponentSpy.callCount).toEqual(4);
-});
-
-test('should load items from props', async () => {
-  const spy = sinon.spy(mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }));
-
-  const Container = reduxFilterlist({
-    listId: 'test',
-    loadItems: spy,
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  const wrapper = mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  await waitForSpyCall(spy);
-  await spy.returnValues[0];
-
-  store.clearActions();
-
-  await wrapper.find(TestChildComponent).props().loadItems();
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    loadList('test'),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
-});
-
-test('should set load error on init', async () => {
-  const spy = sinon.spy(() => {
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  });
-
-  const Container = reduxFilterlist({
-    listId: 'test',
-    loadItems: spy,
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  await waitForSpyCall(spy);
-
-  const actions = store.getActions();
-
-  expect(actions.slice(1, actions.length)).toEqual([
-    loadList('test'),
-    loadListError('test', {
+  expect(page.getStore().getActions()[0]).toEqual(
+    loadListError('testId', {
       error: 'Error',
       additional: null,
     }),
-  ]);
-});
-
-/* TO DO: uncomment after fix async calls in jest */
-/* test('should throw error from loadItems on init', async (done) => {
-  let isErrorThrown = false;
-  try {
-    const Container = reduxFilterlist({
-      listId: 'test',
-      loadItems: async () => {
-        throw new Error('Error from loadItems');
-      },
-    })(TestChildComponent);
-
-    class ManualContainer extends Container {
-      componentDidMount() {};
-    }
-
-    const store = mockStore({
-      reduxFilterlist: {},
-    });
-
-    const wrapper = mount(
-      <Provider store={store}>
-        <ManualContainer />
-      </Provider>,
-    );
-
-    const manualContainerNode = wrapper.find(ManualContainer);
-
-    await Container.prototype.componentDidMount.call(manualContainerNode.instance());
-  } catch (e) {
-    isErrorThrown = true;
-  }
-
-  expect(isErrorThrown).toEqual(true);
-}); */
-
-test('should set load error calling loadItems from props', async () => {
-  let callsCount = 0;
-  const spy = sinon.spy(() => {
-    if (callsCount === 0) {
-      ++callsCount;
-
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  });
-
-  const Container = reduxFilterlist({
-    listId: 'test',
-    loadItems: spy,
-  })(TestChildComponent);
-
-  const store = mockStore({
-    reduxFilterlist: {},
-  });
-
-  const wrapper = mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  await waitForSpyCall(spy);
-
-  store.clearActions();
-
-  await wrapper.find(TestChildComponent).props().loadItems();
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    loadList('test'),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
-});
-
-async function initTestComponent(listId, loadItems, params) {
-  const spy = sinon.spy(loadItems);
-
-  const Container = reduxFilterlist({
-    listId,
-    loadItems: spy,
-
-    ...params,
-  })(TestChildComponent);
-
-  const store = mockStore();
-
-  const wrapper = mount(
-    <Provider store={store}>
-      <Container />
-    </Provider>,
-  );
-
-  await waitForSpyCall(spy);
-  await spy.returnValues[0];
-
-  store.clearActions();
-
-  return {
-    store,
-    child: wrapper.find(TestChildComponent),
-  };
-}
-
-test('should dispatch setFilterValue from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
-
-  child.props().setFilterValue('testFilter', 'testValue');
-
-  expect(store.getActions()[0]).toEqual(
-    setFilterValue('test', 'testFilter', 'testValue'),
   );
 });
 
-test('should apply filter from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch setFilterValue', () => {
+  const page = setup();
 
-  child.props().setFilterValue('testFilter', 'testValue');
+  page.getListAction('setFilterValue')('testId', 'testFilter', 'testValue');
 
-  await child.props().applyFilter('testFilter');
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setFilterValue('test', 'testFilter', 'testValue'),
-    applyFilter('test', 'testFilter'),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    setFilterValue('testId', 'testFilter', 'testValue'),
+  );
 });
 
-test('should set load error calling applyFilter from props', async () => {
-  let callsCount = 0;
+test('should dispatch applyFilter', () => {
+  const page = setup();
 
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
+  page.getListAction('applyFilter')('testId', 'testFilter');
 
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  child.props().setFilterValue('testFilter', 'testValue');
-
-  await child.props().applyFilter('testFilter');
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setFilterValue('test', 'testFilter', 'testValue'),
-    applyFilter('test', 'testFilter'),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    applyFilter('testId', 'testFilter'),
+  );
 });
 
-test('should set and apply filter from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch setAndApplyFilter', () => {
+  const page = setup();
 
-  await child.props().setAndApplyFilter('testFilter', 'testValue');
+  page.getListAction('setAndApplyFilter')('testId', 'testFilter', 'testValue');
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setAndApplyFilter('test', 'testFilter', 'testValue'),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    setAndApplyFilter('testId', 'testFilter', 'testValue'),
+  );
 });
 
-test('should set load error calling setAndApplyFilter from props', async () => {
-  let callsCount = 0;
+test('should dispatch resetFilter', () => {
+  const page = setup();
 
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
+  page.getListAction('resetFilter')('testId', 'testFilter');
 
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().setAndApplyFilter('testFilter', 'testValue');
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setAndApplyFilter('test', 'testFilter', 'testValue'),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    resetFilter('testId', 'testFilter'),
+  );
 });
 
-test('should reset filter from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch setFiltersValues', () => {
+  const page = setup();
 
-  await child.props().resetFilter('testFilter');
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetFilter('test', 'testFilter'),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
-});
-
-test('should set load error calling resetFilter from props', async () => {
-  let callsCount = 0;
-
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
-
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().resetFilter('testFilter');
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetFilter('test', 'testFilter'),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
-});
-
-test('should set multiple filters from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
-
-  child.props().setFiltersValues({
+  page.getListAction('setFiltersValues')('testId', {
     filter1: 'value1',
     filter2: 'value2',
   });
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setFiltersValues('test', {
+  expect(page.getStore().getActions()[0]).toEqual(
+    setFiltersValues('testId', {
       filter1: 'value1',
       filter2: 'value2',
     }),
-  ]);
+  );
 });
 
-test('should apply multiple filters from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch applyFilters', () => {
+  const page = setup();
 
-  await child.props().applyFilters(['filter1', 'filter2']);
+  page.getListAction('applyFilters')('testId', ['filter1', 'filter2']);
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    applyFilters('test', ['filter1', 'filter2']),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    applyFilters('testId', ['filter1', 'filter2']),
+  );
 });
 
-test('should set load error calling applyFilters from props', async () => {
-  let callsCount = 0;
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
+test('should dispatch setAndApplyFilters', () => {
+  const page = setup();
 
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().applyFilters(['filter1', 'filter2']);
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    applyFilters('test', ['filter1', 'filter2']),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
-});
-
-test('should set and apply multiple filters from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
-
-  await child.props().setAndApplyFilters({
+  page.getListAction('setAndApplyFilters')('testId', {
     filter1: 'value1',
     filter2: 'value2',
   });
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setAndApplyFilters('test', {
+  expect(page.getStore().getActions()[0]).toEqual(
+    setAndApplyFilters('testId', {
       filter1: 'value1',
       filter2: 'value2',
     }),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
+  );
 });
 
-test('should set load error calling setAndApplyFilters from props', async () => {
-  let callsCount = 0;
+test('should dispatch resetFilters', () => {
+  const page = setup();
 
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
+  page.getListAction('resetFilters')('testId', ['filter1', 'filter2']);
 
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().setAndApplyFilters({
-    filter1: 'value1',
-    filter2: 'value2',
-  });
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setAndApplyFilters('test', {
-      filter1: 'value1',
-      filter2: 'value2',
-    }),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    resetFilters('testId', ['filter1', 'filter2']),
+  );
 });
 
-test('should reset multiple filters from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch resetAllFilters', () => {
+  const page = setup();
 
-  await child.props().resetFilters(['filter1', 'filter2']);
+  page.getListAction('resetAllFilters')('testId');
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetFilters('test', ['filter1', 'filter2']),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    resetAllFilters('testId'),
+  );
 });
 
-test('should set load error calling resetFilters from props', async () => {
-  let callsCount = 0;
+test('should dispatch setSorting', () => {
+  const page = setup();
 
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
+  page.getListAction('setSorting')('testId', 'id', true);
 
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().resetFilters(['filter1', 'filter2']);
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetFilters('test', ['filter1', 'filter2']),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    setSorting('testId', 'id', true),
+  );
 });
 
-test('should reset all filters from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch resetSorting', () => {
+  const page = setup();
 
-  await child.props().resetAllFilters();
+  page.getListAction('resetSorting')('testId');
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetAllFilters('test'),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
+  expect(page.getStore().getActions()[0]).toEqual(
+    resetSorting('testId'),
+  );
 });
 
-test('should set load error calling resetAllFilters from props', async () => {
-  let callsCount = 0;
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', () => {
-    if (callsCount === 0) {
-      ++callsCount;
+test('should dispatch insertItem', () => {
+  const page = setup();
 
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().resetAllFilters();
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetAllFilters('test'),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
-});
-
-test('should call loadItemsSuccess once', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
-
-  await Promise.all([
-    child.props().loadItems().catch(() => {}),
-    child.props().loadItems(),
-  ]);
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    loadList('test'),
-    loadList('test'),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
-});
-
-test('should set sorting from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
-
-  await child.props().setSorting('id', true);
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setSorting('test', 'id', true),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
-});
-
-test('should set load error calling setSorting from props', async () => {
-  let callsCount = 0;
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
-
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().setSorting('id', true);
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    setSorting('test', 'id', true),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
-});
-
-test('should reset sorting from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
-
-  await child.props().resetSorting();
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetSorting('test'),
-    loadListSuccess('test', {
-      items: [{
-        id: 1,
-      }, {
-        id: 2,
-      }, {
-        id: 3,
-      }],
-      additional: {
-        count: 3,
-      },
-    }),
-  ]);
-});
-
-test('should set load error calling resetSorting from props', async () => {
-  let callsCount = 0;
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', async () => {
-    if (callsCount === 0) {
-      ++callsCount;
-
-      return {
-        items: [{
-          id: 1,
-        }, {
-          id: 2,
-        }, {
-          id: 3,
-        }],
-        additional: {
-          count: 3,
-        },
-      };
-    }
-
-    throw new LoadListError({
-      error: 'Error',
-      additional: null,
-    });
-  }, {});
-
-  await child.props().resetSorting();
-
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    resetSorting('test'),
-    loadListError('test', {
-      error: 'Error',
-      additional: null,
-    }),
-  ]);
-});
-
-test('should insert item to list from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
-
-  child.props().insertItem(1, {
+  page.getListAction('insertItem')('testId', 1, {
     id: 4,
   }, {
     additional: 4,
   });
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    insertItem('test', 1, {
+  expect(page.getStore().getActions()[0]).toEqual(
+    insertItem('testId', 1, {
       id: 4,
     }, {
       additional: 4,
     }),
-  ]);
+  );
 });
 
-test('should delete list item from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch deleteItem', () => {
+  const page = setup();
 
-  child.props().deleteItem(1, {
-    additional: 2,
+  page.getListAction('deleteItem')('testId', 1, {
+    additional: 4,
   });
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    deleteItem('test', 1, {
-      additional: 2,
+  expect(page.getStore().getActions()[0]).toEqual(
+    deleteItem('testId', 1, {
+      additional: 4,
     }),
-  ]);
+  );
 });
 
-test('should update list item from props', async () => {
-  const {
-    child,
-    store,
-  } = await initTestComponent('test', mockAsyncCall({
-    items: [{
-      id: 1,
-    }, {
-      id: 2,
-    }, {
-      id: 3,
-    }],
-    additional: {
-      count: 3,
-    },
-  }), {});
+test('should dispatch insertItem', () => {
+  const page = setup();
 
-  child.props().updateItem(1, {
-    id: 10,
+  page.getListAction('updateItem')('testId', 1, {
+    id: 4,
   }, {
-    additional: 2,
+    additional: 4,
   });
 
-  const actions = store.getActions();
-
-  expect(actions).toEqual([
-    updateItem('test', 1, {
-      id: 10,
+  expect(page.getStore().getActions()[0]).toEqual(
+    updateItem('testId', 1, {
+      id: 4,
     }, {
-      additional: 2,
+      additional: 4,
     }),
-  ]);
+  );
 });
