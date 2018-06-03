@@ -62,8 +62,7 @@
     "react-dom": "^16.3.2",
     "react-redux": "^5.0.7",
     "react-test-renderer": "^16.3.2",
-    "redux": "^4.0.0",
-    "sinon": "^5.0.7"
+    "redux": "^4.0.0"
   },
   "dependencies": {
     "array-insert": "^2.0.0",
