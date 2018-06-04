@@ -12,7 +12,7 @@ import {
   resetAllFilters,
   setSorting,
   resetSorting,
-} from '../list-state-mappers';
+} from '../listStateMappers';
 
 const defaultState = {
   ...listInitialState,
