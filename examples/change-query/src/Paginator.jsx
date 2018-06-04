@@ -1,14 +1,14 @@
-import React from 'react'
+import React from 'react';
 
 const buttonStyle = {
   display: 'inline-block',
   marginRight: '10px',
-}
+};
 
 const clickableButtonStyle = Object.assign({}, buttonStyle, {
   color: 'blue',
   cursor: 'pointer',
-})
+});
 
 const Paginator = ({
   count,
@@ -17,33 +17,33 @@ const Paginator = ({
 
   setPage,
 }) => {
-  const pagesLength = Math.ceil(count / perPage)
+  const pagesLength = Math.ceil(count / perPage);
 
   return (
     <div>
       {
         (() => {
-          const res = []
+          const res = [];
 
           for (let i = 0; i < pagesLength; ++i) {
-            const isCurrent = current === i + 1
+            const isCurrent = current === i + 1;
 
             res.push(
               <div
-                onClick={ isCurrent ? () => {} : setPage.bind(null, i + 1) }
-                style={ isCurrent ? buttonStyle : clickableButtonStyle }
-                key={ i }
+                onClick={isCurrent ? () => {} : setPage.bind(null, i + 1)}
+                style={isCurrent ? buttonStyle : clickableButtonStyle}
+                key={i}
               >
                 { i + 1 }
-              </div>
-            )
+              </div>,
+            );
           }
 
-          return res
+          return res;
         })()
       }
     </div>
-  )
-}
+  );
+};
 
-export default Paginator
+export default Paginator;

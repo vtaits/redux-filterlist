@@ -5,7 +5,7 @@ const context = path.join(__dirname, 'src');
 module.exports = {
   mode: 'development',
   context,
-  entry: './index.js',
+  entry: './index.jsx',
   output: {
     path: path.join(__dirname, 'dist'),
     publicPath: '/dist/',
@@ -25,6 +25,6 @@ module.exports = {
       'src',
       'node_modules',
     ],
-    extensions: ['.js'],
+    extensions: ['.js', '.jsx'],
   },
 };

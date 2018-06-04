@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 
 const style = {
   cursor: 'pointer',
   color: 'blue',
-}
+};
 
 const Th = ({
   param,
@@ -16,17 +16,17 @@ const Th = ({
   setSorting,
 }) => (
   <th
-    onClick={ setSorting.bind(null, param) }
-    style={ style }
+    onClick={setSorting.bind(null, param)}
+    style={style}
   >
     { children }
 
     {
       param === current && (
-        asc ?  '↓' : '↑'
+        asc ? '↓' : '↑'
       )
     }
   </th>
-)
+);
 
-export default Th
+export default Th;
