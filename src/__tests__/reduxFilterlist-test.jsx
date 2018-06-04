@@ -1,10 +1,10 @@
 import { mount } from 'enzyme';
 
 import React from 'react';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import { combineReducers } from 'redux';
 
-import _reduxFilterlist from '../reduxFilterlist';
+import { createMappers } from '../reduxFilterlist';
 import collectListInitialState from '../collectListInitialState';
 import {
   registerList,
@@ -51,7 +51,16 @@ const TestChildComponent = () => (
   <div />
 );
 
-const testReduxFilterlist = _reduxFilterlist.bind(null, TestWrapperComponent);
+function testReduxFilterlist(params) {
+  return (WrappedComponent) => {
+    const {
+      mapStateToProps,
+      mapDispatchToProps,
+    } = createMappers(WrappedComponent, params);
+
+    return connect(mapStateToProps, mapDispatchToProps)(TestWrapperComponent);
+  };
+}
 
 class PageObject {
   constructor(decoratorParams, reducerState, props) {
@@ -97,75 +106,57 @@ test('should render wrapper component without error', () => {
 
 test('should throw an exception if listId is not defined', () => {
   expect(() => {
-    const Container = testReduxFilterlist({
+    testReduxFilterlist({
       loadItems: jest.fn(),
     })(TestChildComponent);
-
-    mount(
-      <Provider store={mockStore({
-        reduxFilterlist: {},
-      })}
-      >
-        <Container />
-      </Provider>,
-    );
   })
     .toThrowError('listId is required');
 });
 
 test('should throw an exception if loadItems is not defined', () => {
   expect(() => {
-    const Container = testReduxFilterlist({
+    const {
+      mapStateToProps,
+    } = createMappers(TestChildComponent, {
       listId: 'testId',
-    })(TestChildComponent);
+    });
 
-    mount(
-      <Provider store={mockStore({
-        reduxFilterlist: {},
-      })}
-      >
-        <Container />
-      </Provider>,
-    );
+    mapStateToProps({
+      reduxFilterlist: {},
+    }, {});
   })
     .toThrowError('loadItems is required');
 });
 
 test('should throw an exception if loadItems is not a function', () => {
   expect(() => {
-    const Container = testReduxFilterlist({
+    const {
+      mapStateToProps,
+    } = createMappers(TestChildComponent, {
       listId: 'testId',
       loadItems: 123,
-    })(TestChildComponent);
+    });
 
-    mount(
-      <Provider store={mockStore({
-        reduxFilterlist: {},
-      })}
-      >
-        <Container />
-      </Provider>,
-    );
+    mapStateToProps({
+      reduxFilterlist: {},
+    }, {});
   })
     .toThrowError('loadItems should be a function');
 });
 
 test('should throw an exception if onBeforeRequest defined and not a function', () => {
   expect(() => {
-    const Container = testReduxFilterlist({
+    const {
+      mapStateToProps,
+    } = createMappers(TestChildComponent, {
       listId: 'testId',
       loadItems: jest.fn(),
       onBeforeRequest: 123,
-    })(TestChildComponent);
+    });
 
-    mount(
-      <Provider store={mockStore({
-        reduxFilterlist: {},
-      })}
-      >
-        <Container />
-      </Provider>,
-    );
+    mapStateToProps({
+      reduxFilterlist: {},
+    }, {});
   })
     .toThrowError('onBeforeRequest should be a function');
 });
