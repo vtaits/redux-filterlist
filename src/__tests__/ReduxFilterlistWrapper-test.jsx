@@ -61,9 +61,14 @@ const defaultProps = {
 
 class ManualReduxFilterlistWrapper extends ReduxFilterlistWrapper {
   componentDidMount() {}
+  componentDidUpdate() {}
 
   manualComponentDidMount() {
     return super.componentDidMount();
+  }
+
+  manualComponentDidUpdate(prevProps) {
+    return super.componentDidUpdate(prevProps);
   }
 
   requestItems(requestId) {
@@ -111,6 +116,14 @@ class PageObject {
 
   setProps(props) {
     return this.wrapper.setProps(props);
+  }
+
+  async setPropsAndUpdate(props) {
+    const prevProps = this.wrapper.props();
+
+    this.wrapper.setProps(props);
+
+    await this.wrapper.instance().manualComponentDidUpdate(prevProps);
   }
 }
 
@@ -695,6 +708,188 @@ test('should load items from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+});
+
+test('should call setStateFromProps on component update', async () => {
+  const setStateFromProps = jest.fn();
+  const requestItems = jest.fn();
+
+  const page = setup({
+    listId: 'testId',
+
+    listState: {
+      ...listInitialState,
+      requestId: 3,
+    },
+
+    listActions: {
+      ...listActions,
+      setStateFromProps,
+    },
+
+    componentProps: {
+      testProperty: 'testValue1',
+      sort: {
+        param: 'param1',
+        asc: true,
+      },
+    },
+
+    reduxFilterlistParams: {
+      ...defaultProps.reduxFilterlistParams,
+
+      getStateFromProps: ({
+        testProperty,
+        sort,
+      }) => ({
+        appliedFilters: {
+          testProperty,
+        },
+        sort,
+      }),
+
+      shouldRecountFilters: () => true,
+    },
+
+    requestItemsMock: requestItems,
+  });
+
+  await page.setPropsAndUpdate({
+    componentProps: {
+      testProperty: 'testValue2',
+      sort: {
+        param: 'param2',
+        asc: false,
+      },
+    },
+  });
+
+  expect(setStateFromProps.mock.calls.length).toBe(1);
+  expect(setStateFromProps.mock.calls[0][0]).toBe('testId');
+  expect(setStateFromProps.mock.calls[0][1]).toEqual({
+    testProperty: 'testValue2',
+  });
+  expect(setStateFromProps.mock.calls[0][2]).toEqual({
+    param: 'param2',
+    asc: false,
+  });
+
+  expect(requestItems.mock.calls.length).toBe(1);
+  expect(requestItems.mock.calls[0][0]).toBe(3);
+});
+
+test('should not call setStateFromProps on component update if shouldRecountFilters is not defined', async () => {
+  const setStateFromProps = jest.fn();
+  const requestItems = jest.fn();
+
+  const page = setup({
+    listId: 'testId',
+
+    listState: {
+      ...listInitialState,
+      requestId: 3,
+    },
+
+    listActions: {
+      ...listActions,
+      setStateFromProps,
+    },
+
+    componentProps: {
+      testProperty: 'testValue1',
+      sort: {
+        param: 'param1',
+        asc: true,
+      },
+    },
+
+    reduxFilterlistParams: {
+      ...defaultProps.reduxFilterlistParams,
+
+      getStateFromProps: ({
+        testProperty,
+        sort,
+      }) => ({
+        appliedFilters: {
+          testProperty,
+        },
+        sort,
+      }),
+    },
+
+    requestItemsMock: requestItems,
+  });
+
+  await page.setPropsAndUpdate({
+    componentProps: {
+      testProperty: 'testValue2',
+      sort: {
+        param: 'param2',
+        asc: false,
+      },
+    },
+  });
+
+  expect(setStateFromProps.mock.calls.length).toBe(0);
+  expect(requestItems.mock.calls.length).toBe(0);
+});
+
+test('should not call setStateFromProps on component update if shouldRecountFilters returns false', async () => {
+  const setStateFromProps = jest.fn();
+  const requestItems = jest.fn();
+
+  const page = setup({
+    listId: 'testId',
+
+    listState: {
+      ...listInitialState,
+      requestId: 3,
+    },
+
+    listActions: {
+      ...listActions,
+      setStateFromProps,
+    },
+
+    componentProps: {
+      testProperty: 'testValue1',
+      sort: {
+        param: 'param1',
+        asc: true,
+      },
+    },
+
+    reduxFilterlistParams: {
+      ...defaultProps.reduxFilterlistParams,
+
+      getStateFromProps: ({
+        testProperty,
+        sort,
+      }) => ({
+        appliedFilters: {
+          testProperty,
+        },
+        sort,
+      }),
+    },
+
+    setStateFromProps: () => false,
+
+    requestItemsMock: requestItems,
+  });
+
+  await page.setPropsAndUpdate({
+    componentProps: {
+      testProperty: 'testValue2',
+      sort: {
+        param: 'param2',
+        asc: false,
+      },
+    },
+  });
+
+  expect(setStateFromProps.mock.calls.length).toBe(0);
+  expect(requestItems.mock.calls.length).toBe(0);
 });
 
 test('should call setFilterValue from props', async () => {

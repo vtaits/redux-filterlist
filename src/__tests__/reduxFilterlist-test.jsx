@@ -245,6 +245,50 @@ test('should provide correct componentProps', () => {
   });
 });
 
+test('should provide getStateFromProps and shouldRecountFilters from decorator', () => {
+  const getStateFromProps = jest.fn();
+  const shouldRecountFilters = jest.fn();
+
+  const page = setup({
+    getStateFromProps,
+    shouldRecountFilters,
+  }, {}, {
+    params: {
+      testParam: 'testValue',
+    },
+  });
+
+  const props = page.getWrapperComponent().props();
+
+  expect(props.reduxFilterlistParams.getStateFromProps).toBe(getStateFromProps);
+  expect(props.reduxFilterlistParams.shouldRecountFilters).toBe(shouldRecountFilters);
+});
+
+test('should provide getStateFromProps and shouldRecountFilters from component props', () => {
+  const getStateFromPropsWrong = jest.fn();
+  const shouldRecountFiltersWrong = jest.fn();
+
+  const getStateFromProps = jest.fn();
+  const shouldRecountFilters = jest.fn();
+
+  const page = setup({
+    getStateFromProps: getStateFromPropsWrong,
+    shouldRecountFilters: shouldRecountFiltersWrong,
+  }, {}, {
+    params: {
+      testParam: 'testValue',
+    },
+
+    getStateFromProps,
+    shouldRecountFilters,
+  });
+
+  const props = page.getWrapperComponent().props();
+
+  expect(props.reduxFilterlistParams.getStateFromProps).toBe(getStateFromProps);
+  expect(props.reduxFilterlistParams.shouldRecountFilters).toBe(shouldRecountFilters);
+});
+
 test('should provide the correct list state', () => {
   const page = setup({}, {
     testId: {
