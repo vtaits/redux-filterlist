@@ -71,14 +71,14 @@ class ManualReduxFilterlistWrapper extends ReduxFilterlistWrapper {
     return super.componentDidUpdate(prevProps);
   }
 
-  requestItems(requestId) {
+  requestItems(requestId, actionType) {
     if (this.props.requestItemsMock) {
-      this.props.requestItemsMock(requestId);
+      this.props.requestItemsMock(requestId, actionType);
     }
   }
 
-  manualRequestItems(requestId) {
-    return super.requestItems(requestId);
+  manualRequestItems(requestId, actionType) {
+    return super.requestItems(requestId, actionType);
   }
 }
 
@@ -110,8 +110,8 @@ class PageObject {
     return this.wrapper.instance().manualComponentDidMount();
   }
 
-  requestItems(requestId) {
-    return this.wrapper.instance().manualRequestItems(requestId);
+  requestItems(requestId, actionType) {
+    return this.wrapper.instance().manualRequestItems(requestId, actionType);
   }
 
   setProps(props) {
@@ -542,13 +542,14 @@ test('should call onBeforeRequest before loadItems', async () => {
     },
   });
 
-  await page.requestItems(3);
+  await page.requestItems(3, 'testType');
 
   expect(onBeforeRequest.mock.calls.length).toBe(1);
   expect(onBeforeRequest.mock.calls[0][0]).toBe(listState);
   expect(onBeforeRequest.mock.calls[0][1]).toEqual({
     testProperty: 'testValue',
   });
+  expect(onBeforeRequest.mock.calls[0][2]).toBe('testType');
 
   expect(loadItems.mock.calls.length).toBe(1);
   expect(loadItems.mock.calls[0][0]).toBe(listState);
@@ -590,6 +591,7 @@ test('should call loadList and requestItems on render', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('loadItemsOnInit');
 });
 
 test('should not call loadList and requestItems on render when autoload is false', async () => {
@@ -708,6 +710,7 @@ test('should load items from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('loadItems');
 });
 
 test('should call setStateFromProps on component update', async () => {
@@ -776,6 +779,7 @@ test('should call setStateFromProps on component update', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('setStateFromProps');
 });
 
 test('should not call setStateFromProps on component update if shouldRecountState is not defined', async () => {
@@ -958,6 +962,7 @@ test('should apply filter from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('applyFilter');
 });
 
 test('should set and apply filter from props', async () => {
@@ -993,6 +998,7 @@ test('should set and apply filter from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('setAndApplyFilter');
 });
 
 test('should reset filter from props', async () => {
@@ -1027,6 +1033,7 @@ test('should reset filter from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('resetFilter');
 });
 
 test('should set multiple filters from props', async () => {
@@ -1100,6 +1107,7 @@ test('should apply multiple filters from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('applyFilters');
 });
 
 test('should set and apply multiple filters from props', async () => {
@@ -1140,6 +1148,7 @@ test('should set and apply multiple filters from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('setAndApplyFilters');
 });
 
 test('should reset multiple filters from props', async () => {
@@ -1174,6 +1183,7 @@ test('should reset multiple filters from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('resetFilters');
 });
 
 test('should reset all filters from props', async () => {
@@ -1207,6 +1217,7 @@ test('should reset all filters from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('resetAllFilters');
 });
 
 test('should set sorting from props', async () => {
@@ -1242,6 +1253,7 @@ test('should set sorting from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('setSorting');
 });
 
 test('should reset sorting from props', async () => {
@@ -1275,6 +1287,7 @@ test('should reset sorting from props', async () => {
 
   expect(requestItems.mock.calls.length).toBe(1);
   expect(requestItems.mock.calls[0][0]).toBe(3);
+  expect(requestItems.mock.calls[0][1]).toBe('resetSorting');
 });
 
 test('should insert item to list from props', async () => {

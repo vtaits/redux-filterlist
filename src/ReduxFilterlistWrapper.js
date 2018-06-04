@@ -68,7 +68,7 @@ class ReduxFilterlistWrapper extends Component {
 
   async componentDidMount() {
     if (this.props.listState.autoload) {
-      await this.loadItems();
+      await this.loadItemsOnInit();
     }
   }
 
@@ -116,7 +116,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.setStateFromProps(listId, appliedFilters, sort);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'setStateFromProps');
   }
 
   setAndApplyFilter = async (filterName, value) => {
@@ -130,7 +130,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.setAndApplyFilter(listId, filterName, value);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'setAndApplyFilter');
   }
 
   setFilterValue = (filterName, value) => {
@@ -162,7 +162,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.setAndApplyFilters(listId, values);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'setAndApplyFilters');
   }
 
   setSorting = async (param, asc) => {
@@ -176,7 +176,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.setSorting(listId, param, asc);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'setSorting');
   }
 
   resetSorting = async () => {
@@ -190,7 +190,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetSorting(listId);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'resetSorting');
   }
 
   insertItem = (itemIndex, item, additional) => {
@@ -231,7 +231,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetAllFilters(listId);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'resetAllFilters');
   }
 
   resetFilters = async (filtersNames) => {
@@ -245,7 +245,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetFilters(listId, filtersNames);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'resetFilters');
   }
 
   applyFilters = async (filtersNames) => {
@@ -259,7 +259,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.applyFilters(listId, filtersNames);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'applyFilters');
   }
 
   resetFilter = async (filterName) => {
@@ -273,7 +273,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.resetFilter(listId, filterName);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'resetFilter');
   }
 
   applyFilter = async (filterName) => {
@@ -287,7 +287,7 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.applyFilter(listId, filterName);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'applyFilter');
   }
 
   loadItems = async () => {
@@ -301,7 +301,21 @@ class ReduxFilterlistWrapper extends Component {
 
     listActions.loadList(listId);
 
-    await this.requestItems(requestId);
+    await this.requestItems(requestId, 'loadItems');
+  }
+
+  loadItemsOnInit = async () => {
+    const {
+      listId,
+      listActions,
+      listState: {
+        requestId,
+      },
+    } = this.props;
+
+    listActions.loadList(listId);
+
+    await this.requestItems(requestId, 'loadItemsOnInit');
   }
 
   waitForRequestIdUpdate(incrementedRequestId) {
@@ -326,7 +340,7 @@ class ReduxFilterlistWrapper extends Component {
     });
   }
 
-  async requestItems(requestId) {
+  async requestItems(requestId, actionType) {
     const incrementedRequestId = requestId + 1;
 
     try {
@@ -353,7 +367,7 @@ class ReduxFilterlistWrapper extends Component {
     }
 
     if (onBeforeRequest) {
-      onBeforeRequest(listState, componentProps);
+      onBeforeRequest(listState, componentProps, actionType);
     }
 
     let response;
