@@ -748,7 +748,7 @@ test('should call setStateFromProps on component update', async () => {
         sort,
       }),
 
-      shouldRecountFilters: () => true,
+      shouldRecountState: () => true,
     },
 
     requestItemsMock: requestItems,
@@ -778,7 +778,7 @@ test('should call setStateFromProps on component update', async () => {
   expect(requestItems.mock.calls[0][0]).toBe(3);
 });
 
-test('should not call setStateFromProps on component update if shouldRecountFilters is not defined', async () => {
+test('should not call setStateFromProps on component update if shouldRecountState is not defined', async () => {
   const setStateFromProps = jest.fn();
   const requestItems = jest.fn();
 
@@ -834,7 +834,7 @@ test('should not call setStateFromProps on component update if shouldRecountFilt
   expect(requestItems.mock.calls.length).toBe(0);
 });
 
-test('should not call setStateFromProps on component update if shouldRecountFilters returns false', async () => {
+test('should not call setStateFromProps on component update if shouldRecountState returns false', async () => {
   const setStateFromProps = jest.fn();
   const requestItems = jest.fn();
 

@@ -245,13 +245,13 @@ test('should provide correct componentProps', () => {
   });
 });
 
-test('should provide getStateFromProps and shouldRecountFilters from decorator', () => {
+test('should provide getStateFromProps and shouldRecountState from decorator', () => {
   const getStateFromProps = jest.fn();
-  const shouldRecountFilters = jest.fn();
+  const shouldRecountState = jest.fn();
 
   const page = setup({
     getStateFromProps,
-    shouldRecountFilters,
+    shouldRecountState,
   }, {}, {
     params: {
       testParam: 'testValue',
@@ -261,32 +261,32 @@ test('should provide getStateFromProps and shouldRecountFilters from decorator',
   const props = page.getWrapperComponent().props();
 
   expect(props.reduxFilterlistParams.getStateFromProps).toBe(getStateFromProps);
-  expect(props.reduxFilterlistParams.shouldRecountFilters).toBe(shouldRecountFilters);
+  expect(props.reduxFilterlistParams.shouldRecountState).toBe(shouldRecountState);
 });
 
-test('should provide getStateFromProps and shouldRecountFilters from component props', () => {
+test('should provide getStateFromProps and shouldRecountState from component props', () => {
   const getStateFromPropsWrong = jest.fn();
-  const shouldRecountFiltersWrong = jest.fn();
+  const shouldRecountStateWrong = jest.fn();
 
   const getStateFromProps = jest.fn();
-  const shouldRecountFilters = jest.fn();
+  const shouldRecountState = jest.fn();
 
   const page = setup({
     getStateFromProps: getStateFromPropsWrong,
-    shouldRecountFilters: shouldRecountFiltersWrong,
+    shouldRecountState: shouldRecountStateWrong,
   }, {}, {
     params: {
       testParam: 'testValue',
     },
 
     getStateFromProps,
-    shouldRecountFilters,
+    shouldRecountState,
   });
 
   const props = page.getWrapperComponent().props();
 
   expect(props.reduxFilterlistParams.getStateFromProps).toBe(getStateFromProps);
-  expect(props.reduxFilterlistParams.shouldRecountFilters).toBe(shouldRecountFilters);
+  expect(props.reduxFilterlistParams.shouldRecountState).toBe(shouldRecountState);
 });
 
 test('should provide the correct list state', () => {

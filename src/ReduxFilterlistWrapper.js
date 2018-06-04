@@ -79,14 +79,14 @@ class ReduxFilterlistWrapper extends Component {
 
   async componentDidUpdate(prevProps) {
     const {
-      shouldRecountFilters,
+      shouldRecountState,
       getStateFromProps,
     } = this.props.reduxFilterlistParams;
 
     if (
       getStateFromProps &&
-      shouldRecountFilters &&
-      shouldRecountFilters(this.props.componentProps, prevProps.componentProps)
+      shouldRecountState &&
+      shouldRecountState(this.props.componentProps, prevProps.componentProps)
     ) {
       const {
         appliedFilters,
