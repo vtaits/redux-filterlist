@@ -81,3 +81,17 @@ export const reduxFilterlistParamsShape = PropTypes.shape({
   shouldRecountState: PropTypes.func,
   getStateFromProps: PropTypes.func,
 });
+
+export const listStateMappersShape = PropTypes.shape({
+  setFilterValue: PropTypes.func.isRequired,
+  applyFilter: PropTypes.func.isRequired,
+  setAndApplyFilter: PropTypes.func.isRequired,
+  resetFilter: PropTypes.func.isRequired,
+  setFiltersValues: PropTypes.func.isRequired,
+  applyFilters: PropTypes.func.isRequired,
+  setAndApplyFilters: PropTypes.func.isRequired,
+  resetFilters: PropTypes.func.isRequired,
+  resetAllFilters: PropTypes.func.isRequired,
+  setSorting: PropTypes.func.isRequired,
+  resetSorting: PropTypes.func.isRequired,
+});

@@ -3,8 +3,14 @@ import PropTypes from 'prop-types';
 
 import isEqual from 'lodash.isequal';
 
-import { listIdPropTypes, listStatePropTypes, reduxFilterlistParamsShape } from './propTypes';
+import {
+  listIdPropTypes,
+  listStatePropTypes,
+  listStateMappersShape,
+  reduxFilterlistParamsShape,
+} from './propTypes';
 import { LoadListError, RequestCanceledError } from './errors';
+import * as allListStateMappers from './listStateMappers';
 
 class ReduxFilterlistWrapper extends Component {
   static propTypes = {
@@ -50,10 +56,14 @@ class ReduxFilterlistWrapper extends Component {
 
     // eslint-disable-next-line react/forbid-prop-types
     componentProps: PropTypes.object.isRequired,
+
+    listStateMappers: listStateMappersShape.isRequired,
   }
 
   static defaultProps = {
     onBeforeRequest: null,
+
+    listStateMappers: allListStateMappers,
   }
 
   componentWillMount() {
@@ -109,88 +119,116 @@ class ReduxFilterlistWrapper extends Component {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
+      listState,
+
+      reduxFilterlistParams: {
+        getStateFromProps,
       },
+
+      componentProps,
     } = this.props;
+
+    const mappedState = getStateFromProps(componentProps);
 
     listActions.setStateFromProps(listId, appliedFilters, sort);
 
-    await this.requestItems(requestId, 'setStateFromProps');
+    await this.requestItems(listState.requestId, 'setStateFromProps', mappedState);
   }
 
   setAndApplyFilter = async (filterName, value) => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+      listState,
+
+      listStateMappers,
     } = this.props;
 
+    const mappedState = listStateMappers.setAndApplyFilter(listState, filterName, value);
+    
     listActions.setAndApplyFilter(listId, filterName, value);
 
-    await this.requestItems(requestId, 'setAndApplyFilter');
+    await this.requestItems(listState.requestId, 'setAndApplyFilter', mappedState);
   }
 
-  setFilterValue = (filterName, value) => {
+  setFilterValue = async (filterName, value) => {
     const {
       listId,
       listActions,
+
+      listState,
+      listStateMappers,
     } = this.props;
 
+    const mappedState = listStateMappers.setFilterValue(listState, filterName, value);
+    
     listActions.setFilterValue(listId, filterName, value);
+
+    // await this.requestItems(listState.requestId, 'setFilterValue', mappedState);
   }
 
-  setFiltersValues = (values) => {
+  setFiltersValues = async (values) => {
     const {
       listId,
       listActions,
+
+      listState,
+      listStateMappers,
     } = this.props;
 
+    const mappedState = listStateMappers.setFiltersValues(listState, values);
+    
     listActions.setFiltersValues(listId, values);
+
+    // await this.requestItems(listState.requestId, 'setFiltersValues', mappedState);
   }
 
   setAndApplyFilters = async (values) => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
 
+    const mappedState = listStateMappers.setAndApplyFilters(listState, values);
+    
     listActions.setAndApplyFilters(listId, values);
 
-    await this.requestItems(requestId, 'setAndApplyFilters');
+    await this.requestItems(listState.requestId, 'setAndApplyFilters', mappedState);
   }
 
   setSorting = async (param, asc) => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
 
+    const mappedState = listStateMappers.setSorting(listState, param, asc);
+    
     listActions.setSorting(listId, param, asc);
 
-    await this.requestItems(requestId, 'setSorting');
+    await this.requestItems(listState.requestId, 'setSorting', mappedState);
   }
 
   resetSorting = async () => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
+
+    const mappedState = listStateMappers.resetSorting(listState);
 
     listActions.resetSorting(listId);
 
-    await this.requestItems(requestId, 'resetSorting');
+    await this.requestItems(listState.requestId, 'resetSorting', mappedState);
   }
 
   insertItem = (itemIndex, item, additional) => {
@@ -224,70 +262,80 @@ class ReduxFilterlistWrapper extends Component {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
+
+    const mappedState = listStateMappers.resetAllFilters(listState);
 
     listActions.resetAllFilters(listId);
 
-    await this.requestItems(requestId, 'resetAllFilters');
+    await this.requestItems(listState.requestId, 'resetAllFilters', mappedState);
   }
 
   resetFilters = async (filtersNames) => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
+
+    const mappedState = listStateMappers.resetFilters(listState, filtersNames);
 
     listActions.resetFilters(listId, filtersNames);
 
-    await this.requestItems(requestId, 'resetFilters');
+    await this.requestItems(listState.requestId, 'resetFilters', mappedState);
   }
 
   applyFilters = async (filtersNames) => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
 
+    const mappedState = listStateMappers.applyFilters(listState, filtersNames);
+    
     listActions.applyFilters(listId, filtersNames);
 
-    await this.requestItems(requestId, 'applyFilters');
+    await this.requestItems(listState.requestId, 'applyFilters', mappedState);
   }
 
   resetFilter = async (filterName) => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
+
+    const mappedState = listStateMappers.resetFilter(listState, filterName);
 
     listActions.resetFilter(listId, filterName);
 
-    await this.requestItems(requestId, 'resetFilter');
+    await this.requestItems(listState.requestId, 'resetFilter', mappedState);
   }
 
   applyFilter = async (filterName) => {
     const {
       listId,
       listActions,
-      listState: {
-        requestId,
-      },
+
+      listState,
+      listStateMappers,
     } = this.props;
 
+    const mappedState = listStateMappers.applyFilter(listState, filterName);
+    
     listActions.applyFilter(listId, filterName);
 
-    await this.requestItems(requestId, 'applyFilter');
+    await this.requestItems(listState.requestId, 'applyFilter', mappedState);
   }
 
   loadItems = async () => {

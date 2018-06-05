@@ -43,6 +43,20 @@ const listActions = {
   updateItem: () => {},
 };
 
+const listStateMappers = {
+  setFilterValue: () => {},
+  applyFilter: () => {},
+  setAndApplyFilter: () => {},
+  resetFilter: () => {},
+  setFiltersValues: () => {},
+  applyFilters: () => {},
+  setAndApplyFilters: () => {},
+  resetFilters: () => {},
+  resetAllFilters: () => {},
+  setSorting: () => {},
+  resetSorting: () => {},
+};
+
 const defaultProps = {
   listId: 'test',
 
@@ -57,6 +71,8 @@ const defaultProps = {
   reduxFilterlistParams: {},
 
   componentProps: {},
+
+  listStateMappers,
 };
 
 class ManualReduxFilterlistWrapper extends ReduxFilterlistWrapper {
