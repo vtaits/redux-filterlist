@@ -143,7 +143,7 @@ export function resetFilters(listState, filtersNames) {
   };
 }
 
-export function resetAllFilters(listState, filtersNames) {
+export function resetAllFilters(listState) {
   return {
     filters: {
       ...listState.alwaysResetFilters,
@@ -196,7 +196,7 @@ export function setSorting(listState, param, asc) {
   };
 }
 
-export function resetSorting(listState, param, asc) {
+export function resetSorting(listState) {
   return {
     filters: {
       ...listState.filters,
