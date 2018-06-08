@@ -12,6 +12,9 @@ import {
 import { LoadListError, RequestCanceledError } from './errors';
 import * as allListStateMappers from './listStateMappers';
 
+import recountListState from './recountListState';
+import shouldSetLoadingState from './shouldSetLoadingState';
+
 class ReduxFilterlistWrapper extends Component {
   static propTypes = {
     listId: listIdPropTypes.isRequired,
@@ -25,26 +28,10 @@ class ReduxFilterlistWrapper extends Component {
       registerList: PropTypes.func.isRequired,
       destroyList: PropTypes.func.isRequired,
 
-      setStateFromProps: PropTypes.func.isRequired,
+      changeListState: PropTypes.func.isRequired,
 
-      loadList: PropTypes.func.isRequired,
       loadListSuccess: PropTypes.func.isRequired,
       loadListError: PropTypes.func.isRequired,
-
-      setFilterValue: PropTypes.func.isRequired,
-      applyFilter: PropTypes.func.isRequired,
-      setAndApplyFilter: PropTypes.func.isRequired,
-      resetFilter: PropTypes.func.isRequired,
-
-      setFiltersValues: PropTypes.func.isRequired,
-      applyFilters: PropTypes.func.isRequired,
-      setAndApplyFilters: PropTypes.func.isRequired,
-      resetFilters: PropTypes.func.isRequired,
-
-      resetAllFilters: PropTypes.func.isRequired,
-
-      setSorting: PropTypes.func.isRequired,
-      resetSorting: PropTypes.func.isRequired,
 
       insertItem: PropTypes.func.isRequired,
       deleteItem: PropTypes.func.isRequired,
@@ -57,7 +44,7 @@ class ReduxFilterlistWrapper extends Component {
     // eslint-disable-next-line react/forbid-prop-types
     componentProps: PropTypes.object.isRequired,
 
-    listStateMappers: listStateMappersShape.isRequired,
+    listStateMappers: listStateMappersShape,
   }
 
   static defaultProps = {
@@ -115,12 +102,8 @@ class ReduxFilterlistWrapper extends Component {
     this.props.listActions.destroyList(listId);
   }
 
-  setStateFromProps = async (appliedFilters, sort) => {
+  setStateFromProps = async () => {
     const {
-      listId,
-      listActions,
-      listState,
-
       reduxFilterlistParams: {
         getStateFromProps,
       },
@@ -130,105 +113,74 @@ class ReduxFilterlistWrapper extends Component {
 
     const mappedState = getStateFromProps(componentProps);
 
-    listActions.setStateFromProps(listId, appliedFilters, sort);
-
-    await this.requestItems(listState.requestId, 'setStateFromProps', mappedState);
+    await this.requestItems('setStateFromProps', mappedState);
   }
 
   setAndApplyFilter = async (filterName, value) => {
     const {
-      listId,
-      listActions,
       listState,
 
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.setAndApplyFilter(listState, filterName, value);
-    
-    listActions.setAndApplyFilter(listId, filterName, value);
 
-    await this.requestItems(listState.requestId, 'setAndApplyFilter', mappedState);
+    await this.requestItems('setAndApplyFilter', mappedState);
   }
 
   setFilterValue = async (filterName, value) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.setFilterValue(listState, filterName, value);
-    
-    listActions.setFilterValue(listId, filterName, value);
 
-    // await this.requestItems(listState.requestId, 'setFilterValue', mappedState);
+    await this.requestItems('setFilterValue', mappedState);
   }
 
   setFiltersValues = async (values) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.setFiltersValues(listState, values);
-    
-    listActions.setFiltersValues(listId, values);
 
-    // await this.requestItems(listState.requestId, 'setFiltersValues', mappedState);
+    await this.requestItems('setFiltersValues', mappedState);
   }
 
   setAndApplyFilters = async (values) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.setAndApplyFilters(listState, values);
-    
-    listActions.setAndApplyFilters(listId, values);
 
-    await this.requestItems(listState.requestId, 'setAndApplyFilters', mappedState);
+    await this.requestItems('setAndApplyFilters', mappedState);
   }
 
   setSorting = async (param, asc) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.setSorting(listState, param, asc);
-    
-    listActions.setSorting(listId, param, asc);
 
-    await this.requestItems(listState.requestId, 'setSorting', mappedState);
+    await this.requestItems('setSorting', mappedState);
   }
 
   resetSorting = async () => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.resetSorting(listState);
 
-    listActions.resetSorting(listId);
-
-    await this.requestItems(listState.requestId, 'resetSorting', mappedState);
+    await this.requestItems('resetSorting', mappedState);
   }
 
   insertItem = (itemIndex, item, additional) => {
@@ -260,147 +212,68 @@ class ReduxFilterlistWrapper extends Component {
 
   resetAllFilters = async () => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.resetAllFilters(listState);
 
-    listActions.resetAllFilters(listId);
-
-    await this.requestItems(listState.requestId, 'resetAllFilters', mappedState);
+    await this.requestItems('resetAllFilters', mappedState);
   }
 
   resetFilters = async (filtersNames) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.resetFilters(listState, filtersNames);
 
-    listActions.resetFilters(listId, filtersNames);
-
-    await this.requestItems(listState.requestId, 'resetFilters', mappedState);
+    await this.requestItems('resetFilters', mappedState);
   }
 
   applyFilters = async (filtersNames) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.applyFilters(listState, filtersNames);
-    
-    listActions.applyFilters(listId, filtersNames);
 
-    await this.requestItems(listState.requestId, 'applyFilters', mappedState);
+    await this.requestItems('applyFilters', mappedState);
   }
 
   resetFilter = async (filterName) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.resetFilter(listState, filterName);
 
-    listActions.resetFilter(listId, filterName);
-
-    await this.requestItems(listState.requestId, 'resetFilter', mappedState);
+    await this.requestItems('resetFilter', mappedState);
   }
 
   applyFilter = async (filterName) => {
     const {
-      listId,
-      listActions,
-
       listState,
       listStateMappers,
     } = this.props;
 
     const mappedState = listStateMappers.applyFilter(listState, filterName);
-    
-    listActions.applyFilter(listId, filterName);
 
-    await this.requestItems(listState.requestId, 'applyFilter', mappedState);
+    await this.requestItems('applyFilter', mappedState);
   }
 
   loadItems = async () => {
-    const {
-      listId,
-      listActions,
-      listState: {
-        requestId,
-      },
-    } = this.props;
-
-    listActions.loadList(listId);
-
-    await this.requestItems(requestId, 'loadItems');
+    await this.requestItems('loadItems', null);
   }
 
   loadItemsOnInit = async () => {
-    const {
-      listId,
-      listActions,
-      listState: {
-        requestId,
-      },
-    } = this.props;
-
-    listActions.loadList(listId);
-
-    await this.requestItems(requestId, 'loadItemsOnInit');
+    await this.requestItems('loadItemsOnInit', null);
   }
 
-  waitForRequestIdUpdate(incrementedRequestId) {
-    return new Promise((resolve, reject) => {
-      const iteration = () => {
-        const currentRequestId = this.props.listState.requestId;
-
-        if (currentRequestId > incrementedRequestId) {
-          reject(new RequestCanceledError());
-        }
-
-        if (currentRequestId === incrementedRequestId) {
-          resolve();
-
-          return;
-        }
-
-        setTimeout(iteration);
-      };
-
-      setTimeout(iteration);
-    });
-  }
-
-  async requestItems(requestId, actionType) {
-    const incrementedRequestId = requestId + 1;
-
-    try {
-      await this.waitForRequestIdUpdate(incrementedRequestId);
-    } catch (catchedError) {
-      if (catchedError instanceof RequestCanceledError) {
-        return;
-      }
-
-      throw catchedError;
-    }
-
+  async requestItems(actionType, mappedState) {
     const {
       componentProps,
       listId,
@@ -410,19 +283,23 @@ class ReduxFilterlistWrapper extends Component {
       onBeforeRequest,
     } = this.props;
 
-    if (incrementedRequestId !== listState.requestId) {
+    const nextListState = recountListState(listState, mappedState);
+
+    listActions.changeListState(listId, nextListState, actionType);
+
+    if (!shouldSetLoadingState(mappedState)) {
       return;
     }
 
     if (onBeforeRequest) {
-      onBeforeRequest(listState, componentProps, actionType);
+      onBeforeRequest(nextListState, componentProps, actionType);
     }
 
     let response;
     let error;
     let isSuccess;
     try {
-      const successResponse = await loadItems(listState, componentProps);
+      const successResponse = await loadItems(nextListState, componentProps);
       response = successResponse;
       isSuccess = true;
     } catch (catchedError) {
@@ -430,12 +307,8 @@ class ReduxFilterlistWrapper extends Component {
       isSuccess = false;
     }
 
-    if (incrementedRequestId !== this.props.listState.requestId) {
-      return;
-    }
-
     if (isSuccess) {
-      listActions.loadListSuccess(listId, response);
+      listActions.loadListSuccess(listId, response, nextListState.requestId);
       return;
     }
 
@@ -444,7 +317,7 @@ class ReduxFilterlistWrapper extends Component {
     }
 
     if (error instanceof LoadListError) {
-      listActions.loadListError(listId, error.errors);
+      listActions.loadListError(listId, error.errors, nextListState.requestId);
       return;
     }
 
