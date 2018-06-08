@@ -6,6 +6,8 @@ import {
   registerList,
   destroyList,
 
+  changeListState,
+
   loadList,
   loadListSuccess,
   loadListError,
@@ -255,6 +257,32 @@ reducersForTest.forEach(({
       const state = reducer({}, registerList(1, params, {}));
 
       expect(state[1]).toEqual(collectListInitialState(params));
+    });
+
+    test('should change list state', () => {
+      const nextListState = {
+        ...listInitialState,
+
+        sort: {
+          param: 'param',
+          asc: false,
+        },
+
+        alwaysResetFilters: {
+          page: 1,
+        },
+
+        appliedFilters: {
+          filter1: 'value1',
+          filter2: 'value2',
+          filter3: ['value3', 'value4'],
+        },
+      };
+
+      let state = reducer({}, registerList(1, {}, {}));
+      state = reducer(state, changeListState(1, nextListState, 'testAction'));
+
+      expect(state[1]).toBe(nextListState);
     });
 
     test('should set loading state with loadList', () => {

@@ -4,6 +4,8 @@ import {
   REGISTER_LIST,
   DESTROY_LIST,
 
+  CHANGE_LIST_STATE,
+
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
@@ -34,6 +36,8 @@ import {
   registerList,
   destroyList,
 
+  changeListState,
+
   loadList,
   loadListSuccess,
   loadListError,
@@ -59,6 +63,8 @@ import {
   deleteItem,
   updateItem,
 } from '../actions';
+
+import listInitialState from '../listInitialState';
 
 test('register list action is FSA', () => {
   expect(isFSA(registerList(1, {}, {}))).toBeTruthy();
@@ -261,6 +267,26 @@ test('should create load list action', () => {
     });
 });
 
+test('changeListState action is FSA', () => {
+  expect(isFSA(changeListState(1, listInitialState, 'testAction'))).toBeTruthy();
+});
+
+test('should create changeListState action', () => {
+  expect(changeListState(1, listInitialState, 'testAction'))
+    .toEqual({
+      type: CHANGE_LIST_STATE,
+
+      payload: {
+        listId: 1,
+        nextListState: listInitialState,
+      },
+
+      meta: {
+        actionType: 'testAction',
+      },
+    });
+});
+
 test('should throw an exception in load list success action without response', () => {
   expect(() => {
     loadListSuccess(1);
@@ -274,7 +300,7 @@ test('should throw an exception in load list success action without response ite
       additional: {
         count: 3,
       },
-    });
+    }, 5);
   })
     .toThrowError('Response items is required');
 });
@@ -283,7 +309,7 @@ test('should throw an exception in load list success action if response items is
   expect(() => {
     loadListSuccess(1, {
       items: 12,
-    });
+    }, 5);
   })
     .toThrowError('Response items should be array');
 });
@@ -291,7 +317,7 @@ test('should throw an exception in load list success action if response items is
 test('load list success action is FSA', () => {
   expect(isFSA(loadListSuccess(1, {
     items: [1, 2, 3],
-  }))).toBeTruthy();
+  }, 5))).toBeTruthy();
 });
 
 test('should create load list success action', () => {
@@ -300,7 +326,7 @@ test('should create load list success action', () => {
     additional: {
       count: 3,
     },
-  }))
+  }, 5))
     .toEqual({
       type: LOAD_LIST_SUCCESS,
       payload: {
@@ -311,6 +337,7 @@ test('should create load list success action', () => {
             count: 3,
           },
         },
+        requestId: 5,
       },
     });
 });
@@ -321,7 +348,7 @@ test('load list error action is FSA', () => {
     additional: {
       count: 0,
     },
-  }))).toBeTruthy();
+  }, 5))).toBeTruthy();
 });
 
 test('should create load list error action', () => {
@@ -330,7 +357,7 @@ test('should create load list error action', () => {
     additional: {
       count: 0,
     },
-  }))
+  }, 5))
     .toEqual({
       type: LOAD_LIST_ERROR,
       payload: {
@@ -341,6 +368,7 @@ test('should create load list error action', () => {
             count: 0,
           },
         },
+        requestId: 5,
       },
     });
 });

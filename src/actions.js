@@ -2,6 +2,8 @@ import {
   REGISTER_LIST,
   DESTROY_LIST,
 
+  CHANGE_LIST_STATE,
+
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
@@ -85,6 +87,21 @@ export function destroyList(listId) {
   };
 }
 
+export function changeListState(listId, nextListState, actionType) {
+  return {
+    type: CHANGE_LIST_STATE,
+
+    payload: {
+      listId,
+      nextListState,
+    },
+
+    meta: {
+      actionType,
+    },
+  };
+}
+
 export function loadList(listId) {
   return {
     type: LOAD_LIST,
@@ -94,7 +111,7 @@ export function loadList(listId) {
   };
 }
 
-export function loadListSuccess(listId, response) {
+export function loadListSuccess(listId, response, requestId) {
   if (!response) {
     throw new Error('Response is required');
   }
@@ -112,16 +129,18 @@ export function loadListSuccess(listId, response) {
     payload: {
       listId,
       response,
+      requestId,
     },
   };
 }
 
-export function loadListError(listId, response) {
+export function loadListError(listId, response, requestId) {
   return {
     type: LOAD_LIST_ERROR,
     payload: {
       listId,
       response,
+      requestId,
     },
   };
 }

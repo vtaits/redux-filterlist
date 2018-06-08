@@ -201,6 +201,7 @@ test('should provide the correct props', () => {
     .toEqual([
       'applyFilter',
       'applyFilters',
+      'changeListState',
       'deleteItem',
       'destroyList',
       'insertItem',

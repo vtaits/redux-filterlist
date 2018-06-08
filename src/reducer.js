@@ -4,6 +4,8 @@ import {
   REGISTER_LIST,
   DESTROY_LIST,
 
+  CHANGE_LIST_STATE,
+
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
@@ -59,6 +61,9 @@ function listReducer(listState, { type, payload }) {
       }
 
       return collectListInitialState(payload.params);
+
+    case CHANGE_LIST_STATE:
+      return payload.nextListState;
 
     case LOAD_LIST:
       return {
@@ -325,6 +330,7 @@ function listReducer(listState, { type, payload }) {
 
 const listsActions = [
   REGISTER_LIST,
+  CHANGE_LIST_STATE,
   LOAD_LIST,
   LOAD_LIST_SUCCESS,
   LOAD_LIST_ERROR,
