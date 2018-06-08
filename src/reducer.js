@@ -75,6 +75,10 @@ function listReducer(listState, { type, payload }) {
       };
 
     case LOAD_LIST_SUCCESS:
+      if (listState.requestId !== payload.requestId) {
+        return listState;
+      }
+
       return {
         ...listState,
         loading: false,
@@ -91,6 +95,10 @@ function listReducer(listState, { type, payload }) {
       };
 
     case LOAD_LIST_ERROR:
+      if (listState.requestId !== payload.requestId) {
+        return listState;
+      }
+
       return {
         ...listState,
         loading: false,

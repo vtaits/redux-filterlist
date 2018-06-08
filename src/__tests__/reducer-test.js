@@ -123,7 +123,7 @@ reducersForTest.forEach(({
           additional: {
             count: 2,
           },
-        }));
+        }, 1));
         state = reducer(state, fn());
 
         expect(state[1].appliedFilters.page).toEqual(1);
@@ -156,7 +156,7 @@ reducersForTest.forEach(({
           additional: {
             count: 2,
           },
-        }));
+        }, 1));
         state = reducer(state, fn());
 
         expect(state[1].appliedFilters.page).toEqual(1);
@@ -182,7 +182,7 @@ reducersForTest.forEach(({
           additional: {
             count: 2,
           },
-        }));
+        }, 2));
 
         expect(state[1].shouldClean).toEqual(false);
         expect(state[1].loading).toEqual(false);
@@ -303,10 +303,26 @@ reducersForTest.forEach(({
       state = reducer(state, loadListSuccess(1, {
         items: [],
         additional: {},
-      }));
+      }, 1));
 
       expect(state[1].loading).toEqual(false);
       expect(state[1].shouldClean).toEqual(false);
+    });
+
+    test('should not reset loading and shouldClean with loadListSuccess action if request id is differs from list state request id', () => {
+      let state = reducer({}, registerList(1, {}, {}));
+      state = reducer(state, resetAllFilters(1));
+
+      expect(state[1].loading).toEqual(true);
+      expect(state[1].shouldClean).toEqual(true);
+
+      state = reducer(state, loadListSuccess(1, {
+        items: [],
+        additional: {},
+      }, 2));
+
+      expect(state[1].loading).toEqual(true);
+      expect(state[1].shouldClean).toEqual(true);
     });
 
     test('should reset loading and shouldClean with loadListError action', () => {
@@ -318,7 +334,7 @@ reducersForTest.forEach(({
 
       state = reducer(state, loadListError(1, {
         additional: {},
-      }));
+      }, 1));
 
       expect(state[1].loading).toEqual(false);
       expect(state[1].shouldClean).toEqual(false);
@@ -338,7 +354,7 @@ reducersForTest.forEach(({
         additional: {
           count: 2,
         },
-      }));
+      }, 1));
 
       expect(state[1].loading).toEqual(false);
       expect(state[1].items).toEqual([{
@@ -361,7 +377,7 @@ reducersForTest.forEach(({
           label: 4,
           value: 4,
         }],
-      }));
+      }, 2));
 
       expect(state[1].items).toEqual([{
         label: 1,
@@ -390,7 +406,7 @@ reducersForTest.forEach(({
           value: 6,
         }],
         additional: null,
-      }));
+      }, 3));
 
       expect(state[1].items).toEqual([{
         label: 1,
@@ -430,7 +446,7 @@ reducersForTest.forEach(({
         additional: {
           count: 2,
         },
-      }));
+      }, 1));
 
       state = reducer(state, loadList(1));
       state = reducer(state, loadListSuccess(1, {
@@ -447,7 +463,7 @@ reducersForTest.forEach(({
         additional: {
           count: 3,
         },
-      }));
+      }, 2));
 
       expect(state[1].loading).toEqual(false);
       expect(state[1].items).toEqual([{
@@ -478,7 +494,7 @@ reducersForTest.forEach(({
       state = reducer(state, loadList(1));
       state = reducer(state, loadList(2));
 
-      state = reducer(state, loadListError(1));
+      state = reducer(state, loadListError(1, null, 1));
 
       expect(state[1].loading).toEqual(false);
       expect(state[2].loading).toEqual(true);
@@ -490,9 +506,22 @@ reducersForTest.forEach(({
       state = reducer(state, loadList(1));
       state = reducer(state, loadListError(1, {
         error: 'Error',
-      }));
+      }, 1));
 
       expect(state[1].error).toEqual('Error');
+      expect(state[1].additional).toEqual(null);
+    });
+
+    test('should not set load error if request id is differs from list state request id', () => {
+      let state = reducer({}, registerList(1, {}, {}));
+
+      state = reducer(state, loadList(1));
+      state = reducer(state, loadListError(1, {
+        error: 'Error',
+      }, 2));
+
+      expect(state[1].loading).toEqual(true);
+      expect(state[1].error).toEqual(null);
       expect(state[1].additional).toEqual(null);
     });
 
@@ -505,7 +534,7 @@ reducersForTest.forEach(({
         additional: {
           error: true,
         },
-      }));
+      }, 1));
 
       expect(state[1].additional).toEqual({
         error: true,
@@ -518,7 +547,7 @@ reducersForTest.forEach(({
       state = reducer(state, loadList(1));
       state = reducer(state, loadListError(1, {
         error: 'Error',
-      }));
+      }, 1));
 
       state = reducer(state, loadList(1));
 
@@ -1019,7 +1048,7 @@ reducersForTest.forEach(({
       additional: {
         count: 5,
       },
-    }));
+    }, 1));
 
     state = reducer(state, insertItem(1, 2, {
       label: 6,
@@ -1074,7 +1103,7 @@ reducersForTest.forEach(({
       additional: {
         count: 5,
       },
-    }));
+    }, 1));
 
     state = reducer(state, insertItem(1, 2, {
       label: 6,
@@ -1131,7 +1160,7 @@ reducersForTest.forEach(({
       additional: {
         count: 5,
       },
-    }));
+    }, 1));
 
     state = reducer(state, deleteItem(1, 2));
 
@@ -1177,7 +1206,7 @@ reducersForTest.forEach(({
       additional: {
         count: 5,
       },
-    }));
+    }, 1));
 
     state = reducer(state, deleteItem(1, 2, {
       count: 4,
@@ -1225,7 +1254,7 @@ reducersForTest.forEach(({
       additional: {
         count: 5,
       },
-    }));
+    }, 1));
 
     state = reducer(state, updateItem(1, 2, {
       label: 10,
@@ -1277,7 +1306,7 @@ reducersForTest.forEach(({
       additional: {
         count: 5,
       },
-    }));
+    }, 1));
 
     state = reducer(state, updateItem(1, 2, {
       label: 10,
