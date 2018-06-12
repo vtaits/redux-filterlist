@@ -12,26 +12,8 @@ import {
 
   changeListState,
 
-  loadList,
   loadListSuccess,
   loadListError,
-
-  setStateFromProps,
-
-  setFilterValue,
-  applyFilter,
-  setAndApplyFilter,
-  resetFilter,
-
-  setFiltersValues,
-  applyFilters,
-  setAndApplyFilters,
-  resetFilters,
-
-  resetAllFilters,
-
-  setSorting,
-  resetSorting,
 
   insertItem,
   deleteItem,
@@ -201,26 +183,13 @@ test('should provide the correct props', () => {
 
   expect(Object.keys(props.listActions).sort())
     .toEqual([
-      'applyFilter',
-      'applyFilters',
       'changeListState',
       'deleteItem',
       'destroyList',
       'insertItem',
-      'loadList',
       'loadListError',
       'loadListSuccess',
       'registerList',
-      'resetAllFilters',
-      'resetFilter',
-      'resetFilters',
-      'resetSorting',
-      'setAndApplyFilter',
-      'setAndApplyFilters',
-      'setFilterValue',
-      'setFiltersValues',
-      'setSorting',
-      'setStateFromProps',
       'updateItem',
     ]);
 });
@@ -472,17 +441,6 @@ test('should dispatch changeListState', () => {
   );
 });
 
-
-test('should dispatch loadList', () => {
-  const page = setup();
-
-  page.getListAction('loadList')('testId');
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    loadList('testId'),
-  );
-});
-
 test('should dispatch loadListSuccess', () => {
   const page = setup();
 
@@ -528,148 +486,6 @@ test('should dispatch loadListError', () => {
       error: 'Error',
       additional: null,
     }, 5),
-  );
-});
-
-test('should dispatch setStateFromProps', () => {
-  const page = setup();
-
-  page.getListAction('setStateFromProps')('testId', {
-    filter: 'value',
-  }, {
-    param: 'test',
-    asc: true,
-  });
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    setStateFromProps('testId', {
-      filter: 'value',
-    }, {
-      param: 'test',
-      asc: true,
-    }),
-  );
-});
-
-test('should dispatch setFilterValue', () => {
-  const page = setup();
-
-  page.getListAction('setFilterValue')('testId', 'testFilter', 'testValue');
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    setFilterValue('testId', 'testFilter', 'testValue'),
-  );
-});
-
-test('should dispatch applyFilter', () => {
-  const page = setup();
-
-  page.getListAction('applyFilter')('testId', 'testFilter');
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    applyFilter('testId', 'testFilter'),
-  );
-});
-
-test('should dispatch setAndApplyFilter', () => {
-  const page = setup();
-
-  page.getListAction('setAndApplyFilter')('testId', 'testFilter', 'testValue');
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    setAndApplyFilter('testId', 'testFilter', 'testValue'),
-  );
-});
-
-test('should dispatch resetFilter', () => {
-  const page = setup();
-
-  page.getListAction('resetFilter')('testId', 'testFilter');
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    resetFilter('testId', 'testFilter'),
-  );
-});
-
-test('should dispatch setFiltersValues', () => {
-  const page = setup();
-
-  page.getListAction('setFiltersValues')('testId', {
-    filter1: 'value1',
-    filter2: 'value2',
-  });
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    setFiltersValues('testId', {
-      filter1: 'value1',
-      filter2: 'value2',
-    }),
-  );
-});
-
-test('should dispatch applyFilters', () => {
-  const page = setup();
-
-  page.getListAction('applyFilters')('testId', ['filter1', 'filter2']);
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    applyFilters('testId', ['filter1', 'filter2']),
-  );
-});
-
-test('should dispatch setAndApplyFilters', () => {
-  const page = setup();
-
-  page.getListAction('setAndApplyFilters')('testId', {
-    filter1: 'value1',
-    filter2: 'value2',
-  });
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    setAndApplyFilters('testId', {
-      filter1: 'value1',
-      filter2: 'value2',
-    }),
-  );
-});
-
-test('should dispatch resetFilters', () => {
-  const page = setup();
-
-  page.getListAction('resetFilters')('testId', ['filter1', 'filter2']);
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    resetFilters('testId', ['filter1', 'filter2']),
-  );
-});
-
-test('should dispatch resetAllFilters', () => {
-  const page = setup();
-
-  page.getListAction('resetAllFilters')('testId');
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    resetAllFilters('testId'),
-  );
-});
-
-test('should dispatch setSorting', () => {
-  const page = setup();
-
-  page.getListAction('setSorting')('testId', 'id', true);
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    setSorting('testId', 'id', true),
-  );
-});
-
-test('should dispatch resetSorting', () => {
-  const page = setup();
-
-  page.getListAction('resetSorting')('testId');
-
-  expect(page.getStore().getActions()[0]).toEqual(
-    resetSorting('testId'),
   );
 });
 

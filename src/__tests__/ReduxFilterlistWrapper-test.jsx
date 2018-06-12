@@ -20,26 +20,8 @@ const listActions = {
 
   changeListState: () => {},
 
-  loadList: () => {},
   loadListSuccess: () => {},
   loadListError: () => {},
-
-  setStateFromProps: () => {},
-
-  setFilterValue: () => {},
-  applyFilter: () => {},
-  setAndApplyFilter: () => {},
-  resetFilter: () => {},
-
-  setFiltersValues: () => {},
-  applyFilters: () => {},
-  setAndApplyFilters: () => {},
-  resetFilters: () => {},
-
-  resetAllFilters: () => {},
-
-  setSorting: () => {},
-  resetSorting: () => {},
 
   insertItem: () => {},
   deleteItem: () => {},
