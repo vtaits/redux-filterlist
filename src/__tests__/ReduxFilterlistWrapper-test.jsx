@@ -8,6 +8,7 @@ import { RequestCanceledError, LoadListError } from '../errors';
 import { filterlistPropTypes } from '../propTypes';
 
 import listInitialState from '../listInitialState';
+import recountListState from '../recountListState';
 
 const WrappedComponent = () => (
   <div />
@@ -16,6 +17,8 @@ const WrappedComponent = () => (
 const listActions = {
   registerList: () => {},
   destroyList: () => {},
+
+  changeListState: () => {},
 
   loadList: () => {},
   loadListSuccess: () => {},
@@ -87,14 +90,14 @@ class ManualReduxFilterlistWrapper extends ReduxFilterlistWrapper {
     return super.componentDidUpdate(prevProps);
   }
 
-  requestItems(requestId, actionType) {
+  requestItems(actionType, mappedState) {
     if (this.props.requestItemsMock) {
-      this.props.requestItemsMock(requestId, actionType);
+      this.props.requestItemsMock(actionType, mappedState);
     }
   }
 
-  manualRequestItems(requestId, actionType) {
-    return super.requestItems(requestId, actionType);
+  manualRequestItems(actionType, mappedState) {
+    return super.requestItems(actionType, mappedState);
   }
 }
 
@@ -126,8 +129,8 @@ class PageObject {
     return this.wrapper.instance().manualComponentDidMount();
   }
 
-  requestItems(requestId, actionType) {
-    return this.wrapper.instance().manualRequestItems(requestId, actionType);
+  requestItems(actionType, mappedState) {
+    return this.wrapper.instance().manualRequestItems(actionType, mappedState);
   }
 
   setProps(props) {
@@ -296,8 +299,20 @@ test('should call destroyList on unmount', () => {
   expect(destroyList.mock.calls[0][0]).toBe('testId');
 });
 
-test('should request items successfully', async () => {
-  const loadItems = jest.fn(() => 'test response');
+test('should change list state and not request items', async () => {
+  const mappedState = {
+    filters: {
+      testFilter: 'testValue2',
+    },
+
+    appliedFilters: null,
+    sort: null,
+  };
+
+  const responseSymbol = Symbol('response');
+
+  const loadItems = jest.fn(() => responseSymbol);
+  const changeListState = jest.fn();
   const loadListSuccess = jest.fn();
   const loadListError = jest.fn();
 
@@ -305,6 +320,8 @@ test('should request items successfully', async () => {
     ...listInitialState,
     requestId: 4,
   };
+
+  const nextListState = recountListState(listState, mappedState);
 
   const page = setup({
     listId: 'testId',
@@ -315,6 +332,7 @@ test('should request items successfully', async () => {
 
     listActions: {
       ...listActions,
+      changeListState,
       loadListSuccess,
       loadListError,
     },
@@ -324,25 +342,108 @@ test('should request items successfully', async () => {
     },
   });
 
-  await page.requestItems(3);
+  await page.requestItems('testAction', mappedState);
+
+  expect(changeListState.mock.calls.length).toBe(1);
+  expect(changeListState.mock.calls[0][0]).toBe('testId');
+  expect(changeListState.mock.calls[0][1]).toEqual(nextListState);
+  expect(changeListState.mock.calls[0][2]).toBe('testAction');
+
+  expect(loadItems.mock.calls.length).toBe(0);
+  expect(loadListSuccess.mock.calls.length).toBe(0);
+  expect(loadListError.mock.calls.length).toBe(0);
+});
+
+test('should change list state and request items successfully', async () => {
+  const mappedState = {
+    filters: {
+      testFilter: 'testValue2',
+    },
+
+    appliedFilters: {
+      testFilter: 'testValue3',
+    },
+
+    sort: {
+      param: 'testParam',
+      asc: true,
+    },
+  };
+
+  const responseSymbol = Symbol('response');
+
+  const loadItems = jest.fn(() => responseSymbol);
+  const changeListState = jest.fn();
+  const loadListSuccess = jest.fn();
+  const loadListError = jest.fn();
+
+  const listState = {
+    ...listInitialState,
+    requestId: 4,
+  };
+
+  const nextListState = recountListState(listState, mappedState);
+
+  const page = setup({
+    listId: 'testId',
+
+    loadItems,
+
+    listState,
+
+    listActions: {
+      ...listActions,
+      changeListState,
+      loadListSuccess,
+      loadListError,
+    },
+
+    componentProps: {
+      testProperty: 'testValue',
+    },
+  });
+
+  await page.requestItems('testAction', mappedState);
+
+  expect(changeListState.mock.calls.length).toBe(1);
+  expect(changeListState.mock.calls[0][0]).toBe('testId');
+  expect(changeListState.mock.calls[0][1]).toEqual(nextListState);
+  expect(changeListState.mock.calls[0][2]).toBe('testAction');
 
   expect(loadItems.mock.calls.length).toBe(1);
-  expect(loadItems.mock.calls[0][0]).toBe(listState);
+  expect(loadItems.mock.calls[0][0]).toEqual(nextListState);
   expect(loadItems.mock.calls[0][1]).toEqual({
     testProperty: 'testValue',
   });
 
   expect(loadListSuccess.mock.calls.length).toBe(1);
   expect(loadListSuccess.mock.calls[0][0]).toBe('testId');
-  expect(loadListSuccess.mock.calls[0][1]).toBe('test response');
+  expect(loadListSuccess.mock.calls[0][1]).toBe(responseSymbol);
+  expect(loadListSuccess.mock.calls[0][2]).toBe(5);
 
   expect(loadListError.mock.calls.length).toBe(0);
 });
 
-test('should request items with error', async () => {
+test('should change list state and request items with error', async () => {
+  const mappedState = {
+    filters: {
+      testFilter: 'testValue2',
+    },
+
+    appliedFilters: {
+      testFilter: 'testValue3',
+    },
+
+    sort: {
+      param: 'testParam',
+      asc: true,
+    },
+  };
+
   const loadItems = jest.fn(() => {
     throw new LoadListError('test error');
   });
+  const changeListState = jest.fn();
   const loadListSuccess = jest.fn();
   const loadListError = jest.fn();
 
@@ -350,6 +451,8 @@ test('should request items with error', async () => {
     ...listInitialState,
     requestId: 4,
   };
+
+  const nextListState = recountListState(listState, mappedState);
 
   const page = setup({
     listId: 'testId',
@@ -360,6 +463,7 @@ test('should request items with error', async () => {
 
     listActions: {
       ...listActions,
+      changeListState,
       loadListSuccess,
       loadListError,
     },
@@ -369,10 +473,15 @@ test('should request items with error', async () => {
     },
   });
 
-  await page.requestItems(3);
+  await page.requestItems('testAction', mappedState);
+
+  expect(changeListState.mock.calls.length).toBe(1);
+  expect(changeListState.mock.calls[0][0]).toBe('testId');
+  expect(changeListState.mock.calls[0][1]).toEqual(nextListState);
+  expect(changeListState.mock.calls[0][2]).toBe('testAction');
 
   expect(loadItems.mock.calls.length).toBe(1);
-  expect(loadItems.mock.calls[0][0]).toBe(listState);
+  expect(loadItems.mock.calls[0][0]).toEqual(nextListState);
   expect(loadItems.mock.calls[0][1]).toEqual({
     testProperty: 'testValue',
   });
@@ -382,12 +491,29 @@ test('should request items with error', async () => {
   expect(loadListError.mock.calls.length).toBe(1);
   expect(loadListError.mock.calls[0][0]).toBe('testId');
   expect(loadListError.mock.calls[0][1]).toBe('test error');
+  expect(loadListError.mock.calls[0][2]).toBe(5);
 });
 
-test('should cancel request', async () => {
+test('should change list state and cancel request', async () => {
+  const mappedState = {
+    filters: {
+      testFilter: 'testValue2',
+    },
+
+    appliedFilters: {
+      testFilter: 'testValue3',
+    },
+
+    sort: {
+      param: 'testParam',
+      asc: true,
+    },
+  };
+
   const loadItems = jest.fn(() => {
     throw new RequestCanceledError();
   });
+  const changeListState = jest.fn();
   const loadListSuccess = jest.fn();
   const loadListError = jest.fn();
 
@@ -395,6 +521,8 @@ test('should cancel request', async () => {
     ...listInitialState,
     requestId: 4,
   };
+
+  const nextListState = recountListState(listState, mappedState);
 
   const page = setup({
     listId: 'testId',
@@ -405,6 +533,7 @@ test('should cancel request', async () => {
 
     listActions: {
       ...listActions,
+      changeListState,
       loadListSuccess,
       loadListError,
     },
@@ -414,10 +543,15 @@ test('should cancel request', async () => {
     },
   });
 
-  await page.requestItems(3);
+  await page.requestItems('testAction', mappedState);
+
+  expect(changeListState.mock.calls.length).toBe(1);
+  expect(changeListState.mock.calls[0][0]).toBe('testId');
+  expect(changeListState.mock.calls[0][1]).toEqual(nextListState);
+  expect(changeListState.mock.calls[0][2]).toBe('testAction');
 
   expect(loadItems.mock.calls.length).toBe(1);
-  expect(loadItems.mock.calls[0][0]).toBe(listState);
+  expect(loadItems.mock.calls[0][0]).toEqual(nextListState);
   expect(loadItems.mock.calls[0][1]).toEqual({
     testProperty: 'testValue',
   });
@@ -426,120 +560,113 @@ test('should cancel request', async () => {
   expect(loadListError.mock.calls.length).toBe(0);
 });
 
-test('should not call loadItems, loadListSuccess and loadListError if request id in list state is bigger than incremented request id from arguemnt', async () => {
-  const loadItems = jest.fn();
-  const loadListSuccess = jest.fn();
-  const loadListError = jest.fn();
+test('should change list state and throw error on request items', async () => {
+  const mappedState = {
+    filters: {
+      testFilter: 'testValue2',
+    },
 
-  const listState = {
-    ...listInitialState,
-    requestId: 4,
+    appliedFilters: {
+      testFilter: 'testValue3',
+    },
+
+    sort: {
+      param: 'testParam',
+      asc: true,
+    },
   };
 
-  const page = setup({
-    listId: 'testId',
-
-    loadItems,
-
-    listState,
-
-    listActions: {
-      ...listActions,
-      loadListSuccess,
-      loadListError,
-    },
-
-    componentProps: {
-      testProperty: 'testValue',
-    },
-  });
-
-  await page.requestItems(2);
-
-  expect(loadItems.mock.calls.length).toBe(0);
-  expect(loadListSuccess.mock.calls.length).toBe(0);
-  expect(loadListError.mock.calls.length).toBe(0);
-});
-
-test('should not call loadListSuccess and loadListError if request id incremented during request called', async () => {
-  const listState = {
-    ...listInitialState,
-    requestId: 4,
-  };
-
-  let page;
-  const loadItems = jest.fn(() => {
-    page.setProps({
-      listState: {
-        ...listState,
-        requestId: 5,
-      },
-    });
-  });
-  const loadListSuccess = jest.fn();
-  const loadListError = jest.fn();
-
-  page = setup({
-    listId: 'testId',
-
-    loadItems,
-
-    listState,
-
-    listActions: {
-      ...listActions,
-      loadListSuccess,
-      loadListError,
-    },
-
-    componentProps: {
-      testProperty: 'testValue',
-    },
-  });
-
-  await page.requestItems(3);
-
-  expect(loadItems.mock.calls.length).toBe(1);
-
-  expect(loadListSuccess.mock.calls.length).toBe(0);
-  expect(loadListError.mock.calls.length).toBe(0);
-});
-
-test('should throw error on request items', async () => {
   const loadItems = jest.fn(() => {
     throw new Error('custom error');
   });
+  const changeListState = jest.fn();
+  const loadListSuccess = jest.fn();
+  const loadListError = jest.fn();
+
+  const listState = {
+    ...listInitialState,
+    requestId: 4,
+  };
+
+  const nextListState = recountListState(listState, mappedState);
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 4,
+    loadItems,
+
+    listState,
+
+    listActions: {
+      ...listActions,
+      changeListState,
+      loadListSuccess,
+      loadListError,
     },
 
-    loadItems,
+    componentProps: {
+      testProperty: 'testValue',
+    },
   });
 
   let isThrown = false;
   try {
-    await page.requestItems(3);
+    await page.requestItems('testAction', mappedState);
   } catch (e) {
     isThrown = true;
   }
 
+  expect(changeListState.mock.calls.length).toBe(1);
+  expect(changeListState.mock.calls[0][0]).toBe('testId');
+  expect(changeListState.mock.calls[0][1]).toEqual(nextListState);
+  expect(changeListState.mock.calls[0][2]).toBe('testAction');
+
+  expect(loadItems.mock.calls.length).toBe(1);
+  expect(loadItems.mock.calls[0][0]).toEqual(nextListState);
+  expect(loadItems.mock.calls[0][1]).toEqual({
+    testProperty: 'testValue',
+  });
+
   expect(isThrown).toBe(true);
+
+  expect(loadListSuccess.mock.calls.length).toBe(0);
+  expect(loadListError.mock.calls.length).toBe(0);
 });
 
 test('should call onBeforeRequest before loadItems', async () => {
-  let lastCalledFn = null;
+  const mappedState = {
+    filters: {
+      testFilter: 'testValue2',
+    },
+
+    appliedFilters: {
+      testFilter: 'testValue3',
+    },
+
+    sort: {
+      param: 'testParam',
+      asc: true,
+    },
+  };
+
+  const responseSymbol = Symbol('response');
+
+  const calledFunctions = [];
+
   const onBeforeRequest = jest.fn(() => {
-    lastCalledFn = 'onBeforeRequest';
+    calledFunctions.push('onBeforeRequest');
   });
 
   const loadItems = jest.fn(() => {
-    lastCalledFn = 'loadItems';
+    calledFunctions.push('loadItems');
+
+    return responseSymbol;
   });
+  const changeListState = jest.fn(() => {
+    calledFunctions.push('changeListState');
+  });
+  const loadListSuccess = jest.fn();
+  const loadListError = jest.fn();
 
   const listState = {
     ...listInitialState,
@@ -549,49 +676,37 @@ test('should call onBeforeRequest before loadItems', async () => {
   const page = setup({
     listId: 'testId',
 
-    listState,
-    onBeforeRequest,
     loadItems,
+    onBeforeRequest,
+
+    listState,
+
+    listActions: {
+      ...listActions,
+      changeListState,
+      loadListSuccess,
+      loadListError,
+    },
 
     componentProps: {
       testProperty: 'testValue',
     },
   });
 
-  await page.requestItems(3, 'testType');
+  await page.requestItems('testAction', mappedState);
 
-  expect(onBeforeRequest.mock.calls.length).toBe(1);
-  expect(onBeforeRequest.mock.calls[0][0]).toBe(listState);
-  expect(onBeforeRequest.mock.calls[0][1]).toEqual({
-    testProperty: 'testValue',
-  });
-  expect(onBeforeRequest.mock.calls[0][2]).toBe('testType');
-
-  expect(loadItems.mock.calls.length).toBe(1);
-  expect(loadItems.mock.calls[0][0]).toBe(listState);
-  expect(loadItems.mock.calls[0][1]).toEqual({
-    testProperty: 'testValue',
-  });
-
-  expect(lastCalledFn).toBe('loadItems');
+  expect(calledFunctions).toEqual([
+    'changeListState',
+    'onBeforeRequest',
+    'loadItems',
+  ]);
 });
 
-test('should call loadList and requestItems on render', async () => {
-  const loadList = jest.fn();
+test('should call requestItems on render', async () => {
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
-
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
-      loadList,
-    },
 
     componentProps: {
       testProperty: 'testValue',
@@ -602,12 +717,9 @@ test('should call loadList and requestItems on render', async () => {
 
   await page.componentDidMount();
 
-  expect(loadList.mock.calls.length).toBe(1);
-  expect(loadList.mock.calls[0][0]).toBe('testId');
-
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('loadItemsOnInit');
+  expect(requestItems.mock.calls[0][0]).toBe('loadItemsOnInit');
+  expect(requestItems.mock.calls[0][1]).toBe(null);
 });
 
 test('should not call loadList and requestItems on render when autoload is false', async () => {
@@ -696,21 +808,10 @@ test('should not update component if on componentProps and list state are same',
 });
 
 test('should load items from props', async () => {
-  const loadList = jest.fn();
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
-
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
-      loadList,
-    },
 
     componentProps: {
       testProperty: 'testValue',
@@ -721,30 +822,19 @@ test('should load items from props', async () => {
 
   await page.getWrappedComponent().prop('loadItems')();
 
-  expect(loadList.mock.calls.length).toBe(1);
-  expect(loadList.mock.calls[0][0]).toBe('testId');
-
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('loadItems');
+  expect(requestItems.mock.calls[0][0]).toBe('loadItems');
+  expect(requestItems.mock.calls[0][1]).toBe(null);
 });
 
-test('should call setStateFromProps on component update', async () => {
-  const setStateFromProps = jest.fn();
+test('should call getStateFromProps on component update', async () => {
+  const stateSymbol = Symbol('mapped state');
+
+  const getStateFromProps = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
-
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
-      setStateFromProps,
-    },
 
     componentProps: {
       testProperty: 'testValue1',
@@ -757,15 +847,7 @@ test('should call setStateFromProps on component update', async () => {
     reduxFilterlistParams: {
       ...defaultProps.reduxFilterlistParams,
 
-      getStateFromProps: ({
-        testProperty,
-        sort,
-      }) => ({
-        appliedFilters: {
-          testProperty,
-        },
-        sort,
-      }),
+      getStateFromProps,
 
       shouldRecountState: () => true,
     },
@@ -783,37 +865,26 @@ test('should call setStateFromProps on component update', async () => {
     },
   });
 
-  expect(setStateFromProps.mock.calls.length).toBe(1);
-  expect(setStateFromProps.mock.calls[0][0]).toBe('testId');
-  expect(setStateFromProps.mock.calls[0][1]).toEqual({
+  expect(getStateFromProps.mock.calls.length).toBe(1);
+  expect(getStateFromProps.mock.calls[0][0]).toEqual({
     testProperty: 'testValue2',
-  });
-  expect(setStateFromProps.mock.calls[0][2]).toEqual({
-    param: 'param2',
-    asc: false,
+    sort: {
+      param: 'param2',
+      asc: false,
+    },
   });
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('setStateFromProps');
+  expect(requestItems.mock.calls[0][0]).toBe('setStateFromProps');
+  expect(requestItems.mock.calls[0][1]).toEqual(stateSymbol);
 });
 
-test('should not call setStateFromProps on component update if shouldRecountState is not defined', async () => {
-  const setStateFromProps = jest.fn();
+test('should not call getStateFromProps on component update if shouldRecountState is not defined', async () => {
+  const getStateFromProps = jest.fn();
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
-
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
-      setStateFromProps,
-    },
 
     componentProps: {
       testProperty: 'testValue1',
@@ -826,15 +897,7 @@ test('should not call setStateFromProps on component update if shouldRecountStat
     reduxFilterlistParams: {
       ...defaultProps.reduxFilterlistParams,
 
-      getStateFromProps: ({
-        testProperty,
-        sort,
-      }) => ({
-        appliedFilters: {
-          testProperty,
-        },
-        sort,
-      }),
+      getStateFromProps,
     },
 
     requestItemsMock: requestItems,
@@ -850,26 +913,16 @@ test('should not call setStateFromProps on component update if shouldRecountStat
     },
   });
 
-  expect(setStateFromProps.mock.calls.length).toBe(0);
+  expect(getStateFromProps.mock.calls.length).toBe(0);
   expect(requestItems.mock.calls.length).toBe(0);
 });
 
-test('should not call setStateFromProps on component update if shouldRecountState returns false', async () => {
-  const setStateFromProps = jest.fn();
+test('should not call getStateFromProps on component update if shouldRecountState returns false', async () => {
+  const getStateFromProps = jest.fn();
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
-
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
-      setStateFromProps,
-    },
 
     componentProps: {
       testProperty: 'testValue1',
@@ -882,18 +935,9 @@ test('should not call setStateFromProps on component update if shouldRecountStat
     reduxFilterlistParams: {
       ...defaultProps.reduxFilterlistParams,
 
-      getStateFromProps: ({
-        testProperty,
-        sort,
-      }) => ({
-        appliedFilters: {
-          testProperty,
-        },
-        sort,
-      }),
+      getStateFromProps,
+      shouldRecountState: () => false,
     },
-
-    setStateFromProps: () => false,
 
     requestItemsMock: requestItems,
   });
@@ -908,24 +952,21 @@ test('should not call setStateFromProps on component update if shouldRecountStat
     },
   });
 
-  expect(setStateFromProps.mock.calls.length).toBe(0);
+  expect(getStateFromProps.mock.calls.length).toBe(0);
   expect(requestItems.mock.calls.length).toBe(0);
 });
 
 test('should call setFilterValue from props', async () => {
-  const setFilterValue = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const setFilterValue = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       setFilterValue,
     },
 
@@ -939,27 +980,26 @@ test('should call setFilterValue from props', async () => {
   await page.getWrappedComponent().prop('setFilterValue')('testFilter', 'testValue');
 
   expect(setFilterValue.mock.calls.length).toBe(1);
-  expect(setFilterValue.mock.calls[0][0]).toBe('testId');
+  expect(setFilterValue.mock.calls[0][0]).toBe(listInitialState);
   expect(setFilterValue.mock.calls[0][1]).toBe('testFilter');
   expect(setFilterValue.mock.calls[0][2]).toBe('testValue');
 
-  expect(requestItems.mock.calls.length).toBe(0);
+  expect(requestItems.mock.calls.length).toBe(1);
+  expect(requestItems.mock.calls[0][0]).toBe('setFilterValue');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should apply filter from props', async () => {
-  const applyFilter = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const applyFilter = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       applyFilter,
     },
 
@@ -973,28 +1013,25 @@ test('should apply filter from props', async () => {
   await page.getWrappedComponent().prop('applyFilter')('testFilter');
 
   expect(applyFilter.mock.calls.length).toBe(1);
-  expect(applyFilter.mock.calls[0][0]).toBe('testId');
+  expect(applyFilter.mock.calls[0][0]).toBe(listInitialState);
   expect(applyFilter.mock.calls[0][1]).toBe('testFilter');
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('applyFilter');
+  expect(requestItems.mock.calls[0][0]).toBe('applyFilter');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should set and apply filter from props', async () => {
-  const setAndApplyFilter = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const setAndApplyFilter = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       setAndApplyFilter,
     },
 
@@ -1008,29 +1045,26 @@ test('should set and apply filter from props', async () => {
   await page.getWrappedComponent().prop('setAndApplyFilter')('testFilter', 'testValue');
 
   expect(setAndApplyFilter.mock.calls.length).toBe(1);
-  expect(setAndApplyFilter.mock.calls[0][0]).toBe('testId');
+  expect(setAndApplyFilter.mock.calls[0][0]).toBe(listInitialState);
   expect(setAndApplyFilter.mock.calls[0][1]).toBe('testFilter');
   expect(setAndApplyFilter.mock.calls[0][2]).toBe('testValue');
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('setAndApplyFilter');
+  expect(requestItems.mock.calls[0][0]).toBe('setAndApplyFilter');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should reset filter from props', async () => {
-  const resetFilter = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const resetFilter = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       resetFilter,
     },
 
@@ -1044,28 +1078,25 @@ test('should reset filter from props', async () => {
   await page.getWrappedComponent().prop('resetFilter')('testFilter');
 
   expect(resetFilter.mock.calls.length).toBe(1);
-  expect(resetFilter.mock.calls[0][0]).toBe('testId');
+  expect(resetFilter.mock.calls[0][0]).toBe(listInitialState);
   expect(resetFilter.mock.calls[0][1]).toBe('testFilter');
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('resetFilter');
+  expect(requestItems.mock.calls[0][0]).toBe('resetFilter');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should set multiple filters from props', async () => {
-  const setFiltersValues = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const setFiltersValues = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       setFiltersValues,
     },
 
@@ -1082,29 +1113,28 @@ test('should set multiple filters from props', async () => {
   });
 
   expect(setFiltersValues.mock.calls.length).toBe(1);
-  expect(setFiltersValues.mock.calls[0][0]).toBe('testId');
+  expect(setFiltersValues.mock.calls[0][0]).toBe(listInitialState);
   expect(setFiltersValues.mock.calls[0][1]).toEqual({
     filter1: 'value1',
     filter2: 'value2',
   });
 
-  expect(requestItems.mock.calls.length).toBe(0);
+  expect(requestItems.mock.calls.length).toBe(1);
+  expect(requestItems.mock.calls[0][0]).toBe('setFiltersValues');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should apply multiple filters from props', async () => {
-  const applyFilters = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const applyFilters = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       applyFilters,
     },
 
@@ -1118,28 +1148,25 @@ test('should apply multiple filters from props', async () => {
   await page.getWrappedComponent().prop('applyFilters')(['filter1', 'filter2']);
 
   expect(applyFilters.mock.calls.length).toBe(1);
-  expect(applyFilters.mock.calls[0][0]).toBe('testId');
+  expect(applyFilters.mock.calls[0][0]).toBe(listInitialState);
   expect(applyFilters.mock.calls[0][1]).toEqual(['filter1', 'filter2']);
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('applyFilters');
+  expect(requestItems.mock.calls[0][0]).toBe('applyFilters');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should set and apply multiple filters from props', async () => {
-  const setAndApplyFilters = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const setAndApplyFilters = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       setAndApplyFilters,
     },
 
@@ -1156,31 +1183,28 @@ test('should set and apply multiple filters from props', async () => {
   });
 
   expect(setAndApplyFilters.mock.calls.length).toBe(1);
-  expect(setAndApplyFilters.mock.calls[0][0]).toBe('testId');
+  expect(setAndApplyFilters.mock.calls[0][0]).toBe(listInitialState);
   expect(setAndApplyFilters.mock.calls[0][1]).toEqual({
     filter1: 'value1',
     filter2: 'value2',
   });
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('setAndApplyFilters');
+  expect(requestItems.mock.calls[0][0]).toBe('setAndApplyFilters');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should reset multiple filters from props', async () => {
-  const resetFilters = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const resetFilters = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       resetFilters,
     },
 
@@ -1194,28 +1218,25 @@ test('should reset multiple filters from props', async () => {
   await page.getWrappedComponent().prop('resetFilters')(['filter1', 'filter2']);
 
   expect(resetFilters.mock.calls.length).toBe(1);
-  expect(resetFilters.mock.calls[0][0]).toBe('testId');
+  expect(resetFilters.mock.calls[0][0]).toBe(listInitialState);
   expect(resetFilters.mock.calls[0][1]).toEqual(['filter1', 'filter2']);
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('resetFilters');
+  expect(requestItems.mock.calls[0][0]).toBe('resetFilters');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should reset all filters from props', async () => {
-  const resetAllFilters = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const resetAllFilters = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       resetAllFilters,
     },
 
@@ -1229,27 +1250,24 @@ test('should reset all filters from props', async () => {
   await page.getWrappedComponent().prop('resetAllFilters')();
 
   expect(resetAllFilters.mock.calls.length).toBe(1);
-  expect(resetAllFilters.mock.calls[0][0]).toBe('testId');
+  expect(resetAllFilters.mock.calls[0][0]).toBe(listInitialState);
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('resetAllFilters');
+  expect(requestItems.mock.calls[0][0]).toBe('resetAllFilters');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should set sorting from props', async () => {
-  const setSorting = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const setSorting = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       setSorting,
     },
 
@@ -1263,29 +1281,26 @@ test('should set sorting from props', async () => {
   await page.getWrappedComponent().prop('setSorting')('id', true);
 
   expect(setSorting.mock.calls.length).toBe(1);
-  expect(setSorting.mock.calls[0][0]).toBe('testId');
+  expect(setSorting.mock.calls[0][0]).toBe(listInitialState);
   expect(setSorting.mock.calls[0][1]).toBe('id');
   expect(setSorting.mock.calls[0][2]).toBe(true);
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('setSorting');
+  expect(requestItems.mock.calls[0][0]).toBe('setSorting');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should reset sorting from props', async () => {
-  const resetSorting = jest.fn();
+  const stateSymbol = Symbol('mapped state');
+
+  const resetSorting = jest.fn(() => stateSymbol);
   const requestItems = jest.fn();
 
   const page = setup({
     listId: 'testId',
 
-    listState: {
-      ...listInitialState,
-      requestId: 3,
-    },
-
-    listActions: {
-      ...listActions,
+    listStateMappers: {
+      ...listStateMappers,
       resetSorting,
     },
 
@@ -1299,11 +1314,11 @@ test('should reset sorting from props', async () => {
   await page.getWrappedComponent().prop('resetSorting')();
 
   expect(resetSorting.mock.calls.length).toBe(1);
-  expect(resetSorting.mock.calls[0][0]).toBe('testId');
+  expect(resetSorting.mock.calls[0][0]).toBe(listInitialState);
 
   expect(requestItems.mock.calls.length).toBe(1);
-  expect(requestItems.mock.calls[0][0]).toBe(3);
-  expect(requestItems.mock.calls[0][1]).toBe('resetSorting');
+  expect(requestItems.mock.calls[0][0]).toBe('resetSorting');
+  expect(requestItems.mock.calls[0][1]).toBe(stateSymbol);
 });
 
 test('should insert item to list from props', async () => {

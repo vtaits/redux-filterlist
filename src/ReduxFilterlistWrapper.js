@@ -85,12 +85,7 @@ class ReduxFilterlistWrapper extends Component {
       shouldRecountState &&
       shouldRecountState(this.props.componentProps, prevProps.componentProps)
     ) {
-      const {
-        appliedFilters,
-        sort,
-      } = getStateFromProps(this.props.componentProps);
-
-      await this.setStateFromProps(appliedFilters, sort);
+      await this.setStateFromProps();
     }
   }
 

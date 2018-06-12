@@ -10,6 +10,8 @@ import {
   registerList,
   destroyList,
 
+  changeListState,
+
   loadList,
   loadListSuccess,
   loadListError,
@@ -458,6 +460,19 @@ test('should dispatch destroyList', () => {
   );
 });
 
+test('should dispatch changeListState', () => {
+  const page = setup();
+
+  const newListState = Symbol('new list state');
+
+  page.getListAction('changeListState')('testId', newListState, 'testAction');
+
+  expect(page.getStore().getActions()[0]).toEqual(
+    changeListState('testId', newListState, 'testAction'),
+  );
+});
+
+
 test('should dispatch loadList', () => {
   const page = setup();
 
@@ -482,7 +497,7 @@ test('should dispatch loadListSuccess', () => {
     additional: {
       count: 3,
     },
-  });
+  }, 4);
 
   expect(page.getStore().getActions()[0]).toEqual(
     loadListSuccess('testId', {
@@ -496,7 +511,7 @@ test('should dispatch loadListSuccess', () => {
       additional: {
         count: 3,
       },
-    }),
+    }, 4),
   );
 });
 
@@ -506,13 +521,13 @@ test('should dispatch loadListError', () => {
   page.getListAction('loadListError')('testId', {
     error: 'Error',
     additional: null,
-  });
+  }, 5);
 
   expect(page.getStore().getActions()[0]).toEqual(
     loadListError('testId', {
       error: 'Error',
       additional: null,
-    }),
+    }, 5),
   );
 });
 
