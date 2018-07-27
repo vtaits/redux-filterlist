@@ -290,8 +290,10 @@ export default reduxFilterlist({
       },
     })),
 
-  shouldRecountState: (props, prevProps) =>
-    props.location.search !== prevProps.location.search,
+  shouldRecountState: (props, prevProps) => (
+    props.history.action === 'POP'
+    && props.location.search !== prevProps.location.search
+  ),
 
   getStateFromProps: ({
     location: {
@@ -332,6 +334,7 @@ export default reduxFilterlist({
         asc: !!sort && sort[0] !== '-',
       },
 
+      filters: appliedFilters,
       appliedFilters,
     };
   },
