@@ -126,3 +126,46 @@ test('should no set autoload (true by default)', () => {
 
   expect(state.autoload).toEqual(true);
 });
+
+test('should redefine appliedFilters if getStateFromProps defined', () => {
+  const state = collectListInitialState({
+    appliedFilters: {
+      filter1: 'value1',
+    },
+
+    getStateFromProps: ({ otherFilters }) => ({
+      appliedFilters: otherFilters,
+    }),
+  }, {
+    otherFilters: {
+      filter1: 'value2',
+    },
+  });
+
+  expect(state.appliedFilters).toEqual({
+    filter1: 'value2',
+  });
+});
+
+test('should redefine sort if getStateFromProps defined', () => {
+  const state = collectListInitialState({
+    sort: {
+      param: 'test',
+      asc: false,
+    },
+
+    getStateFromProps: ({ otherSort }) => ({
+      sort: otherSort,
+    }),
+  }, {
+    otherSort: {
+      param: 'otherTest',
+      asc: true,
+    },
+  });
+
+  expect(state.sort).toEqual({
+    param: 'otherTest',
+    asc: true,
+  });
+});

@@ -29,6 +29,7 @@ import {
 } from '../actions';
 
 import listInitialState from '../listInitialState';
+import collectListInitialState from '../collectListInitialState';
 
 test('register list action is FSA', () => {
   expect(isFSA(registerList(1, {}, {}))).toBeTruthy();
@@ -42,9 +43,9 @@ test('should create register list action', () => {
       type: REGISTER_LIST,
       payload: {
         listId: 1,
-        params: {
+        listInitialState: collectListInitialState({
           appliedFilters: {},
-        },
+        }, {}),
       },
     });
 });
@@ -55,152 +56,9 @@ test('should set default params in register list action', () => {
       type: REGISTER_LIST,
       payload: {
         listId: 1,
-        params: {},
+        listInitialState: collectListInitialState({}, {}),
       },
     });
-});
-
-test('should provide only accepted params to register list action', () => {
-  expect(registerList(1, {
-    autoload: true,
-    sort: {
-      param: 'test',
-      asc: false,
-    },
-    isDefaultSortAsc: true,
-    alwaysResetFilters: {},
-    additional: {},
-    initialFilters: {},
-    filters: {},
-    appliedFilters: {},
-    saveFiltersOnResetAll: ['filter1', 'filter2'],
-    saveItemsWhileLoad: true,
-    otherParam: 'value',
-  }, {}))
-    .toEqual({
-      type: REGISTER_LIST,
-      payload: {
-        listId: 1,
-        params: {
-          autoload: true,
-          sort: {
-            param: 'test',
-            asc: false,
-          },
-          isDefaultSortAsc: true,
-          alwaysResetFilters: {},
-          additional: {},
-          initialFilters: {},
-          filters: {},
-          appliedFilters: {},
-          saveFiltersOnResetAll: ['filter1', 'filter2'],
-          saveItemsWhileLoad: true,
-        },
-      },
-    });
-});
-
-test('should redefine appliedFilters if getStateFromProps defined in register list action', () => {
-  const action = registerList(1, {
-    autoload: true,
-    sort: {
-      param: 'test',
-      asc: false,
-    },
-    isDefaultSortAsc: true,
-    alwaysResetFilters: {},
-    additional: {},
-    initialFilters: {},
-    appliedFilters: {
-      filter1: 'value1',
-    },
-    saveFiltersOnResetAll: ['filter1', 'filter2'],
-    saveItemsWhileLoad: true,
-    otherParam: 'value',
-
-    getStateFromProps: ({ otherFilters }) => ({
-      appliedFilters: otherFilters,
-    }),
-  }, {
-    otherFilters: {
-      filter1: 'value2',
-    },
-  });
-
-  expect(action).toEqual({
-    type: REGISTER_LIST,
-    payload: {
-      listId: 1,
-      params: {
-        autoload: true,
-        sort: {
-          param: 'test',
-          asc: false,
-        },
-        isDefaultSortAsc: true,
-        alwaysResetFilters: {},
-        additional: {},
-        initialFilters: {},
-        appliedFilters: {
-          filter1: 'value2',
-        },
-        saveFiltersOnResetAll: ['filter1', 'filter2'],
-        saveItemsWhileLoad: true,
-      },
-    },
-  });
-});
-
-test('should redefine sort if getStateFromProps defined in register list action', () => {
-  const action = registerList(1, {
-    autoload: true,
-    sort: {
-      param: 'test',
-      asc: false,
-    },
-    isDefaultSortAsc: true,
-    alwaysResetFilters: {},
-    additional: {},
-    initialFilters: {},
-    appliedFilters: {
-      filter1: 'value1',
-    },
-    saveFiltersOnResetAll: ['filter1', 'filter2'],
-    saveItemsWhileLoad: true,
-    otherParam: 'value',
-
-    getStateFromProps: ({ otherSort }) => ({
-      sort: otherSort,
-    }),
-  }, {
-    otherSort: {
-      param: 'otherTest',
-      asc: true,
-    },
-  });
-
-  expect(action).toEqual({
-    type: REGISTER_LIST,
-    payload: {
-      listId: 1,
-      params: {
-        autoload: true,
-        sort: {
-          param: 'otherTest',
-          asc: true,
-        },
-        isDefaultSortAsc: true,
-        alwaysResetFilters: {},
-        additional: {},
-        initialFilters: {},
-        appliedFilters: {
-          filter1: 'value1',
-        },
-        saveFiltersOnResetAll: ['filter1', 'filter2'],
-        saveItemsWhileLoad: true,
-      },
-    },
-  });
 });
 
 test('destroy list action is FSA', () => {

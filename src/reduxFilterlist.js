@@ -43,7 +43,7 @@ export function createMappers(WrappedComponent, {
     }
 
     return {
-      listState: listState || collectListInitialState(reduxFilterlistParams),
+      listState: listState || collectListInitialState(reduxFilterlistParams, componentProps),
 
       componentProps,
       listId,

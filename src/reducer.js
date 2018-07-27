@@ -14,8 +14,6 @@ import {
   UPDATE_ITEM,
 } from './actionsTypes';
 
-import collectListInitialState from './collectListInitialState';
-
 function listReducer(listState, { type, payload }) {
   switch (type) {
     case REGISTER_LIST:
@@ -23,7 +21,7 @@ function listReducer(listState, { type, payload }) {
         return listState;
       }
 
-      return collectListInitialState(payload.params);
+      return payload.listInitialState;
 
     case CHANGE_LIST_STATE:
       return payload.nextListState;

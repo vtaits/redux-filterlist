@@ -12,50 +12,14 @@ import {
   UPDATE_ITEM,
 } from './actionsTypes';
 
-const acceptedListParams = [
-  'autoload',
-  'sort',
-  'isDefaultSortAsc',
-  'alwaysResetFilters',
-  'additional',
-  'initialFilters',
-  'filters',
-  'appliedFilters',
-  'saveFiltersOnResetAll',
-  'saveItemsWhileLoad',
-];
+import collectListInitialState from './collectListInitialState';
 
-export function registerList(listId, reduxFilterlistParams, componentProps) {
-  const params = acceptedListParams.reduce((res, paramName) => {
-    const paramValue = reduxFilterlistParams[paramName];
-
-    if (typeof paramValue !== 'undefined') {
-      res[paramName] = paramValue;
-    }
-
-    return res;
-  }, {});
-
-  if (reduxFilterlistParams.getStateFromProps) {
-    const {
-      appliedFilters,
-      sort,
-    } = reduxFilterlistParams.getStateFromProps(componentProps);
-
-    if (appliedFilters) {
-      params.appliedFilters = appliedFilters;
-    }
-
-    if (sort) {
-      params.sort = sort;
-    }
-  }
-
+export function registerList(listId, params, componentProps) {
   return {
     type: REGISTER_LIST,
     payload: {
       listId,
-      params,
+      listInitialState: collectListInitialState(params, componentProps),
     },
   };
 }

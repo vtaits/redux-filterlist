@@ -1,6 +1,25 @@
 import listInitialState from './listInitialState';
 
-export default function collectListInitialState(params) {
+export default function collectListInitialState(rawParams, componentProps) {
+  const params = {
+    ...rawParams,
+  };
+
+  if (rawParams.getStateFromProps) {
+    const {
+      appliedFilters,
+      sort,
+    } = rawParams.getStateFromProps(componentProps);
+
+    if (appliedFilters) {
+      params.appliedFilters = appliedFilters;
+    }
+
+    if (sort) {
+      params.sort = sort;
+    }
+  }
+
   return {
     ...listInitialState,
 

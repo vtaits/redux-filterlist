@@ -218,8 +218,8 @@ test('should provide correct componentProps', () => {
 });
 
 test('should provide getStateFromProps and shouldRecountState from decorator', () => {
-  const getStateFromProps = jest.fn();
-  const shouldRecountState = jest.fn();
+  const getStateFromProps = jest.fn(() => ({}));
+  const shouldRecountState = jest.fn(() => ({}));
 
   const page = setup({
     getStateFromProps,
@@ -237,11 +237,11 @@ test('should provide getStateFromProps and shouldRecountState from decorator', (
 });
 
 test('should provide getStateFromProps and shouldRecountState from component props', () => {
-  const getStateFromPropsWrong = jest.fn();
-  const shouldRecountStateWrong = jest.fn();
+  const getStateFromPropsWrong = jest.fn(() => ({}));
+  const shouldRecountStateWrong = jest.fn(() => ({}));
 
-  const getStateFromProps = jest.fn();
-  const shouldRecountState = jest.fn();
+  const getStateFromProps = jest.fn(() => ({}));
+  const shouldRecountState = jest.fn(() => ({}));
 
   const page = setup({
     getStateFromProps: getStateFromPropsWrong,
