@@ -1,3 +1,8 @@
+## 0.4.0 (July 27, 2018)
+
+ * `loadItems` and `onBeforeRequest` can be defined in props of component.
+ * Added `getStateFromProps` and `shouldRecountState`. It can be used for integration with `react-router`.
+
 ## 0.3.2 (May 15, 2018)
 
  * Added `redux@^4.0.0` to peerDependencies.
