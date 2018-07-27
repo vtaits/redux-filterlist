@@ -258,18 +258,23 @@ List.propTypes = {
 };
 
 export default reduxFilterlist({
-  listId: 'filters',
+  listId: 'changeQuery',
+
   alwaysResetFilters: {
     page: 1,
   },
+
   appliedFilters: {
     page: 1,
     perPage: 10,
   },
+
   initialFilters: {
     perPage: 10,
   },
+
   saveFiltersOnResetAll: ['perPage'],
+
   loadItems: ({
     sort,
     appliedFilters,
@@ -304,6 +309,17 @@ export default reduxFilterlist({
       hideBlue: value => !!value,
     });
 
+    const appliedFilters = {
+      brand: '',
+      owner: '',
+      hideYellow: false,
+      hideRed: false,
+      hideBlue: false,
+      ...parsedSearch,
+      page: parsedSearch.page || 1,
+      perPage: parsedSearch.perPage || 10,
+    };
+
     return {
       sort: {
         param: sort ?
@@ -316,16 +332,7 @@ export default reduxFilterlist({
         asc: !!sort && sort[0] !== '-',
       },
 
-      appliedFilters: {
-        brand: '',
-        owner: '',
-        hideYellow: false,
-        hideRed: false,
-        hideBlue: false,
-        ...parsedSearch,
-        page: parsedSearch.page || 1,
-        perPage: parsedSearch.perPage || 10,
-      },
+      appliedFilters,
     };
   },
 
@@ -340,7 +347,9 @@ export default reduxFilterlist({
       {
         const newQuery = stringifyParams({
           ...listState.appliedFilters,
-          sort: `${listState.sort.asc ? '' : '-'}${listState.sort.param}`,
+          sort: listState.sort.param
+            ? `${listState.sort.asc ? '' : '-'}${listState.sort.param}`
+            : null,
         });
 
         history.push(`/?${newQuery}`);
