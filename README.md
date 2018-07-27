@@ -63,8 +63,10 @@ Params:
 | saveItemsWhileLoad | false | Boolean | by default items are cleared if filters or sorting changed. If `saveItemsWhileLoad` is true, previous list items are saved while load request is pending |
 | onBeforeRequest | false | Function(listState, props) | hook that called before each items request |
 | autoload | false | Boolean | configure initial loading process |
+| getStateFromProps | false | (componentProps: Object) => { filters?: Object; appliedFilters?:  Object; sort?: { param?: string; asc: boolean } } | changes filters, applied filters and sorting on init and props change. E.g. if list should change own state on location change |
+| shouldRecountState | false | (nextComponentProps: Object, prevComponentProps: Object) => boolean | if defined, `getStateFromProps` will be called on component props change only if `shouldRecountState` returned true |
 
-All params except for `listId`, `loadItems` and `onBeforeRequest` can be redefined with component props.
+All params except for `listId` can be redefined with component props.
 
 ### List state
 
