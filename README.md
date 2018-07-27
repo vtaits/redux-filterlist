@@ -1,4 +1,7 @@
+[![NPM](https://img.shields.io/npm/v/redux-filterlist.svg)](https://www.npmjs.com/package/redux-filterlist)
+
 # redux-filterlist
+
 A Higher Order Component using react-redux for creating lists with filters, sotring, paginatinon, endless scroll etc.
 
 ## Installation
