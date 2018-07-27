@@ -64,7 +64,7 @@ Params:
 | alwaysResetFilters | false | Object | filters and their values that sets after every filters or sorting change. Should be { filterName1: filterValue, filter2Name: filter2Value, ... } |
 | saveFiltersOnResetAll | false | Array | filters names that not reset after `resetAllFilters` call. Should be [filterName1, filter2Name, ...] |
 | saveItemsWhileLoad | false | Boolean | by default items are cleared if filters or sorting changed. If `saveItemsWhileLoad` is true, previous list items are saved while load request is pending |
-| onBeforeRequest | false | Function(listState, props) | hook that called before each items request |
+| onBeforeRequest | false | (listState, props, actionType) => void | hook that called before each items request. See below |
 | autoload | false | Boolean | configure initial loading process |
 | getStateFromProps | false | (componentProps: Object) => { filters?: Object; appliedFilters?:  Object; sort?: { param?: string; asc: boolean } } | changes filters, applied filters and sorting on init and props change. E.g. if list should change own state on location change |
 | shouldRecountState | false | (nextComponentProps: Object, prevComponentProps: Object) => boolean | if defined, `getStateFromProps` will be called on component props change only if `shouldRecountState` returned true |
@@ -237,6 +237,32 @@ reduxFilterlist({
   ...params,
 })(List)
 ```
+
+### onBeforeRequest
+
+Hook that called before each items request. Recives next arguments:
+
+1. state of current list
+2. props of component
+3. type of change list action
+
+#### Action types:
+
+ * `setStateFromProps`
+ * `setAndApplyFilter`
+ * `setFilterValue`
+ * `setFiltersValues`
+ * `setAndApplyFilters`
+ * `setSorting`
+ * `resetSorting`
+ * `resetAllFilters`
+ * `resetFilters`
+ * `applyFilters`
+ * `resetFilter`
+ * `applyFilter`
+ * `loadItems`
+ * `loadItemsOnInit`
+
 
 ## Testing
 
