@@ -1,5 +1,9 @@
 [![NPM](https://img.shields.io/npm/v/redux-filterlist.svg)](https://www.npmjs.com/package/redux-filterlist)
 
+# deprecation notice
+
+`redux-filterlist` is depreacted. I recommend to use https://github.com/vtaits/react-filterlist instead
+
 # redux-filterlist
 
 A Higher Order Component using react-redux for creating lists with filters, sotring, paginatinon, endless scroll etc.
