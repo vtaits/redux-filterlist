@@ -3,9 +3,11 @@
   "version": "0.4.0",
   "description": "A Higher Order Component using react-redux for creating lists with filters, sotring, paginatinon, endless scroll etc.",
   "main": "./lib/index.js",
+  "module": "./es/index.js",
   "scripts": {
-    "build": "yarn build:cjs",
+    "build": "yarn build:cjs && yarn build:es",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir lib --ignore \"src/**/__tests__\",\"src/**/test-utils\"",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es --ignore \"src/**/__tests__\",\"src/**/test-utils\"",
     "lint": "eslint src --ext .js,.jsx",
     "test": "yarn lint && yarn test:unit",
     "test:unit": "jest",
